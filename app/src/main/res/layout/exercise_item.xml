@@ -41,7 +41,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginEnd="8dp"
-            android:text="Number of Sets"
+            android:text="Number of Sets "
             android:textSize="12sp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

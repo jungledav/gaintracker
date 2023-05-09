@@ -67,8 +67,7 @@ class AddSetsFragment : Fragment() {
             return
         }
 
-        val setAdapter = SetAdapter(requireContext(), object : SetAdapter.SetInteractionListener {
-
+        val setAdapter = SetAdapter(object : SetAdapter.SetInteractionListener {
             override fun onSetEditClick(set: ExerciseSet) {
                 // Handle set edit click
             }
@@ -81,7 +80,9 @@ class AddSetsFragment : Fragment() {
         binding.recyclerViewSets.adapter = setAdapter
         binding.recyclerViewSets.layoutManager = LinearLayoutManager(requireContext())
 
-        viewModel.getSetsForExercise(currentExerciseId).observe(viewLifecycleOwner, { sets -> setAdapter.setSets(sets) })
+        viewModel.getSetsForExercise(currentExerciseId).observe(viewLifecycleOwner, { sets ->
+            setAdapter.setSets(sets.reversed())
+        })
 
         binding.buttonAddSet.setOnClickListener { onAddSetButtonClick() }
     }

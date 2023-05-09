@@ -40,7 +40,7 @@ class ExerciseSetsFragment : Fragment() {
         val application = requireActivity().application as GainTrackerApplication
         val repository = application.appContainer.mainRepository
 
-        setAdapter = SetAdapter(requireContext(), object : SetAdapter.SetInteractionListener {
+        setAdapter = SetAdapter(object : SetAdapter.SetInteractionListener {
 
             override fun onSetEditClick(set: ExerciseSet) {
                 selectedSetForEdit = set
@@ -93,11 +93,13 @@ class ExerciseSetsFragment : Fragment() {
                     val updatedSet = ExerciseSet(id = set.id, exercise_id = currentExerciseId, reps = reps, weight = weight)
                     lifecycleScope.launch {
                         viewModel.updateExerciseSet(updatedSet)
+                        viewModel
                         viewModel.getSetsForExercise(currentExerciseId).observe(viewLifecycleOwner, { sets ->
                             setAdapter.setSets(sets)
                         })
                         // Reset input fields and button text
-
+                        binding.editTextReps.text.clear()
+                        binding.editTextWeight.text.clear()
                         binding.buttonAddSet.text = "Add Set"
                         selectedSetForEdit = null
                     }
@@ -108,8 +110,6 @@ class ExerciseSetsFragment : Fragment() {
             Toast.makeText(requireContext(), "Please enter valid reps and weight values", Toast.LENGTH_SHORT).show()
         }
     }
-
-
 
     companion object {
         fun newInstance(exerciseId: Long): ExerciseSetsFragment {
@@ -126,5 +126,4 @@ class ExerciseSetsFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
 }

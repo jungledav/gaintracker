@@ -9,6 +9,7 @@ import androidx.room.Delete
 
 import com.example.gaintracker.data.models.Exercise
 import com.example.gaintracker.data.models.ExerciseSet
+import com.example.gaintracker.fragments.ExerciseHistoryFragment
 
 @Dao
 interface ExerciseDao {
@@ -40,5 +41,15 @@ interface ExerciseDao {
 
     @Query("SELECT exerciseGroupId FROM exercises WHERE id = :exerciseId")
     fun getExerciseGroupId(exerciseId: Long): LiveData<Long>
+
+    @Query("""
+    SELECT exercise_sets.*, exercises.date AS exerciseDate
+    FROM exercise_sets
+    INNER JOIN exercises ON exercise_sets.exercise_id = exercises.id
+    WHERE exercises.exerciseGroupId = :exerciseGroupId
+    ORDER BY exercise_sets.date DESC
+""")
+    fun getSetsForExerciseGroupWithExerciseDate(exerciseGroupId: Long): List<ExerciseHistoryFragment.ExerciseSetWithExerciseDate>
+
 
 }
