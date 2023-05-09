@@ -15,13 +15,15 @@ import com.example.gaintracker.fragments.ExerciseHistoryFragment
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class ExerciseHistoryAdapter(private var exerciseSetsByDate: List<ExerciseHistoryFragment.ExerciseSetsByDate> = emptyList()) :
+class ExerciseHistoryAdapter(
+    private var exerciseSetsByDate: List<ExerciseHistoryFragment.ExerciseSetsByDate> = emptyList(),
+    private var recordSetIds: Set<Long> = setOf()) :
     RecyclerView.Adapter<ExerciseHistoryAdapter.ExerciseHistoryViewHolder>() {
 
     inner class ExerciseHistoryViewHolder(val binding: ItemExerciseHistoryBinding) :
         RecyclerView.ViewHolder(binding.root)
 
-    inner class SetsAdapter(private val sets: List<ExerciseSet>, private val isHistoryView: Boolean) :
+    inner class SetsAdapter(private val sets: List<ExerciseSet>, private val isHistoryView: Boolean, private val recordSetIds: Set<Long>) :
         RecyclerView.Adapter<SetsAdapter.SetsViewHolder>() {
 
         inner class SetsViewHolder(val binding: ItemSetBinding) : RecyclerView.ViewHolder(binding.root)
@@ -62,21 +64,8 @@ class ExerciseHistoryAdapter(private var exerciseSetsByDate: List<ExerciseHistor
         }
 
         private fun isRecordSet(currentSet: ExerciseSet): Boolean {
-            val setsByWeight = sets.groupBy { it.weight }
-            val currentSetWeightSets = setsByWeight[currentSet.weight] ?: return false
-
-            val maxRepsForWeight = currentSetWeightSets.maxByOrNull { it.reps }?.reps
-
-            if (currentSet.reps < maxRepsForWeight!!) {
-                return false
-            }
-
-            val firstMaxRepSet = currentSetWeightSets.first { it.reps == maxRepsForWeight }
-
-            return currentSet.id == firstMaxRepSet.id
+            return currentSet.id in recordSetIds
         }
-
-
     }
 
 
@@ -97,15 +86,41 @@ class ExerciseHistoryAdapter(private var exerciseSetsByDate: List<ExerciseHistor
 
         holder.binding.setsRecyclerView.apply {
             layoutManager = LinearLayoutManager(holder.itemView.context)
-            adapter = SetsAdapter(sets, true)
+            adapter = SetsAdapter(sets, true, recordSetIds)
         }
-    }
 
+    }
+    private fun isRecordSet(currentSet: ExerciseSet): Boolean {
+        return recordSetIds.contains(currentSet.id)
+    }
     override fun getItemCount(): Int {
         return exerciseSetsByDate.size
     }
-    fun submitList(newSetsByDate: List<ExerciseHistoryFragment.ExerciseSetsByDate>) {
+
+    fun submitList(newSetsByDate: List<ExerciseHistoryFragment.ExerciseSetsByDate>, newRecordSetIds: Set<Long>) {
         exerciseSetsByDate = newSetsByDate
+        recordSetIds = newRecordSetIds
         notifyDataSetChanged()
     }
+
+    private fun calculateRecordSets(): Map<Long, ExerciseSet> {
+        val sets = exerciseSetsByDate.flatMap { it.sets }
+            .sortedWith(compareBy<ExerciseSet> { it.weight }.thenByDescending { it.reps }.thenBy { it.id })
+
+        val recordSets = mutableMapOf<Pair<Double, Int>, ExerciseSet>()
+
+        for (set in sets) {
+            val currentRecordSet = recordSets[Pair(set.weight, set.reps)]
+            if (currentRecordSet == null || set.id < currentRecordSet.id) {
+                // If two sets have the same weight, reps and date, choose the set with the lower id
+                recordSets[Pair(set.weight, set.reps)] = set
+            }
+        }
+
+        return recordSets.values.associateBy { it.id }
+    }
+
+
+
+
 }

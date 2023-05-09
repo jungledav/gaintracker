@@ -91,9 +91,28 @@ class ExerciseHistoryFragment : Fragment() {
             val setsByDate = setsWithExerciseDate.groupBy { it.exerciseDate }
                 .map { (date, sets) -> ExerciseSetsByDate(Date(date), sets.map { ExerciseSet(it.id, it.exercise_id, it.date, it.reps, it.weight) }.sortedByDescending { it.date }) }
 
-            exerciseHistoryAdapter.submitList(setsByDate)
+            val recordSets = calculateRecordSets(setsByDate)
+            exerciseHistoryAdapter.submitList(setsByDate, recordSets)
         }
     }
+
+    private fun calculateRecordSets(setsByDate: List<ExerciseSetsByDate>): Set<Long> {
+        val sets = setsByDate.flatMap { it.sets }
+        val recordSets = mutableListOf<ExerciseSet>()
+
+        for (set in sets.sortedWith(compareByDescending<ExerciseSet> { it.weight }.thenByDescending { it.reps }.thenBy { it.date })) {
+            if (recordSets.none { it.weight >= set.weight && it.reps >= set.reps }) {
+                recordSets.add(set)
+            }
+        }
+
+        return recordSets.map { it.id }.toSet()
+    }
+
+
+
+
+
 
 
     override fun onDestroyView() {
