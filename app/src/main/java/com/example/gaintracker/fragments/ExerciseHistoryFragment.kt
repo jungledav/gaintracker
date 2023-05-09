@@ -13,12 +13,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.gaintracker.adapters.ExerciseHistoryAdapter
 import com.example.gaintracker.data.dao.ExerciseDao
 import com.example.gaintracker.databinding.FragmentExerciseHistoryBinding
-import com.example.gaintracker.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import com.example.gaintracker.data.database.GainTrackerDatabase
 import com.example.gaintracker.data.models.ExerciseSet
+import com.example.gaintracker.viewmodels.MainViewModel
 import java.util.Date
 
 class ExerciseHistoryFragment : Fragment() {
@@ -51,6 +51,7 @@ class ExerciseHistoryFragment : Fragment() {
     private lateinit var viewModel: MainViewModel
     private lateinit var exerciseHistoryAdapter: ExerciseHistoryAdapter
     private lateinit var exerciseDao: ExerciseDao
+    private var exerciseGroupId: Int? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,7 +65,6 @@ class ExerciseHistoryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val exerciseId = arguments?.getLong(ARG_EXERCISE_GROUP_ID) ?: -1
 
-        // Initialize ViewModel, ExerciseHistoryAdapter, ExerciseDao, and other variables
         viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         exerciseHistoryAdapter = ExerciseHistoryAdapter()
         exerciseDao = GainTrackerDatabase.getDatabase(requireContext()).exerciseDao()
@@ -76,8 +76,15 @@ class ExerciseHistoryFragment : Fragment() {
 
         viewModel.getExerciseGroupId(exerciseId).observe(viewLifecycleOwner) { exerciseGroupId ->
             Log.d("ExerciseHistoryFragment", "Exercise Group ID: $exerciseGroupId, Exercise ID: $exerciseId")
+            this.exerciseGroupId = exerciseGroupId.toInt()
+            updateSetsForExerciseGroup(this.exerciseGroupId!!)
+        }
+    }
 
-            updateSetsForExerciseGroup(exerciseGroupId.toInt())
+    override fun onResume() {
+        super.onResume()
+        exerciseGroupId?.let {
+            updateSetsForExerciseGroup(it)
         }
     }
 
@@ -91,7 +98,7 @@ class ExerciseHistoryFragment : Fragment() {
             val setsByDate = setsWithExerciseDate.groupBy { it.exerciseDate }
                 .map { (date, sets) -> ExerciseSetsByDate(Date(date), sets.map { ExerciseSet(it.id, it.exercise_id, it.date, it.reps, it.weight) }.sortedByDescending { it.date }) }
 
-            val recordSets = calculateRecordSets(setsByDate)
+            val recordSets =            calculateRecordSets(setsByDate)
             exerciseHistoryAdapter.submitList(setsByDate, recordSets)
         }
     }
@@ -109,14 +116,9 @@ class ExerciseHistoryFragment : Fragment() {
         return recordSets.map { it.id }.toSet()
     }
 
-
-
-
-
-
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 }
+
