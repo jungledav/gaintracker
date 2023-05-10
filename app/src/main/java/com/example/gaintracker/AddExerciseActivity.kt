@@ -3,6 +3,7 @@ package com.example.gaintracker
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -62,7 +63,11 @@ class AddExerciseActivity : AppCompatActivity() {
 
             if (exerciseName.isNotBlank() && exerciseName != "Add your own exercise") {
                 lifecycleScope.launch {
+                    Log.d("AddExerciseActivity", "Inserting exercise: $exerciseName")
+
                     val exerciseId = viewModel.insertExercise(exerciseName)
+                    Log.d("AddExerciseActivity", "Exercise inserted with ID: $exerciseId")
+
                     navigateToExerciseDetailsActivity(exerciseId, exerciseName)
                 }
             } else {
@@ -153,6 +158,8 @@ class AddExerciseActivity : AppCompatActivity() {
     }
 
     private fun navigateToExerciseDetailsActivity(exerciseId: Long, exerciseName: String) {
+        Log.d("AddExerciseActivity", "Navigating to ExerciseDetailsActivity with ID: $exerciseId and Name: $exerciseName")
+
         val fromMainActivity = intent.getBooleanExtra(EXTRA_FROM_MAIN_ACTIVITY, false)
 
         if (fromMainActivity) {
