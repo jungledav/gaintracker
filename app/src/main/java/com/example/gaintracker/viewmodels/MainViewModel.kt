@@ -6,7 +6,6 @@ import com.example.gaintracker.data.models.ExerciseSet
 import com.example.gaintracker.data.models.ExerciseWithGroupName
 import com.example.gaintracker.repositories.MainRepository
 import kotlinx.coroutines.launch
-import android.util.Log
 
 class MainViewModel(private val repository: MainRepository) : ViewModel() {
 
@@ -76,5 +75,10 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
     fun getSetsForExerciseGroup(exerciseGroupId: Int): LiveData<List<ExerciseSet>> {
         return repository.getSetsForExerciseGroup(exerciseGroupId)
     }
-
+    fun getMaxWeightForExercise(exerciseId: Long): LiveData<Float> {
+        return repository.getMaxWeightForExercise(exerciseId)
+    }
+    fun getMaxWeightForExerciseType(exerciseTypeId: Long): LiveData<Float> {
+        return repository.getMaxWeightForExerciseType(exerciseTypeId)
+    }
 }

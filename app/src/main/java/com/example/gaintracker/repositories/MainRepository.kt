@@ -8,9 +8,7 @@ import com.example.gaintracker.data.dao.*
 import com.example.gaintracker.data.models.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import androidx.lifecycle.switchMap
-import kotlinx.coroutines.runBlocking
 
 
 class MainRepository(
@@ -107,4 +105,12 @@ class MainRepository(
     fun getSetsForExerciseGroup(exerciseGroupId: Int): LiveData<List<ExerciseSet>> {
         return exerciseDao.getSetsForExerciseGroup(exerciseGroupId)
     }
+    fun getMaxWeightForExercise(exerciseId: Long): LiveData<Float> {
+        return exerciseDao.getMaxWeightForExercise(exerciseId.toInt())
+    }
+
+    fun getMaxWeightForExerciseType(exerciseTypeId: Long): LiveData<Float> {
+        return exerciseDao.getMaxWeightForExerciseType(exerciseTypeId)
+    }
+
 }

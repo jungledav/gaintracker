@@ -4,11 +4,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import androidx.lifecycle.LiveData
 import androidx.viewpager2.widget.ViewPager2
 import com.example.gaintracker.R
 import com.example.gaintracker.adapters.ExerciseDetailsViewPagerAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.example.gaintracker.repositories.MainRepository
+
 
 class ExerciseDetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +41,8 @@ class ExerciseDetailsActivity : AppCompatActivity() {
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = when (position) {
                 0 -> "Add Sets"
-                1 -> "Exercise History"
+                1 -> "History"
+                2 -> "Results"
                 else -> "Tab ${position + 1}"
             }
         }.attach()
@@ -56,4 +60,6 @@ class ExerciseDetailsActivity : AppCompatActivity() {
         const val EXTRA_EXERCISE_ID = "com.example.gaintracker.EXTRA_EXERCISE_ID"
         const val EXTRA_EXERCISE_NAME = "com.example.gaintracker.EXTRA_EXERCISE_NAME"
     }
+
+
 }

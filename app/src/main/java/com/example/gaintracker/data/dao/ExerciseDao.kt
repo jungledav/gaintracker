@@ -51,5 +51,16 @@ interface ExerciseDao {
 """)
     fun getSetsForExerciseGroupWithExerciseDate(exerciseGroupId: Long): List<ExerciseHistoryFragment.ExerciseSetWithExerciseDate>
 
+    @Query("SELECT MAX(weight) FROM exercise_sets WHERE exercise_id = :exerciseId")
+    fun getMaxWeightForExercise(exerciseId: Int): LiveData<Float>
+    @Query("""
+    SELECT MAX(exercise_sets.weight) 
+    FROM exercise_sets
+    INNER JOIN exercises ON exercise_sets.exercise_id = exercises.id
+    WHERE exercises.exerciseGroupId = (SELECT exerciseGroupId FROM exercises WHERE id = :exerciseId)
+    """)
+    fun getMaxWeightForExerciseType(exerciseId: Long): LiveData<Float>
+
+
 
 }
