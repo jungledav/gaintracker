@@ -4,7 +4,6 @@ import kotlinx.serialization.Serializable
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import java.util.*
 
 @Serializable
 @Entity(
