@@ -2,15 +2,12 @@ package com.example.gaintracker.viewmodels
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
-import androidx.lifecycle.LiveData
 import androidx.viewpager2.widget.ViewPager2
 import com.example.gaintracker.R
 import com.example.gaintracker.adapters.ExerciseDetailsViewPagerAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.example.gaintracker.repositories.MainRepository
 
 
 class ExerciseDetailsActivity : AppCompatActivity() {

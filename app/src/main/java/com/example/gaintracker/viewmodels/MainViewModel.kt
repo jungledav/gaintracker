@@ -13,12 +13,6 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
         repository.viewModelScope = viewModelScope
     }
 
-    val allExercises: LiveData<List<Exercise>> = repository.allExercises
-    val allExerciseNames: LiveData<List<String>> = repository.allExerciseNames
-
-    private val _setsForCurrentExercise = MutableLiveData<List<ExerciseSet>>(listOf())
-    val setsForCurrentExercise: LiveData<List<ExerciseSet>>
-        get() = _setsForCurrentExercise
 
     fun deleteExercise(exercise: Exercise) {
         viewModelScope.launch {
@@ -48,9 +42,7 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
 
 
 
-    fun getExerciseHistory(exerciseGroupId: Int): LiveData<List<ExerciseSet>> {
-        return repository.getExerciseHistory(exerciseGroupId)
-    }
+
 
     fun getExerciseGroupId(exerciseId: Long): LiveData<Long> {
         return repository.getExerciseGroupId(exerciseId)
@@ -60,9 +52,7 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
         return repository.getExerciseGroupName(exerciseGroupId)
     }
 
-    suspend fun getExerciseGroupNameById(id: Int): String {
-        return repository.getExerciseGroupNameById(id)
-    }
+
 
     val allExercisesWithGroupNames: LiveData<List<ExerciseWithGroupName>> =
         repository.getAllExercisesWithGroupNames()
@@ -72,9 +62,7 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
             emit(sets)
         }.distinctUntilChanged()
     }
-    fun getSetsForExerciseGroup(exerciseGroupId: Int): LiveData<List<ExerciseSet>> {
-        return repository.getSetsForExerciseGroup(exerciseGroupId)
-    }
+
     fun getMaxWeightForExercise(exerciseId: Long): LiveData<Float> {
         return repository.getMaxWeightForExercise(exerciseId)
     }
