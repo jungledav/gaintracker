@@ -66,7 +66,7 @@ class AddExerciseActivity : AppCompatActivity() {
                     Log.d("AddExerciseActivity", "Inserting exercise: $exerciseName")
 
                     val exerciseId = viewModel.insertExercise(exerciseName)
-                    Log.d("AddExerciseActivity", "Exercise inserted with ID: $exerciseId")
+                    Log.d("AddExerciseActivityy", "Exercise inserted with ID: $exerciseId")
 
                     navigateToExerciseDetailsActivity(exerciseId, exerciseName)
                 }
