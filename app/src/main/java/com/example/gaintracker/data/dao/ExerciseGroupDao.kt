@@ -24,4 +24,5 @@ interface ExerciseGroupDao {
     @Query("SELECT name FROM exercise_groups WHERE id = :id")
     suspend fun getExerciseGroupNameById(id: Int): String
 
+
 }

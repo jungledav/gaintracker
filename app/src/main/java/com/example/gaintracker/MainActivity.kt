@@ -3,6 +3,7 @@ package com.example.gaintracker
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -94,6 +95,7 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, ExerciseDetailsActivity::class.java).apply {
             putExtra(ExerciseDetailsActivity.EXTRA_EXERCISE_ID, exerciseId)
             putExtra(ExerciseDetailsActivity.EXTRA_EXERCISE_NAME, exerciseName)
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
         startActivity(intent)
     }
@@ -158,10 +160,10 @@ class MainActivity : AppCompatActivity() {
         itemTouchHelper.attachToRecyclerView(recyclerView)
         adapter.setOnItemClickListener(object : ExerciseAdapter.OnItemClickListener {
             override fun onItemClick(exercise: Exercise) {
-                viewModel.getExerciseGroupName(exercise.exerciseGroupId.toInt())
-                    .observe(this@MainActivity, Observer { exerciseGroupName ->
-                        openExerciseDetails(exercise.id.toLong(), exerciseGroupName)
-                    })
+                lifecycleScope.launch {
+                    val exerciseGroupName = viewModel.getExerciseGroupNameById(exercise.exerciseGroupId.toInt())
+                    openExerciseDetails(exercise.id.toLong(), exerciseGroupName)
+                }
             }
         })
     }
@@ -187,13 +189,17 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == ADD_EXERCISE_REQUEST_CODE && resultCode == RESULT_OK) {
-            val exerciseId =
-                data?.getLongExtra(ExerciseDetailsActivity.EXTRA_EXERCISE_ID, -1) ?: -1L
-            val exerciseName =
-                data?.getStringExtra(ExerciseDetailsActivity.EXTRA_EXERCISE_NAME) ?: ""
+            val exerciseId = data?.getLongExtra(ExerciseDetailsActivity.EXTRA_EXERCISE_ID, -1) ?: -1
+            val exerciseName = data?.getStringExtra(ExerciseDetailsActivity.EXTRA_EXERCISE_NAME)
 
-            if (exerciseId != -1L) {
-                openExerciseDetails(exerciseId, exerciseName)
+            if (exerciseId != -1L && exerciseName != null) {
+                Log.d(
+                    "MainActivity",
+                    "Received from AddExerciseActivity: ID: $exerciseId, Name: $exerciseName"
+                )
+                // Use exerciseId and exerciseName here...
+            } else {
+                Log.d("MainActivity", "No exercise received from AddExerciseActivity.")
             }
         }
     }

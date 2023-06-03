@@ -68,12 +68,19 @@ class AddExerciseActivity : AppCompatActivity() {
                     val exerciseId = viewModel.insertExercise(exerciseName)
                     Log.d("AddExerciseActivityy", "Exercise inserted with ID: $exerciseId")
 
-                    navigateToExerciseDetailsActivity(exerciseId, exerciseName)
+                    if (exerciseId != 0L) {
+                        Log.d("AddExerciseActivity", "Navigating to ExerciseDetailsActivity with ID: $exerciseId and Name: $exerciseName")
+
+                        navigateToExerciseDetailsActivity(exerciseId, exerciseName)
+                    } else {
+                        Log.d("AddExerciseActivity", "Failed to insert exercise.")
+                    }
                 }
             } else {
                 Toast.makeText(this, "Please select an exercise", Toast.LENGTH_SHORT).show()
             }
         }
+
     }
 
     private fun loadCustomExercises() {
@@ -160,27 +167,21 @@ class AddExerciseActivity : AppCompatActivity() {
     private fun navigateToExerciseDetailsActivity(exerciseId: Long, exerciseName: String) {
         Log.d("AddExerciseActivity", "Navigating to ExerciseDetailsActivity with ID: $exerciseId and Name: $exerciseName")
 
-        val fromMainActivity = intent.getBooleanExtra(EXTRA_FROM_MAIN_ACTIVITY, false)
+        val intent = Intent(this, ExerciseDetailsActivity::class.java)
+        intent.putExtra(ExerciseDetailsActivity.EXTRA_EXERCISE_ID, exerciseId)
+        intent.putExtra(ExerciseDetailsActivity.EXTRA_EXERCISE_NAME, exerciseName)
+        intent.putExtra(ExerciseDetailsActivity.EXTRA_NAVIGATE_BACK_TO_MAIN, true) // new flag
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
 
-        if (fromMainActivity) {
-            setResult(RESULT_OK, Intent().apply {
-                putExtra(ExerciseDetailsActivity.EXTRA_EXERCISE_ID, exerciseId)
-                putExtra(ExerciseDetailsActivity.EXTRA_EXERCISE_NAME, exerciseName)
-            })
-            finish()
-        } else {
-            val intent = Intent(this, ExerciseDetailsActivity::class.java)
-            intent.putExtra(ExerciseDetailsActivity.EXTRA_EXERCISE_ID, exerciseId)
-            intent.putExtra(ExerciseDetailsActivity.EXTRA_EXERCISE_NAME, exerciseName)
-            startActivity(intent)
-            finish()
-        }
+        startActivity(intent)
+        finish()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                onBackPressed()
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
                 true
             }
             else -> super.onOptionsItemSelected(item)

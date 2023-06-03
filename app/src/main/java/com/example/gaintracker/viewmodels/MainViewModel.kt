@@ -52,7 +52,9 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
         return repository.getExerciseGroupName(exerciseGroupId)
     }
 
-
+    suspend fun getExerciseGroupNameById(exerciseGroupId: Int): String {
+        return repository.getExerciseGroupNameById(exerciseGroupId)
+    }
 
     val allExercisesWithGroupNames: LiveData<List<ExerciseWithGroupName>> =
         repository.getAllExercisesWithGroupNames()

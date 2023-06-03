@@ -1,9 +1,12 @@
 package com.example.gaintracker.viewmodels
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import androidx.viewpager2.widget.ViewPager2
+import com.example.gaintracker.MainActivity
 import com.example.gaintracker.R
 import com.example.gaintracker.adapters.ExerciseDetailsViewPagerAdapter
 import com.google.android.material.tabs.TabLayout
@@ -26,6 +29,7 @@ class ExerciseDetailsActivity : AppCompatActivity() {
             finish()
             return
         }
+        Log.d("ExerciseDetailsActivity", "Exercise ID: $exerciseId, Name: $exerciseName")
 
         title = exerciseName
 
@@ -47,7 +51,6 @@ class ExerciseDetailsActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                onBackPressed()
                 finish()
                 true
             }
@@ -57,7 +60,16 @@ class ExerciseDetailsActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_EXERCISE_ID = "com.example.gaintracker.EXTRA_EXERCISE_ID"
         const val EXTRA_EXERCISE_NAME = "com.example.gaintracker.EXTRA_EXERCISE_NAME"
+        const val EXTRA_NAVIGATE_BACK_TO_MAIN = "com.example.gaintracker.EXTRA_NAVIGATE_BACK_TO_MAIN"
     }
+    override fun onBackPressed() {
 
+        if (intent.getBooleanExtra(EXTRA_NAVIGATE_BACK_TO_MAIN, false)) {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        } else {
+            super.onBackPressed()
+        }
+    }
 
 }
