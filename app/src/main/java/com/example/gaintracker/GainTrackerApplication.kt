@@ -1,6 +1,7 @@
 package com.example.gaintracker
 
 import android.app.Application
+import com.jakewharton.threetenabp.AndroidThreeTen
 
 class GainTrackerApplication : Application() {
 
@@ -10,5 +11,6 @@ class GainTrackerApplication : Application() {
         super.onCreate()
 
         appContainer = AppContainer(this)
+        AndroidThreeTen.init(this)
     }
 }

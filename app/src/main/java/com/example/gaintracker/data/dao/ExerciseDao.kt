@@ -61,6 +61,8 @@ interface ExerciseDao {
     """)
     fun getMaxWeightForExerciseType(exerciseId: Long): LiveData<Float>
 
+    @Query("SELECT * FROM exercises ORDER BY date DESC LIMIT 1")
+    suspend fun getLatestExercise(): Exercise?
 
 
 }

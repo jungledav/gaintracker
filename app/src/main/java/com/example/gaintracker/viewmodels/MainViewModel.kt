@@ -71,4 +71,7 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
     fun getMaxWeightForExerciseType(exerciseTypeId: Long): LiveData<Float> {
         return repository.getMaxWeightForExerciseType(exerciseTypeId)
     }
+    suspend fun getLatestExercise(): Exercise? {
+        return repository.getLatestExercise()
+    }
 }

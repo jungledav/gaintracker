@@ -112,5 +112,7 @@ class MainRepository(
     fun getMaxWeightForExerciseType(exerciseTypeId: Long): LiveData<Float> {
         return exerciseDao.getMaxWeightForExerciseType(exerciseTypeId)
     }
-
+    suspend fun getLatestExercise(): Exercise? {
+        return exerciseDao.getLatestExercise()
+    }
 }
