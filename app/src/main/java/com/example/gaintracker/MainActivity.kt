@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Button
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -21,8 +23,9 @@ import java.util.*
 import androidx.lifecycle.Observer
 import com.example.gaintracker.viewmodels.ExerciseDetailsActivity
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     private lateinit var adapter: ExerciseAdapter
     private val viewModel: MainViewModel by viewModels { MainViewModelFactory(appContainer.mainRepository) }
@@ -99,10 +102,31 @@ class MainActivity : AppCompatActivity() {
         }
         startActivity(intent)
     }
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.bottom_nav_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
+        return when (item.itemId) {
+            R.id.action_exercises -> {
+                // Do nothing, we're already here
+                true
+            }
+            R.id.action_dashboard -> {
+                val intent = Intent(this, DashboardActivity::class.java)
+                startActivity(intent)
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        layoutInflater.inflate(R.layout.activity_main, findViewById(R.id.activity_content))
+
 
         val recyclerView: RecyclerView = findViewById(R.id.recyclerViewExercises)
         previousDate = null

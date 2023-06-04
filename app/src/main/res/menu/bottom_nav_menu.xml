@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+
     <item
-        android:id="@+id/nav_exercises"
+        android:id="@+id/action_dashboard"
+        android:icon="@drawable/baseline_speed_24"
+        android:title="Dashboard" />
+    <item
+        android:id="@+id/action_exercises"
         android:icon="@drawable/baseline_fitness_center_24"
         android:title="Workouts" />
 </menu>
