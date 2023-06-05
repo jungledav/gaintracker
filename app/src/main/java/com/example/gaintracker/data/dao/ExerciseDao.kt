@@ -64,5 +64,24 @@ interface ExerciseDao {
     @Query("SELECT * FROM exercises ORDER BY date DESC LIMIT 1")
     suspend fun getLatestExercise(): Exercise?
 
+    // Counts the total number of workouts
+    @Query("SELECT COUNT(DISTINCT DATE(date / 1000, 'unixepoch')) FROM exercises")
+    suspend fun countTotalWorkouts(): Int
 
+
+    // Counts the total number of exercises
+    @Query("SELECT COUNT(*) FROM exercises")
+    suspend fun countTotalExercises(): Int
+
+    // Counts the total number of sets
+    @Query("SELECT COUNT(*) FROM exercise_sets")
+    suspend fun countTotalSets(): Int
+
+    // Counts the total number of reps
+    @Query("SELECT SUM(reps) FROM exercise_sets")
+    suspend fun countTotalReps(): Int
+
+    // Counts the total weight lifted
+    @Query("SELECT SUM(weight) FROM exercise_sets")
+    suspend fun countTotalWeight(): Float
 }

@@ -74,4 +74,13 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
     suspend fun getLatestExercise(): Exercise? {
         return repository.getLatestExercise()
     }
+    suspend fun countTotalWorkouts() = repository.countTotalWorkouts()
+
+    suspend fun countTotalExercises() = repository.countTotalExercises()
+
+    suspend fun countTotalSets() = repository.countTotalSets()
+
+    suspend fun countTotalReps() = repository.countTotalReps()
+
+    suspend fun countTotalWeight() = repository.countTotalWeight()
 }

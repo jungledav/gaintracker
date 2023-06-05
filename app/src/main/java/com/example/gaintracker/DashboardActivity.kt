@@ -29,22 +29,38 @@ class DashboardActivity : AppCompatActivity() {
 
         // Add the new code here
         lifecycleScope.launch {
+
+
+
+
             val latestExercise = viewModel.getLatestExercise()
             if (latestExercise != null) {
                 val latestExerciseDate = Instant.ofEpochMilli(latestExercise.date).atZone(ZoneId.systemDefault()).toLocalDate()
                 val currentDate = LocalDate.now(ZoneId.systemDefault())
                 val daysSinceLastExercise = ChronoUnit.DAYS.between(latestExerciseDate, currentDate)
                 findViewById<TextView>(R.id.welcomeTextView).text = "Hi, welcome back! It's been $daysSinceLastExercise days since your last workout. Start a new workout now."
-            }
+                val totalWorkouts = viewModel.countTotalWorkouts()?.toInt() ?: 0
+                findViewById<TextView>(R.id.workoutsText).text = "Total Workouts: $totalWorkouts"
 
-            if (latestExercise == null) { // No exercise added by users yet
-                findViewById<TextView>(R.id.welcomeTextView).text = "Hi, welcome to GainTracker. Are you ready for your first workout?"
+                val totalExercises = viewModel.countTotalExercises()?.toInt() ?: 0
+                findViewById<TextView>(R.id.exercisesText).text = "Total Exercises: $totalExercises"
+
+                val totalSets = viewModel.countTotalSets()?.toInt() ?: 0
+                findViewById<TextView>(R.id.setsText).text = "Total Sets: $totalSets"
+
+                val totalReps = viewModel.countTotalReps()?.toInt() ?: 0
+                findViewById<TextView>(R.id.repsText).text = "Total Reps: $totalReps"
+
+                val totalWeight = viewModel.countTotalWeight()?.toInt() ?: 0
+                findViewById<TextView>(R.id.weightText).text = "Total Weight Lifted: $totalWeight"
 
 
             }
             else { // Last workout is today
-                findViewById<TextView>(R.id.welcomeTextView).text = "Hi, welcome back! Would you like to continue today's workout?"
+                findViewById<TextView>(R.id.welcomeTextView).text = "Hi, welcome to GainTracker. Are you ready for your first workout?"
             }
+
+
         }
 
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)

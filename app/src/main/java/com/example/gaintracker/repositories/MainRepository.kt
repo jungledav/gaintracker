@@ -115,4 +115,13 @@ class MainRepository(
     suspend fun getLatestExercise(): Exercise? {
         return exerciseDao.getLatestExercise()
     }
+    suspend fun countTotalWorkouts() = exerciseDao.countTotalWorkouts()
+
+    suspend fun countTotalExercises() = exerciseDao.countTotalExercises()
+
+    suspend fun countTotalSets() = exerciseDao.countTotalSets()
+
+    suspend fun countTotalReps() = exerciseDao.countTotalReps()
+
+    suspend fun countTotalWeight() = exerciseDao.countTotalWeight()
 }
