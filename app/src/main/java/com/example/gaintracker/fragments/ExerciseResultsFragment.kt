@@ -33,6 +33,27 @@ class ExerciseResultsFragment : Fragment() {
             tvMaxWeightType.text = "Max weight for exercise type: $maxWeightType"
         })
 
+        val tvMaxRep = view.findViewById<TextView>(R.id.tv_max_rep)
+        val tvTotalReps = view.findViewById<TextView>(R.id.tv_total_reps)
+        val tvExerciseVolume = view.findViewById<TextView>(R.id.tv_exercise_volume)
+        val tvMaxSetVolume = view.findViewById<TextView>(R.id.tv_max_set_volume)
+
+        viewModel.getMaxRepForExercise(exerciseId).observe(viewLifecycleOwner, { maxRep ->
+            tvMaxRep.text = "Max rep: $maxRep"
+        })
+
+        viewModel.getTotalRepsForExercise(exerciseId).observe(viewLifecycleOwner, { totalReps ->
+            tvTotalReps.text = "Total reps: $totalReps"
+        })
+
+        viewModel.getExerciseVolumeForExercise(exerciseId).observe(viewLifecycleOwner, { exerciseVolume ->
+            tvExerciseVolume.text = "Exercise volume: $exerciseVolume"
+        })
+
+        viewModel.getMaxSetVolumeForExercise(exerciseId).observe(viewLifecycleOwner, { maxSetVolume ->
+            tvMaxSetVolume.text = "Max set volume: $maxSetVolume"
+        })
+
         return view
     }
 

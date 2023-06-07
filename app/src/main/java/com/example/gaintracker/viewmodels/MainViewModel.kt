@@ -83,4 +83,20 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
     suspend fun countTotalReps() = repository.countTotalReps()
 
     suspend fun countTotalWeight() = repository.countTotalWeight()
+
+    fun getMaxRepForExercise(exerciseId: Long): LiveData<Int> {
+        return repository.getMaxRepForExercise(exerciseId)
+    }
+
+    fun getTotalRepsForExercise(exerciseId: Long): LiveData<Int> {
+        return repository.getTotalRepsForExercise(exerciseId)
+    }
+
+    fun getExerciseVolumeForExercise(exerciseId: Long): LiveData<Double> {
+        return repository.getExerciseVolumeForExercise(exerciseId)
+    }
+
+    fun getMaxSetVolumeForExercise(exerciseId: Long): LiveData<Double> {
+        return repository.getMaxSetVolumeForExercise(exerciseId)
+    }
 }

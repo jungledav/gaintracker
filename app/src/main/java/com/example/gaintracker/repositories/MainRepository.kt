@@ -124,4 +124,20 @@ class MainRepository(
     suspend fun countTotalReps() = exerciseDao.countTotalReps()
 
     suspend fun countTotalWeight() = exerciseDao.countTotalWeight()
+
+    fun getMaxRepForExercise(exerciseId: Long): LiveData<Int> {
+        return exerciseDao.getMaxRepForExercise(exerciseId)
+    }
+
+    fun getTotalRepsForExercise(exerciseId: Long): LiveData<Int> {
+        return exerciseDao.getTotalRepsForExercise(exerciseId)
+    }
+
+    fun getExerciseVolumeForExercise(exerciseId: Long): LiveData<Double> {
+        return exerciseDao.getExerciseVolumeForExercise(exerciseId)
+    }
+
+    fun getMaxSetVolumeForExercise(exerciseId: Long): LiveData<Double> {
+        return exerciseDao.getMaxSetVolumeForExercise(exerciseId)
+    }
 }

@@ -84,4 +84,15 @@ interface ExerciseDao {
     // Counts the total weight lifted
     @Query("SELECT SUM(weight) FROM exercise_sets")
     suspend fun countTotalWeight(): Float
+    @Query("SELECT MAX(reps) FROM exercise_sets WHERE exercise_id = :exerciseId")
+    fun getMaxRepForExercise(exerciseId: Long): LiveData<Int>
+
+    @Query("SELECT SUM(reps) FROM exercise_sets WHERE exercise_id = :exerciseId")
+    fun getTotalRepsForExercise(exerciseId: Long): LiveData<Int>
+
+    @Query("SELECT SUM(reps * weight) FROM exercise_sets WHERE exercise_id = :exerciseId")
+    fun getExerciseVolumeForExercise(exerciseId: Long): LiveData<Double>
+
+    @Query("SELECT MAX(reps * weight) FROM exercise_sets WHERE exercise_id = :exerciseId")
+    fun getMaxSetVolumeForExercise(exerciseId: Long): LiveData<Double>
 }
