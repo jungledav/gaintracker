@@ -10,6 +10,7 @@
     <!-- Max Weight Card -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card_max_weight"
+        android:visibility="visible"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
@@ -65,6 +66,7 @@
     <!-- Max Rep Card -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card_max_rep"
+        android:visibility="visible"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
@@ -130,6 +132,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
+        android:visibility="visible"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp"
         app:layout_constraintStart_toEndOf="@id/guideline"
@@ -142,11 +145,12 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+
             <TextView
                 android:id="@+id/tv_total_reps"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Total Reps in One Workout"
+                android:text="Max Reps in Workout"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:layout_gravity="center"
@@ -192,6 +196,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
+        android:visibility="visible"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp"
         app:layout_constraintStart_toEndOf="@id/guideline"
@@ -250,6 +255,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
+        android:visibility="visible"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -301,7 +307,19 @@
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
-
+    <TextView
+        android:id="@+id/tv_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:textColor="@color/dark_blue"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/card_max_set_volume"
+        app:layout_constraintBottom_toBottomOf="parent"/>
     <!-- Guideline -->
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"

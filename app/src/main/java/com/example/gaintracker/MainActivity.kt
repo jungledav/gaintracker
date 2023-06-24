@@ -119,6 +119,14 @@ class MainActivity : BaseActivity() {
                 finish()
                 true
             }
+
+            R.id.action_settings -> {
+                // Handle settings action
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
+                finish()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }

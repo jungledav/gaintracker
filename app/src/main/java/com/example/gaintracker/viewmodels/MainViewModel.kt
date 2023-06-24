@@ -7,6 +7,7 @@ import com.example.gaintracker.data.models.ExerciseSet
 import com.example.gaintracker.data.models.ExerciseSetVolume
 import com.example.gaintracker.data.models.ExerciseWithGroupName
 import com.example.gaintracker.repositories.MainRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -224,14 +225,9 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
             ExerciseMaxReps(formattedDate, maxRepsExercise.totalReps, maxRepsExercise.exerciseGroupId)
         }
     }
-
-
-
-
-
-
-
-
+    fun doesExerciseSetExist(exerciseGroupId: Long): LiveData<Boolean> {
+        return repository.doesExerciseSetExist(exerciseGroupId)
+    }
 
     fun getMaxSetVolumeForGroup(exerciseId: Long): LiveData<ExerciseSetVolume> {
         val setVolumeLiveData = repository.getMaxSetVolumeForGroup(exerciseId)

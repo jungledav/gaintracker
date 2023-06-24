@@ -28,6 +28,13 @@ open class BaseActivity : AppCompatActivity() {
                     finish()
                     return@setOnNavigationItemSelectedListener true
                 }
+                R.id.action_settings -> {
+                    // Handle settings action
+                    val intent = Intent(this, SettingsActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                    return@setOnNavigationItemSelectedListener true
+                }
                 else -> return@setOnNavigationItemSelectedListener false
             }
         }
@@ -42,6 +49,7 @@ open class BaseActivity : AppCompatActivity() {
         when (this.javaClass.simpleName) {
             "MainActivity" -> bottomNavigationView.menu.findItem(R.id.action_exercises).isChecked = true
             "DashboardActivity" -> bottomNavigationView.menu.findItem(R.id.action_dashboard).isChecked = true
+            "SettingsActivity" -> bottomNavigationView.menu.findItem(R.id.action_settings).isChecked = true
         }
     }
 

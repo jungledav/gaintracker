@@ -25,6 +25,9 @@
         <activity android:name=".AddExerciseActivity"
         android:parentActivityName="com.example.gaintracker.DashboardActivity" />
         <activity android:name=".MainActivity" />
+        <activity android:name=".SettingsActivity" />
+
+
 
 
         <activity

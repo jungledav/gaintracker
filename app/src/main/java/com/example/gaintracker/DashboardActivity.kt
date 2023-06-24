@@ -73,6 +73,14 @@ class DashboardActivity : AppCompatActivity() {
                     true
 
                 }
+
+                R.id.action_settings -> {
+                    // Handle settings action
+                    val intent = Intent(this, SettingsActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                    true
+                }
                 R.id.action_dashboard -> {
                     // Do nothing, we're already here
                     true

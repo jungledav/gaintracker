@@ -191,5 +191,7 @@ class MainRepository(
     fun getMaxSetVolumeForGroup(exerciseId: Long): LiveData<ExerciseSetVolume?> {
         return exerciseDao.getMaxSetVolumeForGroup(exerciseId)
     }
-
+    fun doesExerciseSetExist(exerciseGroupId: Long): LiveData<Boolean>{
+        return exerciseSetDao.doesExerciseSetExist(exerciseGroupId)
+    }
 }

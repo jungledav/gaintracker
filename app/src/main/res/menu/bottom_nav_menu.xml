@@ -9,4 +9,8 @@
         android:id="@+id/action_exercises"
         android:icon="@drawable/baseline_fitness_center_24"
         android:title="Workouts" />
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/baseline_settings_24"
+        android:title="Settings" />
 </menu>
