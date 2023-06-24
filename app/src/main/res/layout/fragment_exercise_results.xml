@@ -23,23 +23,44 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:gravity="center_horizontal"
             android:padding="16dp">
 
             <TextView
                 android:id="@+id/tv_max_weight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Workout Max weight:"
-                android:textSize="18sp" />
+                android:text="Max Weight"
+                android:textSize="12sp"
+                android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tv_max_weight_type"
+                android:id="@+id/tv_max_weight_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Max weight over all workouts:"
-                android:textSize="12sp" />
+                android:text="Max Weight Date"
+                android:textSize="12sp"
+                android:textColor="@color/dark_blue" />
+
+            <TextView
+                android:id="@+id/tv_max_weight_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Max Weight"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/dark_blue" />
+
+            <TextView
+                android:id="@+id/tv_max_weight_today"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Workout max weight"
+                android:textSize="12sp"
+                android:textColor="@color/dark_blue" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
+
 
     <!-- Max Rep Card -->
     <com.google.android.material.card.MaterialCardView
@@ -60,16 +81,50 @@
             android:padding="16dp">
 
             <TextView
-                android:id="@+id/tv_max_rep"
+                android:id="@+id/tv_max_reps"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Max Rep:"
-                android:textSize="18sp" />
+                android:text="Max Reps in One Set"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:layout_gravity="center"
+                 />
+
+            <TextView
+                android:id="@+id/tv_max_reps_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:text="Max Reps date"
+                android:layout_gravity="center"
+                android:textColor="@color/dark_blue" />
+
+            <TextView
+                android:id="@+id/tv_max_reps_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Max Reps in one set"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_gravity="center"
+                android:textColor="@color/dark_blue" />
+
+            <TextView
+                android:id="@+id/tv_max_reps_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Workout Max Reps"
+                android:layout_gravity="center"
+                android:textSize="12sp"
+                android:textColor="@color/dark_blue" />
+
+
+
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
     <!-- Second Column -->
-    <!-- Total Rep Card -->
+    <!-- Total Rep in one workout Card -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card_total_rep"
         android:layout_width="0dp"
@@ -91,8 +146,43 @@
                 android:id="@+id/tv_total_reps"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Total Reps:"
-                android:textSize="18sp" />
+                android:text="Total Reps in One Workout"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:layout_gravity="center"
+                />
+
+            <TextView
+                android:id="@+id/tv_total_reps_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Workout Max Reps Date"
+                android:textSize="12sp"
+                android:textColor="@color/dark_blue"
+                android:layout_gravity="center"
+                />
+
+            <TextView
+                android:id="@+id/tv_total_reps_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Total Reps"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/dark_blue"
+                android:layout_gravity="center"
+                />
+
+            <TextView
+                android:id="@+id/tv_total_reps_today"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Workout Total Reps"
+                android:textSize="12sp"
+                android:textColor="@color/dark_blue"
+                android:layout_gravity="center"
+                />
+
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -118,8 +208,39 @@
                 android:id="@+id/tv_exercise_volume"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Total Volume:"
-                android:textSize="18sp" />
+                android:text="Max Workout Volume"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:layout_gravity="center"/>
+
+            <TextView
+                android:id="@+id/tv_exercise_volume_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Exercise Volume Date"
+                android:textSize="12sp"
+                android:textColor="@color/dark_blue"
+                android:layout_gravity="center"/>
+
+            <TextView
+                android:id="@+id/tv_exercise_volume_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Exercise Volume"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/dark_blue"
+                android:layout_gravity="center"/>
+
+            <TextView
+                android:id="@+id/tv_exercise_volume_today"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Workout Exercise Volume"
+                android:textSize="12sp"
+                android:textColor="@color/dark_blue"
+                android:layout_gravity="center"/>
+
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -145,8 +266,39 @@
                 android:id="@+id/tv_max_set_volume"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Max Set Volume:"
-                android:textSize="18sp" />
+                android:text="Max Set Volume"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:layout_gravity="center"/>
+
+            <TextView
+                android:id="@+id/tv_max_set_volume_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Max Set Volume Date"
+                android:textColor="@color/dark_blue"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_max_set_volume_value_total"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Max Set Volume"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/dark_blue"
+                android:layout_gravity="center"/>
+
+            <TextView
+                android:id="@+id/tv_max_set_volume_today"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Workout Max Set Volume"
+                android:textSize="12sp"
+                android:textColor="@color/dark_blue"
+                android:layout_gravity="center"/>
+
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import com.example.gaintracker.data.models.Exercise
 import com.example.gaintracker.data.models.ExerciseGroup
 
 @Dao

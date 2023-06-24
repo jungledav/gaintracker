@@ -2,14 +2,17 @@ package com.example.gaintracker.data.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import androidx.room.Delete
-
 import com.example.gaintracker.data.models.Exercise
+import com.example.gaintracker.data.models.ExerciseMaxReps
 import com.example.gaintracker.data.models.ExerciseSet
+import com.example.gaintracker.data.models.ExerciseSetVolume
 import com.example.gaintracker.fragments.ExerciseHistoryFragment
+
+
 
 @Dao
 interface ExerciseDao {
@@ -40,7 +43,8 @@ interface ExerciseDao {
     fun getSetsForExerciseGroup(exerciseGroupId: Int): LiveData<List<ExerciseSet>>
 
     @Query("SELECT exerciseGroupId FROM exercises WHERE id = :exerciseId")
-    fun getExerciseGroupId(exerciseId: Long): LiveData<Long>
+    fun getExerciseGroupId(exerciseId: Long): LiveData<Long?>?
+
 
     @Query("""
     SELECT exercise_sets.*, exercises.date AS exerciseDate
@@ -95,4 +99,112 @@ interface ExerciseDao {
 
     @Query("SELECT MAX(reps * weight) FROM exercise_sets WHERE exercise_id = :exerciseId")
     fun getMaxSetVolumeForExercise(exerciseId: Long): LiveData<Double>
+
+
+    @Query("""
+    SELECT exercises.date
+    FROM exercises
+    WHERE exercises.id = (
+        SELECT exercise_sets.exercise_id
+        FROM exercise_sets
+        WHERE exercise_sets.weight = (
+            SELECT MAX(exercise_sets.weight)
+            FROM exercise_sets
+            WHERE exercise_sets.exercise_id IN (
+                SELECT exercises.id
+                FROM exercises
+                WHERE exercises.exerciseGroupId = (
+                    SELECT exercises.exerciseGroupId
+                    FROM exercises
+                    WHERE exercises.id = :exerciseId
+                )
+            )
+        )
+        LIMIT 1
+    )
+""")
+    fun getMaxWeightDateForExercise(exerciseId: Long): LiveData<Long>
+
+
+    @Query("SELECT MAX(weight) FROM exercise_sets WHERE exercise_id = :exerciseId")
+    fun getTodayMaxWeightForExercise(exerciseId: Long): LiveData<Double>
+
+    @Query("SELECT MAX(reps) FROM exercise_sets WHERE exercise_id = :exerciseId")
+    fun getMaxRepsForExercise(exerciseId: Long): LiveData<Int>
+
+    @Query("SELECT MAX(reps) FROM exercise_sets WHERE exercise_id IN (SELECT id FROM exercises WHERE exerciseGroupId = (SELECT exerciseGroupId FROM exercises WHERE id = :exerciseId))")
+    fun getMaxRepsForExerciseGroup(exerciseId: Long): LiveData<Int>
+
+    @Query("SELECT date FROM exercise_sets WHERE reps = (SELECT MAX(reps) FROM exercise_sets WHERE exercise_id = :exerciseId)")
+    fun getMaxRepsDateForExercise(exerciseId: Long): LiveData<Long>
+
+    @Query("""
+    SELECT exercises.date
+    FROM exercises
+    INNER JOIN exercise_sets ON exercise_sets.exercise_id = exercises.id
+    WHERE exercises.exerciseGroupId = (
+        SELECT exerciseGroupId FROM exercises WHERE id = :exerciseId
+    ) AND exercise_sets.reps = (
+        SELECT MAX(reps) 
+        FROM exercise_sets 
+        INNER JOIN exercises ON exercise_sets.exercise_id = exercises.id
+        WHERE exercises.exerciseGroupId = (
+            SELECT exerciseGroupId FROM exercises WHERE id = :exerciseId
+        )
+    )
+    LIMIT 1
+""") fun getMaxRepsDateForExerciseGroup(exerciseId: Long): LiveData<Long>
+
+    @Query("""
+    SELECT MAX(total_reps)
+    FROM (
+        SELECT SUM(exercise_sets.reps) AS total_reps
+        FROM exercise_sets
+        INNER JOIN exercises ON exercise_sets.exercise_id = exercises.id
+        WHERE exercises.exerciseGroupId = :exerciseGroupId
+        GROUP BY exercise_sets.exercise_id
+    )
+""")
+    suspend fun getMaxTotalRepsForExerciseGroup(exerciseGroupId: Long): Int
+
+
+    @Query("""
+    SELECT exercises.date, sets_sum.total_reps, exercises.exerciseGroupId
+    FROM exercises
+    INNER JOIN (
+        SELECT exercise_id, SUM(reps) as total_reps
+        FROM exercise_sets
+        GROUP BY exercise_id
+    ) AS sets_sum
+    ON exercises.id = sets_sum.exercise_id
+    WHERE exercises.exerciseGroupId = (
+        SELECT exerciseGroupId
+        FROM exercises
+        WHERE id = :exerciseId
+    )
+    ORDER BY sets_sum.total_reps DESC
+    LIMIT 1
+""")
+    fun getMaxRepsExercise(exerciseId: Long): LiveData<ExerciseMaxReps>
+
+
+    @Query("""
+    SELECT exs.date, MAX(sets.weight * sets.reps) as max_volume
+    FROM exercise_sets as sets 
+    INNER JOIN exercises as exs ON sets.exercise_id = exs.id
+    WHERE exs.exerciseGroupId = (
+        SELECT exerciseGroupId 
+        FROM exercises 
+        WHERE id = :exerciseId
+    )
+    GROUP BY exs.date
+    ORDER BY max_volume DESC
+    LIMIT 1
+""")
+    fun getMaxSetVolumeForGroup(exerciseId: Long): LiveData<ExerciseSetVolume>
+
+
 }
+
+
+
