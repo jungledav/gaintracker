@@ -123,7 +123,7 @@ interface ExerciseDao {
         LIMIT 1
     )
 """)
-    fun getMaxWeightDateForExercise(exerciseId: Long): LiveData<Long>
+    fun getMaxWeightDateForExercise(exerciseId: Long): LiveData<Long?>
 
 
     @Query("SELECT MAX(weight) FROM exercise_sets WHERE exercise_id = :exerciseId")
@@ -153,7 +153,7 @@ interface ExerciseDao {
         )
     )
     LIMIT 1
-""") fun getMaxRepsDateForExerciseGroup(exerciseId: Long): LiveData<Long>
+""") fun getMaxRepsDateForExerciseGroup(exerciseId: Long): LiveData<Long?>
 
     @Query("""
     SELECT MAX(total_reps)
@@ -185,7 +185,7 @@ interface ExerciseDao {
     ORDER BY sets_sum.total_reps DESC
     LIMIT 1
 """)
-    fun getMaxRepsExercise(exerciseId: Long): LiveData<ExerciseMaxReps>
+    fun getMaxRepsExercise(exerciseId: Long): LiveData<ExerciseMaxReps?>
 
 
     @Query("""
@@ -201,7 +201,7 @@ interface ExerciseDao {
     ORDER BY max_volume DESC
     LIMIT 1
 """)
-    fun getMaxSetVolumeForGroup(exerciseId: Long): LiveData<ExerciseSetVolume>
+    fun getMaxSetVolumeForGroup(exerciseId: Long): LiveData<ExerciseSetVolume?>
 
 
 }

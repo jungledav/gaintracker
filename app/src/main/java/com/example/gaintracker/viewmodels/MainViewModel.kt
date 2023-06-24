@@ -109,36 +109,60 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
 
 
     fun getMaxWeightDateForExercise(exerciseId: Long): LiveData<String> {
-        val timestampLiveData = repository.getMaxWeightDateForExercise(exerciseId)
-        return timestampLiveData.map { timestamp ->
-            val date = Date(timestamp)
-            val dayFormat = SimpleDateFormat("d", Locale.getDefault())
-            val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())
+        val timestampLiveData: LiveData<Long?> = repository.getMaxWeightDateForExercise(exerciseId)
+        return timestampLiveData.map { timestamp: Long? ->
+            if (timestamp != null) {
+                val date = Date(timestamp)
+                val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+                val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())
 
-            val day = dayFormat.format(date).toInt()
-            val daySuffix = getDayOfMonthSuffix(day)
-            val month = monthFormat.format(date)
-            val year = SimpleDateFormat("yyyy", Locale.getDefault()).format(date)
+                val day = dayFormat.format(date).toInt()
+                val daySuffix = getDayOfMonthSuffix(day)
+                val month = monthFormat.format(date)
+                val year = SimpleDateFormat("yyyy", Locale.getDefault()).format(date)
 
-            "$month $day$daySuffix, $year"
+                "$month $day$daySuffix, $year"
+            } else {
+                // Handle null timestamp here.
+                // You could, for example, return the current date.
+                val date = Date()
+                val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+                val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())
+
+                val day = dayFormat.format(date).toInt()
+                val daySuffix = getDayOfMonthSuffix(day)
+                val month = monthFormat.format(date)
+                val year = SimpleDateFormat("yyyy", Locale.getDefault()).format(date)
+
+                "$month $day$daySuffix, $year"
+            }
         }
     }
+
 
     fun getMaxRepsDateForExerciseGroup(exerciseId: Long): LiveData<String> {
         val timestampLiveData = repository.getMaxRepsDateForExerciseGroup(exerciseId)
         return timestampLiveData.map { timestamp ->
-            val date = Date(timestamp)
-            val dayFormat = SimpleDateFormat("d", Locale.getDefault())
-            val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())
+            if (timestamp != null) {
+                val date = Date(timestamp)
+                val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+                val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())
 
-            val day = dayFormat.format(date).toInt()
-            val daySuffix = getDayOfMonthSuffix(day)
-            val month = monthFormat.format(date)
-            val year = SimpleDateFormat("yyyy", Locale.getDefault()).format(date)
+                val day = dayFormat.format(date).toInt()
+                val daySuffix = getDayOfMonthSuffix(day)
+                val month = monthFormat.format(date)
+                val year = SimpleDateFormat("yyyy", Locale.getDefault()).format(date)
 
-            "$month $day$daySuffix, $year"
+                "$month $day$daySuffix, $year"
+            } else {
+                // Handle null timestamp here.
+                // You could, for example, return a fallback value.
+                "No date available"
+            }
         }
     }
+
+
 
     fun getDayOfMonthSuffix(n: Int): String {
         if (n in 11..13) {
@@ -175,20 +199,28 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
 
 
     fun getMaxTotalRepsForExerciseGroup(exerciseId: Long): LiveData<ExerciseMaxReps> {
-        val maxRepsLiveData = repository.getMaxRepsExercise(exerciseId)
+        val maxRepsLiveData = repository.getMaxRepsExercise(exerciseId).map { it?.let { it } ?: ExerciseMaxReps("No History yet", 0, 0) }
         return maxRepsLiveData.map { maxRepsExercise ->
-            val timestamp = maxRepsExercise.date.toLong() // Convert string to Long
-            val date = Date(timestamp) // Create a Date from the timestamp
+            // maxRepsExercise is guaranteed to be non-null at this point
 
-            val dayFormat = SimpleDateFormat("d", Locale.getDefault())
-            val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())
+            // Check if date is not empty before trying to convert it to a Long
+            val formattedDate = if (maxRepsExercise.date != "No History yet") {
+                val timestamp = maxRepsExercise.date.toLong()
+                val date = Date(timestamp) // Create a Date from the timestamp
 
-            val day = dayFormat.format(date).toInt()
-            val daySuffix = getDayOfMonthSuffix(day)
-            val month = monthFormat.format(date)
-            val year = SimpleDateFormat("yyyy", Locale.getDefault()).format(date)
+                val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+                val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())
 
-            val formattedDate = "$month $day$daySuffix, $year"
+                val day = dayFormat.format(date).toInt()
+                val daySuffix = getDayOfMonthSuffix(day)
+                val month = monthFormat.format(date)
+                val year = SimpleDateFormat("yyyy", Locale.getDefault()).format(date)
+
+                "$month $day$daySuffix, $year"
+            } else {
+                "No History yet"
+            }
+
             ExerciseMaxReps(formattedDate, maxRepsExercise.totalReps, maxRepsExercise.exerciseGroupId)
         }
     }
@@ -196,22 +228,34 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
 
 
 
+
+
+
+
+
     fun getMaxSetVolumeForGroup(exerciseId: Long): LiveData<ExerciseSetVolume> {
         val setVolumeLiveData = repository.getMaxSetVolumeForGroup(exerciseId)
         return setVolumeLiveData.map { setVolume ->
-            val date = Date(setVolume.date.toLong()) // Corrected line
-            val dayFormat = SimpleDateFormat("d", Locale.getDefault())
-            val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())
+            if (setVolume != null && setVolume.date != null && setVolume.max_volume != null) {
+                val date = Date(setVolume.date.toLong())
+                val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+                val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())
 
-            val day = dayFormat.format(date).toInt()
-            val daySuffix = getDayOfMonthSuffix(day)
-            val month = monthFormat.format(date)
-            val year = SimpleDateFormat("yyyy", Locale.getDefault()).format(date)
+                val day = dayFormat.format(date).toInt()
+                val daySuffix = getDayOfMonthSuffix(day)
+                val month = monthFormat.format(date)
+                val year = SimpleDateFormat("yyyy", Locale.getDefault()).format(date)
 
-            val formattedDate = "$month $day$daySuffix, $year"
-            ExerciseSetVolume(formattedDate, setVolume.max_volume)
+                val formattedDate = "$month $day$daySuffix, $year"
+                ExerciseSetVolume(formattedDate, setVolume.max_volume)
+            } else {
+                // Handle null setVolume here
+                // You could, for example, return a default ExerciseSetVolume
+                ExerciseSetVolume("No History yet", 0.0)
+            }
         }
     }
+
 
 
 

@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -22,6 +23,7 @@ import com.example.gaintracker.viewmodels.MainViewModel
 import java.util.Date
 
 class ExerciseHistoryFragment : Fragment() {
+    private lateinit var tvNoHistory: TextView
 
     data class ExerciseSetWithExerciseDate(
         val id: Long,
@@ -46,7 +48,8 @@ class ExerciseHistoryFragment : Fragment() {
     }
 
     private var _binding: FragmentExerciseHistoryBinding? = null
-    private val binding get() = _binding!!
+    private val binding get() = _binding ?: throw IllegalStateException("Binding is not initialized yet")
+
 
     private lateinit var viewModel: MainViewModel
     private lateinit var exerciseHistoryAdapter: ExerciseHistoryAdapter
@@ -63,6 +66,8 @@ class ExerciseHistoryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val tvNoHistory = binding.tvNoHistory
+
         val exerciseId = arguments?.getLong(ARG_EXERCISE_GROUP_ID) ?: -1
 
         viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
@@ -95,13 +100,24 @@ class ExerciseHistoryFragment : Fragment() {
                 exerciseDao.getSetsForExerciseGroupWithExerciseDate(exerciseGroupId.toLong())
             }
 
-            val setsByDate = setsWithExerciseDate.groupBy { it.exerciseDate }
-                .map { (date, sets) -> ExerciseSetsByDate(Date(date), sets.map { ExerciseSet(it.id, it.exercise_id, it.date, it.reps, it.weight) }.sortedByDescending { it.date }) }
+            // Add null safety before accessing methods or properties
+            setsWithExerciseDate?.let {
+                val setsByDate = it.groupBy { it.exerciseDate }
+                    .map { (date, sets) -> ExerciseSetsByDate(Date(date), sets.map { ExerciseSet(it.id, it.exercise_id, it.date, it.reps, it.weight) }.sortedByDescending { it.date }) }
 
-            val recordSets =            calculateRecordSets(setsByDate)
-            exerciseHistoryAdapter.submitList(setsByDate, recordSets)
+                val recordSets = calculateRecordSets(setsByDate)
+                exerciseHistoryAdapter.submitList(setsByDate, recordSets)
+
+                // Hide the TextView if data is available, otherwise show it
+                binding.tvNoHistory.visibility = if (setsByDate.isEmpty()) View.VISIBLE else View.GONE
+            } ?: run {
+                // If setsWithExerciseDate is null, show the TextView
+                binding.tvNoHistory.visibility = View.VISIBLE
+            }
         }
     }
+
+
 
     private fun calculateRecordSets(setsByDate: List<ExerciseSetsByDate>): Set<Long> {
         val sets = setsByDate.flatMap { it.sets }

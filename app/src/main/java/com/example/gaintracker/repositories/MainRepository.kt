@@ -160,9 +160,10 @@ class MainRepository(
     }
 
 
-    fun getMaxWeightDateForExercise(exerciseId: Long): LiveData<Long> {
+    fun getMaxWeightDateForExercise(exerciseId: Long): LiveData<Long?> {
         return exerciseDao.getMaxWeightDateForExercise(exerciseId)
     }
+
 
     fun getWorkoutMaxWeightForExercise(exerciseId: Long): LiveData<Double> {
         return exerciseDao.getTodayMaxWeightForExercise(exerciseId)
@@ -180,14 +181,14 @@ class MainRepository(
         return exerciseDao.getMaxRepsForExerciseGroup(exerciseId)
     }
 
-    fun getMaxRepsDateForExerciseGroup(exerciseId: Long): LiveData<Long> {
+    fun getMaxRepsDateForExerciseGroup(exerciseId: Long): LiveData<Long?> {
         return exerciseDao.getMaxRepsDateForExerciseGroup(exerciseId)
     }
 
-    fun getMaxRepsExercise(exerciseId: Long): LiveData<ExerciseMaxReps> {
+    fun getMaxRepsExercise(exerciseId: Long): LiveData<ExerciseMaxReps?> {
         return exerciseDao.getMaxRepsExercise(exerciseId)
     }
-    fun getMaxSetVolumeForGroup(exerciseId: Long): LiveData<ExerciseSetVolume> {
+    fun getMaxSetVolumeForGroup(exerciseId: Long): LiveData<ExerciseSetVolume?> {
         return exerciseDao.getMaxSetVolumeForGroup(exerciseId)
     }
 
