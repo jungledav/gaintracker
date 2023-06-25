@@ -85,7 +85,7 @@ class SettingsActivity : AppCompatActivity() {
                 contentResolver.openInputStream(uri)?.let { inputStream ->
                     lifecycleScope.launch(Dispatchers.IO) {
                         val records = CSVFormat.DEFAULT
-                            .withHeader("exercise_group_name", "exercise_name", "exercise_date", "exercise_set_date", "exercise_set_reps", "exercise_set_weight")
+                            .withHeader("exercise_group_name", "muscle_group_name", "exercise_date", "exercise_set_date", "exercise_set_reps", "exercise_set_weight")
                             .withFirstRecordAsHeader()
                             .parse(InputStreamReader(inputStream))
                         for (record in records) {
@@ -99,17 +99,25 @@ class SettingsActivity : AppCompatActivity() {
 
     private suspend fun processRecord(record: CSVRecord) {
         val exerciseGroupName = record["exercise_group_name"]
+        val exerciseMuscleGroupName = record["muscle_group_name"]
         val exerciseDate = java.text.SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(record["exercise_date"])?.time ?: System.currentTimeMillis()
         val exerciseSetDate = java.text.SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(record["exercise_set_date"])?.time ?: System.currentTimeMillis()
         val exerciseSetReps = record["exercise_set_reps"].toInt()
         val exerciseSetWeight = record["exercise_set_weight"].toDouble()
 
         val group = viewModel.getExerciseGroupByName(exerciseGroupName)
-        val groupId = group?.id ?: viewModel.insertExerciseGroup(ExerciseGroup(name = exerciseGroupName))
+        val groupId = group?.id?.toLong() ?: viewModel.insertExerciseGroup(ExerciseGroup(name = exerciseGroupName))
 
-        val exerciseId = viewModel.insertExerciseWithDetails(Exercise(exerciseGroupId = groupId, date = exerciseDate))
+        // Check if the exercise for the given date and group already exists
+        val existingExercise = viewModel.getExerciseByDateAndGroup(exerciseDate, groupId)
 
+        // If the exercise exists, we use its id. Otherwise, we insert a new exercise and use its id.
+        val exerciseId = existingExercise?.id?.toLong() ?: viewModel.insertExerciseWithDetails(Exercise(exerciseGroupId = groupId, date = exerciseDate))
+
+        // Insert a new set for the existing or new exercise.
         viewModel.insertExerciseSet(ExerciseSet(exercise_id = exerciseId, date = exerciseSetDate, reps = exerciseSetReps, weight = exerciseSetWeight))
     }
+
+
 }
 

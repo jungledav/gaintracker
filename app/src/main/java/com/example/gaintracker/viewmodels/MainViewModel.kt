@@ -32,7 +32,8 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
         return repository.insertExercise(name)
     }
     suspend fun insertExerciseWithDetails(exercise: Exercise): Long {
-        return repository.insertExerciseWithDetails(exercise)
+        val insertedId = repository.insertExerciseWithDetails(exercise)
+        return insertedId
     }
 
 
@@ -262,9 +263,9 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
         }
     }
 
-
-
-
+    suspend fun getExerciseByDateAndGroup(date: Long, groupId: Long): Exercise? {
+        return repository.getExerciseByDateAndGroup(date, groupId)
+    }
 
 
 }

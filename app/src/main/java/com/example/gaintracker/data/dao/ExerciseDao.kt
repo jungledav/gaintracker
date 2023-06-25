@@ -202,6 +202,8 @@ interface ExerciseDao {
     LIMIT 1
 """)
     fun getMaxSetVolumeForGroup(exerciseId: Long): LiveData<ExerciseSetVolume?>
+    @Query("SELECT * FROM exercises WHERE date = :date AND exerciseGroupId = :groupId LIMIT 1")
+    suspend fun getExerciseByDateAndGroup(date: Long, groupId: Long): Exercise?
 
 
 }

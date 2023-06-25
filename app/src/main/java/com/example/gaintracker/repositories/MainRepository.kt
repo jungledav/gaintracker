@@ -201,4 +201,8 @@ class MainRepository(
     fun doesExerciseSetExist(exerciseGroupId: Long): LiveData<Boolean>{
         return exerciseSetDao.doesExerciseSetExist(exerciseGroupId)
     }
+
+    suspend fun getExerciseByDateAndGroup(date: Long, groupId: Long): Exercise? {
+        return exerciseDao.getExerciseByDateAndGroup(date, groupId)
+    }
 }
