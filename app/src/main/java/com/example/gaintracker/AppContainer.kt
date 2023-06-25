@@ -13,9 +13,8 @@ class AppContainer(context: Context) {
     private val gainTrackerDatabase = GainTrackerDatabase.getDatabase(context)
     private val exerciseDao: ExerciseDao = gainTrackerDatabase.exerciseDao()
     private val exerciseSetDao: ExerciseSetDao = gainTrackerDatabase.exerciseSetDao()
-    private val exerciseHistoryDao: ExerciseHistoryDao = gainTrackerDatabase.exerciseHistoryDao()
     private val exerciseGroupDao: ExerciseGroupDao = gainTrackerDatabase.exerciseGroupDao()
-    val mainRepository = MainRepository(exerciseDao, exerciseSetDao, exerciseHistoryDao, exerciseGroupDao)
+    val mainRepository = MainRepository(exerciseDao, exerciseSetDao, exerciseGroupDao)
 
     val mainViewModelFactory = MainViewModelFactory(mainRepository)
 }

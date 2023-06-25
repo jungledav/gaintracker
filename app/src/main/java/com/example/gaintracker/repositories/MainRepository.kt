@@ -16,7 +16,6 @@ import androidx.lifecycle.switchMap
 class MainRepository(
     private val exerciseDao: ExerciseDao,
     private val exerciseSetDao: ExerciseSetDao,
-    private val exerciseHistoryDao: ExerciseHistoryDao,
     private val exerciseGroupDao: ExerciseGroupDao
 ) {
     lateinit var viewModelScope: CoroutineScope
@@ -29,7 +28,12 @@ class MainRepository(
             exerciseGroups.map { it.name }
         }
 
-
+    suspend fun getExerciseGroupByName(name: String): ExerciseGroup? {
+        return exerciseGroupDao.getExerciseGroupByName(name)
+    }
+    suspend fun insertExerciseGroup(exerciseGroup: ExerciseGroup): Long {
+        return exerciseGroupDao.insertExerciseGroup(exerciseGroup)
+    }
     suspend fun insertExercise(name: String): Long {
         // Check if an exercise group with the same name exists
         val existingExerciseGroup = exerciseGroupDao.getExerciseGroupByName(name)
@@ -42,6 +46,9 @@ class MainRepository(
 
         // Create a new exercise using the exercise group ID and insert it into the database
         val exercise = Exercise(exerciseGroupId = exerciseGroupId)
+        return exerciseDao.insert(exercise)
+    }
+    suspend fun insertExerciseWithDetails(exercise: Exercise): Long {
         return exerciseDao.insert(exercise)
     }
 

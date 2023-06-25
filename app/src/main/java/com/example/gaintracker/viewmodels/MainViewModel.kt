@@ -2,6 +2,7 @@ package com.example.gaintracker.viewmodels
 
 import androidx.lifecycle.*
 import com.example.gaintracker.data.models.Exercise
+import com.example.gaintracker.data.models.ExerciseGroup
 import com.example.gaintracker.data.models.ExerciseMaxReps
 import com.example.gaintracker.data.models.ExerciseSet
 import com.example.gaintracker.data.models.ExerciseSetVolume
@@ -30,6 +31,10 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
     suspend fun insertExercise(name: String): Long {
         return repository.insertExercise(name)
     }
+    suspend fun insertExerciseWithDetails(exercise: Exercise): Long {
+        return repository.insertExerciseWithDetails(exercise)
+    }
+
 
     suspend fun insertExerciseSet(exerciseSet: ExerciseSet) {
         repository.insertExerciseSet(exerciseSet)
@@ -139,7 +144,12 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
             }
         }
     }
-
+    suspend fun getExerciseGroupByName(name: String): ExerciseGroup? {
+        return repository.getExerciseGroupByName(name)
+    }
+    suspend fun insertExerciseGroup(exerciseGroup: ExerciseGroup): Long {
+        return repository.insertExerciseGroup(exerciseGroup)
+    }
 
     fun getMaxRepsDateForExerciseGroup(exerciseId: Long): LiveData<String> {
         val timestampLiveData = repository.getMaxRepsDateForExerciseGroup(exerciseId)

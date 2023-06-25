@@ -1,20 +1,44 @@
 package com.example.gaintracker
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.apache.commons.csv.CSVFormat
+import org.apache.commons.csv.CSVRecord
+import java.io.InputStreamReader
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
-import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import com.example.gaintracker.data.database.GainTrackerDatabase
+import com.example.gaintracker.data.models.Exercise
+import com.example.gaintracker.data.models.ExerciseGroup
+import com.example.gaintracker.data.models.ExerciseSet
+import com.example.gaintracker.repositories.MainRepository
+import com.example.gaintracker.viewmodels.MainViewModel
+import com.example.gaintracker.viewmodels.MainViewModelFactory
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import java.util.Locale
 
 class SettingsActivity : AppCompatActivity() {
 
     private val READ_REQUEST_CODE = 42
+    // We'll need to access your ViewModel and through it the Repository here. Replace this with actual access to your ViewModel.
+    private lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+// Initialize ViewModel using MainViewModelFactory
+        val database = GainTrackerDatabase.getDatabase(applicationContext)
+        val exerciseGroupDao = database.exerciseGroupDao()
+        val exerciseDao = database.exerciseDao()
+        val exerciseSetDao = database.exerciseSetDao()
+        val repository = MainRepository(exerciseDao, exerciseSetDao,exerciseGroupDao)
+        val viewModelFactory = MainViewModelFactory(repository)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
 
         val uploadButton: Button = findViewById(R.id.btn_upload)
         uploadButton.setOnClickListener {
@@ -57,9 +81,35 @@ class SettingsActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
         super.onActivityResult(requestCode, resultCode, resultData)
         if (requestCode == READ_REQUEST_CODE && resultCode == RESULT_OK) {
-            val uri: Uri? = resultData?.data
-            Toast.makeText(this, "File Selected: ${uri?.path}", Toast.LENGTH_SHORT).show()
-            // Proceed with your code to process the file, e.g., upload it to your server
+            resultData?.data?.also { uri ->
+                contentResolver.openInputStream(uri)?.let { inputStream ->
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        val records = CSVFormat.DEFAULT
+                            .withHeader("exercise_group_name", "exercise_name", "exercise_date", "exercise_set_date", "exercise_set_reps", "exercise_set_weight")
+                            .withFirstRecordAsHeader()
+                            .parse(InputStreamReader(inputStream))
+                        for (record in records) {
+                            processRecord(record)
+                        }
+                    }
+                }
+            }
         }
     }
+
+    private suspend fun processRecord(record: CSVRecord) {
+        val exerciseGroupName = record["exercise_group_name"]
+        val exerciseDate = java.text.SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(record["exercise_date"])?.time ?: System.currentTimeMillis()
+        val exerciseSetDate = java.text.SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(record["exercise_set_date"])?.time ?: System.currentTimeMillis()
+        val exerciseSetReps = record["exercise_set_reps"].toInt()
+        val exerciseSetWeight = record["exercise_set_weight"].toDouble()
+
+        val group = viewModel.getExerciseGroupByName(exerciseGroupName)
+        val groupId = group?.id ?: viewModel.insertExerciseGroup(ExerciseGroup(name = exerciseGroupName))
+
+        val exerciseId = viewModel.insertExerciseWithDetails(Exercise(exerciseGroupId = groupId, date = exerciseDate))
+
+        viewModel.insertExerciseSet(ExerciseSet(exercise_id = exerciseId, date = exerciseSetDate, reps = exerciseSetReps, weight = exerciseSetWeight))
+    }
 }
+
