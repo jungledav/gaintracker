@@ -39,7 +39,8 @@ object PredefinedExercises {
             ExerciseInfo("Dumbbell Shoulder Press", "Dumbbell"),
             ExerciseInfo("Lateral Raise", "Dumbbell"),
             ExerciseInfo("Front Raise", "Dumbbell"),
-            ExerciseInfo("Rear Delt Fly", "Dumbbell"),
+            ExerciseInfo("Rear Delt Machine Fly", "Machine"),
+            ExerciseInfo("Cable Cross Pull", "Machine"),
             ExerciseInfo("Upright Row", "Barbell"),
             ExerciseInfo("Face Pull", "Machine"),
             ExerciseInfo("Machine Shoulder Press", "Machine")
@@ -51,23 +52,23 @@ object PredefinedExercises {
             ExerciseInfo("Preacher Curl", "Barbell"),
             ExerciseInfo("Concentration Curl", "Dumbbell"),
             ExerciseInfo("Cable Curl", "Machine"),
-            ExerciseInfo("Machine Curl", "Machine")
+            ExerciseInfo("Seated Machine Curl", "Machine")
         )),
         MuscleGroup("Triceps", listOf(
-            ExerciseInfo("Tricep Dips", "Bodyweight"),
+            ExerciseInfo("Triceps Dips", "Bodyweight"),
             ExerciseInfo("Close Grip Bench Press", "Barbell"),
             ExerciseInfo("Skull Crushers", "Barbell"),
-            ExerciseInfo("Tricep Pushdown", "Machine"),
-            ExerciseInfo("Overhead Tricep Extension", "Dumbbell"),
+            ExerciseInfo("Triceps Push down", "Machine"),
+            ExerciseInfo("Dumbbell Overhead Triceps Extension", "Dumbbell"),
             ExerciseInfo("Kickbacks", "Dumbbell"),
-            ExerciseInfo("Machine Tricep Extension", "Machine")
+            ExerciseInfo("Machine Triceps Extension", "Machine")
         )),
         MuscleGroup("Legs", listOf(
             ExerciseInfo("Squats", "Barbell"),
-            ExerciseInfo("Leg Press", "Machine"),
+            ExerciseInfo("Seated Leg Press", "Machine"),
             ExerciseInfo("Lunges", "Dumbbell"),
-            ExerciseInfo("Deadlift", "Barbell"),
-            ExerciseInfo("Leg Extension", "Machine"),
+            ExerciseInfo("Dead lift", "Barbell"),
+            ExerciseInfo("Leg Extension Machine", "Machine"),
             ExerciseInfo("Leg Curl", "Machine"),
             ExerciseInfo("Calf Raises", "Dumbbell"),
             ExerciseInfo("Seated Calf Raises", "Machine")
