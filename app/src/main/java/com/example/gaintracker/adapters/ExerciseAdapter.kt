@@ -5,16 +5,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.gaintracker.MainActivity
 import com.example.gaintracker.R
 import com.example.gaintracker.data.models.Exercise
 import com.example.gaintracker.data.models.ExerciseListItem
 import java.text.SimpleDateFormat
 import java.util.*
+import com.example.gaintracker.OnNoExercisesTodayClickListener
+
 
 
 
 class ExerciseAdapter(
-    private val onFetchSets: (exercise: Exercise) -> Unit
+    private val onFetchSets: (exercise: Exercise) -> Unit,
+    private val context: MainActivity
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var items = emptyList<ExerciseListItem>()
@@ -42,7 +46,14 @@ class ExerciseAdapter(
         val textViewDate: TextView = itemView.findViewById(R.id.textViewDate)
     }
 
-    inner class NoExercisesTodayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    inner class NoExercisesTodayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        init {
+            itemView.setOnClickListener {
+                context.onNoExercisesTodayClick()
+            }
+        }
+    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {

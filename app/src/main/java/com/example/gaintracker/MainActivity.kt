@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -25,7 +26,13 @@ import com.example.gaintracker.viewmodels.ExerciseDetailsActivity
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class MainActivity : BaseActivity() {
+
+
+interface OnNoExercisesTodayClickListener {
+    fun onNoExercisesTodayClick()
+}
+
+class MainActivity : BaseActivity(), OnNoExercisesTodayClickListener {
 
     private lateinit var adapter: ExerciseAdapter
     private val viewModel: MainViewModel by viewModels { MainViewModelFactory(appContainer.mainRepository) }
@@ -38,7 +45,12 @@ class MainActivity : BaseActivity() {
         const val EXTRA_EXERCISE_ID = "extra_exercise_id"
         const val EXTRA_EXERCISE_NAME = "extra_exercise_name"
     }
-
+    interface OnNoExercisesTodayClickListener {
+        fun onNoExercisesTodayClick()
+    }
+    override fun onNoExercisesTodayClick() {
+        openAddExerciseActivity()
+    }
     private fun generateExerciseListItems(exercisesWithGroupNames: List<ExerciseWithGroupName>): List<ExerciseListItem> {
         val items = mutableListOf<ExerciseListItem>()
         var previousDate: Date? = null
@@ -138,7 +150,7 @@ class MainActivity : BaseActivity() {
 
         val recyclerView: RecyclerView = findViewById(R.id.recyclerViewExercises)
         previousDate = null
-        adapter = ExerciseAdapter { exercise ->
+        adapter = ExerciseAdapter({ exercise ->
             viewModel.getSetsForExercise(exercise.id.toLong())
                 .observe(this, Observer { sets: List<ExerciseSet> ->
                     val position = adapter.indexOfExercise(exercise)
@@ -147,14 +159,16 @@ class MainActivity : BaseActivity() {
                         viewHolder.updateSetsCount(sets.size)
                     }
                 })
-        }
+        }, this)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
+
 
         viewModel.allExercisesWithGroupNames.observe(this) { exercisesWithGroupNames ->
             val items = generateExerciseListItems(exercisesWithGroupNames)
             adapter.setItems(items)
         }
+
 
         val buttonAddExercise = findViewById<Button>(R.id.buttonAddExercise)
         buttonAddExercise.setOnClickListener {
@@ -198,6 +212,7 @@ class MainActivity : BaseActivity() {
                 }
             }
         })
+
     }
 
     private fun undoDeleteExercise(exercise: Exercise) {
