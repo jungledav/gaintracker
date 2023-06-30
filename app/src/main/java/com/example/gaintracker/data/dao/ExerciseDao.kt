@@ -10,6 +10,7 @@ import com.example.gaintracker.data.models.Exercise
 import com.example.gaintracker.data.models.ExerciseMaxReps
 import com.example.gaintracker.data.models.ExerciseSet
 import com.example.gaintracker.data.models.ExerciseSetVolume
+import com.example.gaintracker.data.models.MaxOneRepForExercise
 import com.example.gaintracker.fragments.ExerciseHistoryFragment
 
 
@@ -34,35 +35,42 @@ interface ExerciseDao {
     @Delete
     suspend fun deleteExercise(exercise: Exercise)
 
-    @Query("""
+    @Query(
+        """
     SELECT * FROM exercise_sets 
     WHERE exercise_id IN (
         SELECT id FROM exercises WHERE exerciseGroupId = :exerciseGroupId
     )
-""")
+"""
+    )
     fun getSetsForExerciseGroup(exerciseGroupId: Int): LiveData<List<ExerciseSet>>
 
     @Query("SELECT exerciseGroupId FROM exercises WHERE id = :exerciseId")
     fun getExerciseGroupId(exerciseId: Long): LiveData<Long?>?
 
 
-    @Query("""
+    @Query(
+        """
     SELECT exercise_sets.*, exercises.date AS exerciseDate
     FROM exercise_sets
     INNER JOIN exercises ON exercise_sets.exercise_id = exercises.id
     WHERE exercises.exerciseGroupId = :exerciseGroupId
     ORDER BY exercise_sets.date DESC
-""")
+"""
+    )
     fun getSetsForExerciseGroupWithExerciseDate(exerciseGroupId: Long): List<ExerciseHistoryFragment.ExerciseSetWithExerciseDate>
 
     @Query("SELECT MAX(weight) FROM exercise_sets WHERE exercise_id = :exerciseId")
     fun getMaxWeightForExercise(exerciseId: Int): LiveData<Float>
-    @Query("""
+
+    @Query(
+        """
     SELECT MAX(exercise_sets.weight) 
     FROM exercise_sets
     INNER JOIN exercises ON exercise_sets.exercise_id = exercises.id
     WHERE exercises.exerciseGroupId = (SELECT exerciseGroupId FROM exercises WHERE id = :exerciseId)
-    """)
+    """
+    )
     fun getMaxWeightForExerciseType(exerciseId: Long): LiveData<Float>
 
     @Query("SELECT * FROM exercises ORDER BY date DESC LIMIT 1")
@@ -88,6 +96,7 @@ interface ExerciseDao {
     // Counts the total weight lifted
     @Query("SELECT SUM(weight) FROM exercise_sets")
     suspend fun countTotalWeight(): Float
+
     @Query("SELECT MAX(reps) FROM exercise_sets WHERE exercise_id = :exerciseId")
     fun getMaxRepForExercise(exerciseId: Long): LiveData<Int>
 
@@ -101,7 +110,8 @@ interface ExerciseDao {
     fun getMaxSetVolumeForExercise(exerciseId: Long): LiveData<Double>
 
 
-    @Query("""
+    @Query(
+        """
     SELECT exercises.date
     FROM exercises
     WHERE exercises.id = (
@@ -122,7 +132,8 @@ interface ExerciseDao {
         )
         LIMIT 1
     )
-""")
+"""
+    )
     fun getMaxWeightDateForExercise(exerciseId: Long): LiveData<Long?>
 
 
@@ -138,7 +149,8 @@ interface ExerciseDao {
     @Query("SELECT date FROM exercise_sets WHERE reps = (SELECT MAX(reps) FROM exercise_sets WHERE exercise_id = :exerciseId)")
     fun getMaxRepsDateForExercise(exerciseId: Long): LiveData<Long>
 
-    @Query("""
+    @Query(
+        """
     SELECT exercises.date
     FROM exercises
     INNER JOIN exercise_sets ON exercise_sets.exercise_id = exercises.id
@@ -153,9 +165,12 @@ interface ExerciseDao {
         )
     )
     LIMIT 1
-""") fun getMaxRepsDateForExerciseGroup(exerciseId: Long): LiveData<Long?>
+"""
+    )
+    fun getMaxRepsDateForExerciseGroup(exerciseId: Long): LiveData<Long?>
 
-    @Query("""
+    @Query(
+        """
     SELECT MAX(total_reps)
     FROM (
         SELECT SUM(exercise_sets.reps) AS total_reps
@@ -164,11 +179,13 @@ interface ExerciseDao {
         WHERE exercises.exerciseGroupId = :exerciseGroupId
         GROUP BY exercise_sets.exercise_id
     )
-""")
+"""
+    )
     suspend fun getMaxTotalRepsForExerciseGroup(exerciseGroupId: Long): Int
 
 
-    @Query("""
+    @Query(
+        """
     SELECT exercises.date, sets_sum.total_reps, exercises.exerciseGroupId
     FROM exercises
     INNER JOIN (
@@ -184,11 +201,13 @@ interface ExerciseDao {
     )
     ORDER BY sets_sum.total_reps DESC
     LIMIT 1
-""")
+"""
+    )
     fun getMaxRepsExercise(exerciseId: Long): LiveData<ExerciseMaxReps?>
 
 
-    @Query("""
+    @Query(
+        """
     SELECT exs.date, MAX(sets.weight * sets.reps) as max_volume
     FROM exercise_sets as sets 
     INNER JOIN exercises as exs ON sets.exercise_id = exs.id
@@ -200,13 +219,41 @@ interface ExerciseDao {
     GROUP BY exs.date
     ORDER BY max_volume DESC
     LIMIT 1
-""")
+"""
+    )
     fun getMaxSetVolumeForGroup(exerciseId: Long): LiveData<ExerciseSetVolume?>
+
     @Query("SELECT * FROM exercises WHERE date = :date AND exerciseGroupId = :groupId LIMIT 1")
     suspend fun getExerciseByDateAndGroup(date: Long, groupId: Long): Exercise?
 
 
+    @Query(
+        """
+    SELECT weight * (1 + 0.0333 * reps) as one_rep_max 
+    FROM exercise_sets
+    WHERE exercise_id = :exerciseId
+    ORDER BY one_rep_max DESC
+    LIMIT 1
+    """
+    )
+    suspend fun calculateOneRepMax(exerciseId: Long): Double?
+
+
+    @Query("""
+    SELECT 
+        E.date AS exerciseDate,
+         MAX(ES.weight * (1 + 0.0333 * ES.reps)) AS oneRepMax
+    FROM 
+        exercise_sets AS ES
+    JOIN 
+        exercises AS E ON ES.exercise_id = E.id
+    WHERE 
+        E.exerciseGroupId = (
+            SELECT exerciseGroupId FROM exercises WHERE id = :exerciseId
+        )
+""")
+    suspend fun calculateGroupMaxOneRep(exerciseId: Long): MaxOneRepForExercise?
+
+
 }
-
-
 

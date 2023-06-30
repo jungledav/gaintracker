@@ -205,4 +205,13 @@ class MainRepository(
     suspend fun getExerciseByDateAndGroup(date: Long, groupId: Long): Exercise? {
         return exerciseDao.getExerciseByDateAndGroup(date, groupId)
     }
+
+    suspend fun calculateOneRepMax(exerciseId: Long): Double? {
+        return exerciseDao.calculateOneRepMax(exerciseId)
+    }
+    suspend fun calculateGroupMaxOneRep(exerciseId: Long): MaxOneRepForExercise? {
+        return exerciseDao.calculateGroupMaxOneRep(exerciseId)
+    }
+
+
 }

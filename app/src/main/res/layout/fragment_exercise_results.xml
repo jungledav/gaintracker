@@ -31,7 +31,7 @@
                 android:id="@+id/tv_max_weight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Max Weight"
+                android:text="Max Weight Lifted"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
@@ -126,6 +126,65 @@
     </com.google.android.material.card.MaterialCardView>
 
     <!-- Second Column -->
+    <!-- 1 rep max card-->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/one_max_rep"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:visibility="visible"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:layout_constraintStart_toEndOf="@id/guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+
+            <TextView
+                android:id="@+id/tv_one_max_rep"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Calculated One Max Rep"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_one_max_rep_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Workout Max Reps Date"
+                android:textColor="@color/dark_blue"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_one_max_rep_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="One Max Rep"
+                android:textColor="@color/dark_blue"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_one_max_rep_today"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Workout One Max Rep"
+                android:textColor="@color/dark_blue"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
     <!-- Total Rep in one workout Card -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card_total_rep"
@@ -137,7 +196,8 @@
         app:cardElevation="4dp"
         app:layout_constraintStart_toEndOf="@id/guideline"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/one_max_rep"
+        >
 
         <LinearLayout
             android:layout_width="match_parent"

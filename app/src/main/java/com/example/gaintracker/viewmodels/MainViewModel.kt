@@ -267,5 +267,44 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
         return repository.getExerciseByDateAndGroup(date, groupId)
     }
 
+    private val _oneRepMax = MutableLiveData<Double?>()
+    val oneRepMax: LiveData<Double?>
+        get() = _oneRepMax
+
+    fun calculateOneRepMax(exerciseId: Long) {
+        viewModelScope.launch {
+            _oneRepMax.value = repository.calculateOneRepMax(exerciseId)
+        }
+    }
+    private val _groupMaxOneRep = MutableLiveData<Double?>()
+    val groupMaxOneRep: LiveData<Double?>
+        get() = _groupMaxOneRep
+
+    private val _groupMaxOneRepDate = MutableLiveData<String?>()
+    val groupMaxOneRepDate: LiveData<String?>
+        get() = _groupMaxOneRepDate
+
+    fun calculateGroupMaxOneRep(exerciseId: Long) {
+        viewModelScope.launch {
+            val maxOneRepForExercise = repository.calculateGroupMaxOneRep(exerciseId)
+            maxOneRepForExercise?.let {
+                _groupMaxOneRep.value = it.oneRepMax
+
+                val date = Date(it.exerciseDate)
+                val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+                val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())
+
+                val day = dayFormat.format(date).toInt()
+                val daySuffix = getDayOfMonthSuffix(day)
+                val month = monthFormat.format(date)
+                val year = SimpleDateFormat("yyyy", Locale.getDefault()).format(date)
+
+                _groupMaxOneRepDate.value = "$month $day$daySuffix, $year"
+            } ?: run {
+                _groupMaxOneRep.value = null
+                _groupMaxOneRepDate.value = null
+            }
+        }
+    }
 
 }

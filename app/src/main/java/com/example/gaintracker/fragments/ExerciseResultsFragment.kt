@@ -1,5 +1,6 @@
 package com.example.gaintracker.fragments
 
+import android.icu.text.SimpleDateFormat
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,10 +10,13 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.room.InvalidationTracker
 import com.example.gaintracker.GainTrackerApplication
 import com.example.gaintracker.R
 import com.example.gaintracker.viewmodels.MainViewModel
 import com.google.android.material.card.MaterialCardView
+import java.util.Date
+import java.util.Locale
 
 class ExerciseResultsFragment : Fragment() {
 
@@ -67,6 +71,40 @@ class ExerciseResultsFragment : Fragment() {
                             .observe(viewLifecycleOwner, { maxWeightToday ->
                                 tvMaxWeightToday.text = "This workout: $maxWeightToday kg"
                             })
+
+                        /// Values for Max One Rep Card
+                        val tvOneMaxRep = view.findViewById<TextView>(R.id.tv_one_max_rep_value)
+                        val tvOneMaxRepDate = view.findViewById<TextView>(R.id.tv_one_max_rep_date)
+                        viewModel.calculateGroupMaxOneRep(exerciseId)
+                        viewModel.groupMaxOneRep.observe(viewLifecycleOwner, { oneGroupRepMax ->
+                            oneGroupRepMax?.let {
+                                val formattedOnegroupRepMax = String.format("%.2f", it)
+                                tvOneMaxRep.text = "$formattedOnegroupRepMax kg"
+                            } ?: run {
+                                tvOneMaxRep.text = "N/A"
+                            }
+                        })
+
+                        viewModel.groupMaxOneRepDate.observe(viewLifecycleOwner, { dateString ->
+                            dateString?.let {
+                                tvOneMaxRepDate.text = "$dateString"
+                            } ?: run {
+                                tvOneMaxRepDate.text = "N/A"
+                            }
+                        })
+
+// Calculate the one rep max
+                        val tvOneMaxRepToday = view.findViewById<TextView>(R.id.tv_one_max_rep_today)
+                        viewModel.calculateOneRepMax(exerciseId)
+                        viewModel.oneRepMax.observe(viewLifecycleOwner, { oneRepMax ->
+                            oneRepMax?.let {
+                                val formattedOneRepMax = String.format("%.2f", it)
+                                tvOneMaxRepToday.text = "This workout: $formattedOneRepMax kg"
+                            } ?: run {
+                                tvOneMaxRepToday.text = "N/A"
+                            }
+                        })
+
 
 
 /// Values for "Max Reps in One Workout" Card on Exercise Result tab
