@@ -3,6 +3,7 @@ package com.example.gaintracker.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gaintracker.MainActivity
@@ -11,10 +12,6 @@ import com.example.gaintracker.data.models.Exercise
 import com.example.gaintracker.data.models.ExerciseListItem
 import java.text.SimpleDateFormat
 import java.util.*
-import com.example.gaintracker.OnNoExercisesTodayClickListener
-
-
-
 
 class ExerciseAdapter(
     private val onFetchSets: (exercise: Exercise) -> Unit,
@@ -54,6 +51,15 @@ class ExerciseAdapter(
         }
     }
 
+    inner class AddAnotherExerciseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val addAnotherExerciseButton: Button = itemView.findViewById(R.id.addAnotherExerciseButton)
+
+        init {
+            addAnotherExerciseButton.setOnClickListener {
+                context.onAddAnotherExerciseClick()
+            }
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
@@ -68,6 +74,10 @@ class ExerciseAdapter(
             VIEW_TYPE_NO_EXERCISES_TODAY -> {
                 val itemView = LayoutInflater.from(parent.context).inflate(R.layout.no_exercises_today_item, parent, false)
                 NoExercisesTodayViewHolder(itemView)
+            }
+            VIEW_TYPE_ADD_ANOTHER_EXERCISE -> {
+                val itemView = LayoutInflater.from(parent.context).inflate(R.layout.add_another_exercise_item, parent, false)
+                AddAnotherExerciseViewHolder(itemView)
             }
             else -> throw IllegalArgumentException("Invalid view type")
         }
@@ -86,6 +96,12 @@ class ExerciseAdapter(
                 val dividerItem = currentItem as ExerciseListItem.DividerItem
                 holder.textViewDate.text = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(dividerItem.date)
             }
+            is NoExercisesTodayViewHolder -> {
+                // Nothing to bind
+            }
+            is AddAnotherExerciseViewHolder -> {
+                // Nothing to bind
+            }
         }
     }
 
@@ -96,6 +112,7 @@ class ExerciseAdapter(
             is ExerciseListItem.ExerciseItem -> VIEW_TYPE_EXERCISE
             is ExerciseListItem.DividerItem -> VIEW_TYPE_DIVIDER
             ExerciseListItem.NoExercisesTodayItem -> VIEW_TYPE_NO_EXERCISES_TODAY
+            ExerciseListItem.AddAnotherExerciseItem -> VIEW_TYPE_ADD_ANOTHER_EXERCISE
         }
     }
 
@@ -130,5 +147,6 @@ class ExerciseAdapter(
         private const val VIEW_TYPE_EXERCISE = 1
         private const val VIEW_TYPE_DIVIDER = 2
         private const val VIEW_TYPE_NO_EXERCISES_TODAY = 3
+        private const val VIEW_TYPE_ADD_ANOTHER_EXERCISE = 4
     }
 }

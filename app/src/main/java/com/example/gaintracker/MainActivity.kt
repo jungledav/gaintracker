@@ -32,7 +32,11 @@ interface OnNoExercisesTodayClickListener {
     fun onNoExercisesTodayClick()
 }
 
-class MainActivity : BaseActivity(), OnNoExercisesTodayClickListener {
+interface onAddAnotherExerciseClickListener {
+    fun onAddAnotherExerciseClick()
+}
+
+class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExercisesTodayClickListener {
 
     private lateinit var adapter: ExerciseAdapter
     private val viewModel: MainViewModel by viewModels { MainViewModelFactory(appContainer.mainRepository) }
@@ -45,38 +49,48 @@ class MainActivity : BaseActivity(), OnNoExercisesTodayClickListener {
         const val EXTRA_EXERCISE_ID = "extra_exercise_id"
         const val EXTRA_EXERCISE_NAME = "extra_exercise_name"
     }
-    interface OnNoExercisesTodayClickListener {
-        fun onNoExercisesTodayClick()
-    }
+
     override fun onNoExercisesTodayClick() {
+        openAddExerciseActivity()
+    }
+
+   override fun onAddAnotherExerciseClick() {
         openAddExerciseActivity()
     }
     private fun generateExerciseListItems(exercisesWithGroupNames: List<ExerciseWithGroupName>): List<ExerciseListItem> {
         val items = mutableListOf<ExerciseListItem>()
         var previousDate: Date? = null
         var currentDate: Date
-
-        if (exercisesWithGroupNames.isEmpty() || !isSameDay(
-                Date(),
-                Date(exercisesWithGroupNames[0].exercise.date)
-            )
-        ) {
-            items.add(ExerciseListItem.DividerItem(Date()))
-            items.add(ExerciseListItem.NoExercisesTodayItem)
-        }
+        var isExerciseForCurrentDayAdded = false
 
         exercisesWithGroupNames.forEach { exerciseWithGroupName ->
             currentDate = Date(exerciseWithGroupName.exercise.date)
+
             if (previousDate?.let { isSameDay(it, currentDate) } != true) {
                 items.add(ExerciseListItem.DividerItem(currentDate))
+                if (isSameDay(currentDate, Date())) {
+                    isExerciseForCurrentDayAdded = true
+                }
             }
+
+            if(isExerciseForCurrentDayAdded && isSameDay(currentDate, Date())) {
+                items.add(ExerciseListItem.AddAnotherExerciseItem)
+                isExerciseForCurrentDayAdded = false
+            }
+
             items.add(
                 ExerciseListItem.ExerciseItem(
                     exercise = exerciseWithGroupName.exercise,
                     exerciseGroupName = exerciseWithGroupName.groupName
                 )
             )
+
             previousDate = currentDate
+        }
+
+        if (exercisesWithGroupNames.isEmpty() || !isSameDay(Date(), Date(exercisesWithGroupNames[0].exercise.date))) {
+            items.add(0, ExerciseListItem.DividerItem(Date()))
+            items.add(1, ExerciseListItem.NoExercisesTodayItem)
         }
 
         return items
@@ -169,12 +183,6 @@ class MainActivity : BaseActivity(), OnNoExercisesTodayClickListener {
             adapter.setItems(items)
         }
 
-
-        val buttonAddExercise = findViewById<Button>(R.id.buttonAddExercise)
-        buttonAddExercise.setOnClickListener {
-            openAddExerciseActivity()
-        }
-
         val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
             0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
         ) {
@@ -226,7 +234,7 @@ class MainActivity : BaseActivity(), OnNoExercisesTodayClickListener {
             })
     }
 
-    private fun openAddExerciseActivity() {
+   fun openAddExerciseActivity() {
         val intent = Intent(this, AddExerciseActivity::class.java)
         intent.putExtra(AddExerciseActivity.EXTRA_FROM_MAIN_ACTIVITY, true)
         startActivityForResult(intent, ADD_EXERCISE_REQUEST_CODE)
