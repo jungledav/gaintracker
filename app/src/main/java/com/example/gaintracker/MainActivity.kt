@@ -89,8 +89,8 @@ class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExerc
         }
 
         if (exercisesWithGroupNames.isEmpty() || !isSameDay(Date(), Date(exercisesWithGroupNames[0].exercise.date))) {
-            items.add(0, ExerciseListItem.DividerItem(Date()))
-            items.add(1, ExerciseListItem.NoExercisesTodayItem)
+         //   items.add(0, ExerciseListItem.DividerItem(Date()))
+            items.add(0, ExerciseListItem.NoExercisesTodayItem)
         }
 
         return items
