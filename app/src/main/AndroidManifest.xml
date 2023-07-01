@@ -14,22 +14,19 @@
         tools:targetApi="31">
         <activity
             android:name=".DashboardActivity"
-            android:launchMode="singleTop"
-            android:exported="true">
+            android:exported="true" />
+        <activity android:name=".AddExerciseActivity"
+            android:parentActivityName="com.example.gaintracker.DashboardActivity" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AddExerciseActivity"
-        android:parentActivityName="com.example.gaintracker.DashboardActivity" />
-        <activity android:name=".MainActivity" />
         <activity android:name=".SettingsActivity" />
-
-
-
-
         <activity
             android:name=".viewmodels.ExerciseDetailsActivity"
             android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />

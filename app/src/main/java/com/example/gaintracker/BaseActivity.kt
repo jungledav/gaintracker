@@ -2,6 +2,7 @@ package com.example.gaintracker
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -12,6 +13,7 @@ open class BaseActivity : AppCompatActivity() {
         setContentView(R.layout.activity_base)
 
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
+
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.action_exercises -> {
