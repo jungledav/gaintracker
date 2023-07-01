@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.TooltipCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -12,6 +13,7 @@ import com.example.gaintracker.data.models.ExerciseSet
 import com.example.gaintracker.databinding.ItemExerciseHistoryBinding
 import com.example.gaintracker.databinding.ItemSetBinding
 import com.example.gaintracker.fragments.ExerciseHistoryFragment
+import com.google.android.material.snackbar.Snackbar
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -44,10 +46,20 @@ class ExerciseHistoryAdapter(
             holder.binding.textViewReps.text = "${currentSet.reps} reps"
             holder.binding.textViewWeight.text = "${currentSet.weight} kg"
 
+            val infoIcon = holder.binding.infoIcon
             if (isRecordSet(currentSet)) {
-                holder.binding.root.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.record_set_background))
+                // Adding Tooltip
+                val tooltipText = "This is a record set because there is no other set with a greater or equal weight and reps."
+                TooltipCompat.setTooltipText(holder.binding.root, tooltipText)
+                infoIcon.visibility = View.VISIBLE
+                infoIcon.setOnClickListener { v ->
+                    TooltipCompat.setTooltipText(v, tooltipText)
+                    v.performLongClick()
+                }
             } else {
                 holder.binding.root.setBackgroundColor(Color.TRANSPARENT)
+                TooltipCompat.setTooltipText(holder.binding.root, null) // Clear tooltip
+                infoIcon.visibility = View.INVISIBLE
             }
             if (isHistoryView) {
                 holder.binding.imageViewDeleteSet.visibility = View.GONE

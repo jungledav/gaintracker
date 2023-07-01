@@ -11,30 +11,43 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:src="@drawable/ic_edit"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/trash_icon"
-        app:layout_constraintTop_toTopOf="parent" />
-    <TextView
-        android:id="@+id/textViewSetNumber"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textSize="16sp" />
+        android:src="@drawable/ic_edit" />
 
-    <TextView
-        android:id="@+id/textViewReps"
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textSize="16sp" />
+        android:layout_weight="3"
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/textViewWeight"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textSize="16sp" />
+        <TextView
+            android:id="@+id/textViewSetNumber"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/textViewReps"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/textViewWeight"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/infoIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:src="@drawable/baseline_military_tech_24"
+            android:layout_marginStart="8dp"
+            android:visibility="invisible"/>
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/imageViewDeleteSet"
