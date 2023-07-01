@@ -90,9 +90,7 @@ class ExerciseHistoryAdapter(
         }
 
     }
-    private fun isRecordSet(currentSet: ExerciseSet): Boolean {
-        return recordSetIds.contains(currentSet.id)
-    }
+
     override fun getItemCount(): Int {
         return exerciseSetsByDate.size
     }
@@ -103,22 +101,7 @@ class ExerciseHistoryAdapter(
         notifyDataSetChanged()
     }
 
-    private fun calculateRecordSets(): Map<Long, ExerciseSet> {
-        val sets = exerciseSetsByDate.flatMap { it.sets }
-            .sortedWith(compareBy<ExerciseSet> { it.weight }.thenByDescending { it.reps }.thenBy { it.id })
 
-        val recordSets = mutableMapOf<Pair<Double, Int>, ExerciseSet>()
-
-        for (set in sets) {
-            val currentRecordSet = recordSets[Pair(set.weight, set.reps)]
-            if (currentRecordSet == null || set.id < currentRecordSet.id) {
-                // If two sets have the same weight, reps and date, choose the set with the lower id
-                recordSets[Pair(set.weight, set.reps)] = set
-            }
-        }
-
-        return recordSets.values.associateBy { it.id }
-    }
 
 
 
