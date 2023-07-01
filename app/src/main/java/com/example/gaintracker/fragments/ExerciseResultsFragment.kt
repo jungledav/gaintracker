@@ -67,9 +67,13 @@ class ExerciseResultsFragment : Fragment() {
                                 tvMaxWeightDate.text = "$maxWeightDate"
                             })
 
-                        viewModel.getTodayMaxWeightForExercise(exerciseId)
-                            .observe(viewLifecycleOwner, { maxWeightToday ->
+                        viewModel.getTodayMaxWeightForExercise(exerciseId).observe(viewLifecycleOwner, { maxWeightToday ->
+                            maxWeightToday?.let{
                                 tvMaxWeightToday.text = "This workout: $maxWeightToday kg"
+                            }
+                                ?: run {
+                                    tvMaxWeightToday.text = "This workout: N/A"
+                                }
                             })
 
                         /// Values for Max One Rep Card
@@ -101,7 +105,7 @@ class ExerciseResultsFragment : Fragment() {
                                 val formattedOneRepMax = String.format("%.2f", it)
                                 tvOneMaxRepToday.text = "This workout: $formattedOneRepMax kg"
                             } ?: run {
-                                tvOneMaxRepToday.text = "N/A"
+                                tvOneMaxRepToday.text = "This workout: N/A"
                             }
                         })
 
@@ -121,8 +125,11 @@ class ExerciseResultsFragment : Fragment() {
 
                         viewModel.getTodayTotalRepsForExercise(exerciseId)
                             .observe(viewLifecycleOwner, { totalRepsToday ->
-                                tvTotalRepsToday.text = "This workout: $totalRepsToday reps"
-                            })
+                                totalRepsToday?.let{
+                                    tvTotalRepsToday.text = "This workout: $totalRepsToday reps"
+                                }?: run {
+                                    tvTotalRepsToday.text = "This workout: N/A"}
+                                })
 
 
 // Values for "Max Exercise per workout Volume" Card
@@ -130,7 +137,10 @@ class ExerciseResultsFragment : Fragment() {
                         val tvExerciseVolumetoday = view.findViewById<TextView>(R.id.tv_exercise_volume_today)
                         viewModel.getExerciseVolumeForExercise(exerciseId)
                             .observe(viewLifecycleOwner, { exerciseVolume ->
-                                tvExerciseVolumetoday.text = "This workout: $exerciseVolume kg"
+                                exerciseVolume?.let{
+                                    tvExerciseVolumetoday.text = "This workout: $exerciseVolume kg"
+                                }?: run {
+                                    tvExerciseVolumetoday.text = "This workout: N/A"}
                             })
                         val tvMaxExerciseVolumeDate = view.findViewById<TextView>(R.id.tv_exercise_volume_date)
                         val tvMaxExerciseVolumeTotal = view.findViewById<TextView>(R.id.tv_exercise_volume_value)
@@ -155,7 +165,11 @@ class ExerciseResultsFragment : Fragment() {
 
                         viewModel.getMaxSetVolumeForExercise(exerciseId)
                             .observe(viewLifecycleOwner, { maxSetVolume ->
+                                maxSetVolume?.let{
                                 tvMaxSetVolumetoday.text = "This workout: $maxSetVolume kg"
+                                }?: run {
+                                    tvMaxSetVolumetoday.text = "This workout: N/A"
+                                }
                             })
 
 
@@ -165,7 +179,11 @@ class ExerciseResultsFragment : Fragment() {
 
                         viewModel.getMaxRepsForExercise(exerciseId)
                             .observe(viewLifecycleOwner, { maxReps ->
+                                maxReps?.let{
                                 tvMaxRepsValue.text = "This workout: $maxReps reps"
+                                }?: run {
+                                    tvMaxRepsValue.text = "This workout: N/A"
+                                }
                             })
 
 
