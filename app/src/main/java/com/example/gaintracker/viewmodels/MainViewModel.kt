@@ -2,6 +2,7 @@ package com.example.gaintracker.viewmodels
 
 import androidx.lifecycle.*
 import com.example.gaintracker.data.models.Exercise
+import com.example.gaintracker.data.models.ExerciseExerciseVolume
 import com.example.gaintracker.data.models.ExerciseGroup
 import com.example.gaintracker.data.models.ExerciseMaxReps
 import com.example.gaintracker.data.models.ExerciseSet
@@ -255,6 +256,29 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
 
                 val formattedDate = "$month $day$daySuffix, $year"
                 ExerciseSetVolume(formattedDate, setVolume.max_volume)
+            } else {
+                // Handle null setVolume here
+                // You could, for example, return a default ExerciseSetVolume
+                ExerciseSetVolume("No History yet", 0.0)
+            }
+        }
+    }
+
+    fun getMaxExerciseVolumeForGroup(exerciseId: Long): LiveData<ExerciseSetVolume> {
+        val setGroupexerciseVolumeLiveData = repository.getMaxExerciseVolumeForGroup(exerciseId)
+        return setGroupexerciseVolumeLiveData.map { exerciseVolume ->
+            if (exerciseVolume != null) {
+                val date = Date(exerciseVolume.date.toLong())
+                val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+                val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())
+
+                val day = dayFormat.format(date).toInt()
+                val daySuffix = getDayOfMonthSuffix(day)
+                val month = monthFormat.format(date)
+                val year = SimpleDateFormat("yyyy", Locale.getDefault()).format(date)
+
+                val formattedDate = "$month $day$daySuffix, $year"
+                ExerciseSetVolume(formattedDate, exerciseVolume.max_volume)
             } else {
                 // Handle null setVolume here
                 // You could, for example, return a default ExerciseSetVolume

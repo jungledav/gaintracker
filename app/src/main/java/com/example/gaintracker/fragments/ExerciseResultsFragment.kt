@@ -127,10 +127,18 @@ class ExerciseResultsFragment : Fragment() {
 
 // Values for "Max Exercise per workout Volume" Card
 
-                        val tvExerciseVolumetoday =
-                            view.findViewById<TextView>(R.id.tv_exercise_volume_today)
-
-
+                        val tvExerciseVolumetoday = view.findViewById<TextView>(R.id.tv_exercise_volume_today)
+                        viewModel.getExerciseVolumeForExercise(exerciseId)
+                            .observe(viewLifecycleOwner, { exerciseVolume ->
+                                tvExerciseVolumetoday.text = "This workout: $exerciseVolume kg"
+                            })
+                        val tvMaxExerciseVolumeDate = view.findViewById<TextView>(R.id.tv_exercise_volume_date)
+                        val tvMaxExerciseVolumeTotal = view.findViewById<TextView>(R.id.tv_exercise_volume_value)
+                        viewModel.getMaxExerciseVolumeForGroup(exerciseId)
+                            .observe(viewLifecycleOwner, { MaxExerciseVolumeForGroup ->
+                                tvMaxExerciseVolumeDate.text = "${MaxExerciseVolumeForGroup.date}"
+                                tvMaxExerciseVolumeTotal.text = "${MaxExerciseVolumeForGroup.max_volume} kg"
+                            })
 // Values for "Max Set Volume in One Workout" Card
                         val tvMaxSetVolumetoday =
                             view.findViewById<TextView>(R.id.tv_max_set_volume_today)
@@ -143,13 +151,6 @@ class ExerciseResultsFragment : Fragment() {
                             .observe(viewLifecycleOwner, { exerciseSetVolume ->
                                 tvMaxSetVolumeDate.text = "${exerciseSetVolume.date}"
                                 tvMaxSetVolumeValueTotal.text = "${exerciseSetVolume.max_volume} kg"
-                            })
-
-
-
-                        viewModel.getExerciseVolumeForExercise(exerciseId)
-                            .observe(viewLifecycleOwner, { exerciseVolume ->
-                                tvExerciseVolumetoday.text = "This workout: $exerciseVolume kg"
                             })
 
                         viewModel.getMaxSetVolumeForExercise(exerciseId)

@@ -213,5 +213,7 @@ class MainRepository(
         return exerciseDao.calculateGroupMaxOneRep(exerciseId)
     }
 
-
+    fun getMaxExerciseVolumeForGroup(exerciseId: Long): LiveData<ExerciseSetVolume?> {
+        return exerciseDao.getMaxExerciseVolumeForGroup(exerciseId)
+    }
 }

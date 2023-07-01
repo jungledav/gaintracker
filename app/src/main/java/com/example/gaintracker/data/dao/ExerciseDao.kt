@@ -7,6 +7,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.example.gaintracker.data.models.Exercise
+import com.example.gaintracker.data.models.ExerciseExerciseVolume
 import com.example.gaintracker.data.models.ExerciseMaxReps
 import com.example.gaintracker.data.models.ExerciseSet
 import com.example.gaintracker.data.models.ExerciseSetVolume
@@ -254,6 +255,22 @@ interface ExerciseDao {
 """)
     suspend fun calculateGroupMaxOneRep(exerciseId: Long): MaxOneRepForExercise?
 
+    @Query(
+        """
+    SELECT exs.date, SUM(sets.weight * sets.reps) as max_volume
+    FROM exercise_sets as sets 
+    INNER JOIN exercises as exs ON sets.exercise_id = exs.id
+    WHERE exs.exerciseGroupId = (
+        SELECT exerciseGroupId 
+        FROM exercises 
+        WHERE id = :exerciseId
+    )
+    GROUP BY exs.date
+    ORDER BY max_volume DESC
+    LIMIT 1
+"""
+    )
+    fun getMaxExerciseVolumeForGroup(exerciseId: Long): LiveData<ExerciseSetVolume?>
 
 }
 
