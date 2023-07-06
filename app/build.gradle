@@ -10,7 +10,7 @@ android {
     compileSdk 33
 
     defaultConfig {
-        namespace "com.example.gaintracker"
+        namespace "com.UpTrack.example.UpTrack"
         minSdk 21
         targetSdk 33
         versionCode 1

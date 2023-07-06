@@ -16,7 +16,7 @@
             android:name=".DashboardActivity"
             android:exported="true" />
         <activity android:name=".AddExerciseActivity"
-            android:parentActivityName="com.example.gaintracker.DashboardActivity" />
+            android:parentActivityName="com.UpTrack.example.UpTrack.DashboardActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
