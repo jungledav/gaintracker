@@ -10,6 +10,8 @@ import com.UpTrack.example.UpTrack.data.models.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import androidx.lifecycle.switchMap
+import kotlinx.coroutines.flow.Flow
+
 
 
 
@@ -77,7 +79,7 @@ class MainRepository(
         exerciseDao.deleteExercise(exercise)
     }
 
-    suspend fun getSetsForExercise(exerciseId: Long): List<ExerciseSet> {
+    fun getSetsForExercise(exerciseId: Long): Flow<List<ExerciseSet>> {
         return exerciseSetDao.getSetsForExercise(exerciseId)
     }
 

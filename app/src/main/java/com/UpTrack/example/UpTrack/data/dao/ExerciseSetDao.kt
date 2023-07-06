@@ -3,6 +3,8 @@ package com.UpTrack.example.UpTrack.data.dao
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.UpTrack.example.UpTrack.data.models.ExerciseSet
+import kotlinx.coroutines.flow.Flow
+
 
 @Dao
 interface ExerciseSetDao {
@@ -22,7 +24,7 @@ interface ExerciseSetDao {
     suspend fun getExerciseSetById(exerciseSetId: Long): ExerciseSet
 
     @Query("SELECT * FROM exercise_sets WHERE exercise_id = :exerciseId")
-    suspend fun getSetsForExercise(exerciseId: Long): List<ExerciseSet>
+    fun getSetsForExercise(exerciseId: Long): Flow<List<ExerciseSet>>
 
     @Delete
     suspend fun deleteExerciseSet(exerciseSet: ExerciseSet)

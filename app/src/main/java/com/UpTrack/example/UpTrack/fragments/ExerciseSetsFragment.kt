@@ -15,6 +15,8 @@ import com.UpTrack.example.UpTrack.data.models.ExerciseSet
 import com.UpTrack.example.UpTrack.databinding.FragmentAddSetsBinding
 import com.UpTrack.example.UpTrack.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collect
+
 
 class ExerciseSetsFragment : Fragment() {
     private var _binding: FragmentAddSetsBinding? = null
@@ -36,7 +38,7 @@ class ExerciseSetsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        val currentExerciseId = arguments?.getLong("exerciseId") ?: throw IllegalStateException("No exerciseId provided")
         val application = requireActivity().application as GainTrackerApplication
         val repository = application.appContainer.mainRepository
 
@@ -50,21 +52,24 @@ class ExerciseSetsFragment : Fragment() {
             }
 
             override fun onSetDeleteClick(set: ExerciseSet) {
-                viewModel.deleteExerciseSet(set)
-                val currentExerciseId = arguments?.getLong("exerciseId") ?: throw IllegalStateException("No exerciseId provided")
-                viewModel.getSetsForExercise(currentExerciseId).observe(viewLifecycleOwner, { sets ->
-                    setAdapter.setSets(sets)
-                })
+                lifecycleScope.launch {
+                    viewModel.deleteExerciseSet(set)
+                    // viewModel.deleteExerciseSet(set)
+                   // val currentExerciseId = arguments?.getLong("exerciseId") ?: throw IllegalStateException("No exerciseId provided")
+                   // val updatedSets = viewModel.getSetsForExercise(currentExerciseId).value ?: emptyList()
+                   // setAdapter.setSets(updatedSets)
+                }
             }
         })
 
         binding.recyclerViewSets.adapter = setAdapter
         binding.recyclerViewSets.layoutManager = LinearLayoutManager(requireContext())
-        val currentExerciseId = arguments?.getLong("exerciseId") ?: throw IllegalStateException("No exerciseId provided")
 
-        viewModel.getSetsForExercise(currentExerciseId).observe(viewLifecycleOwner, { sets ->
-            setAdapter.setSets(sets)
-        })
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.getSetsForExerciseFlow(currentExerciseId).collect { sets ->
+                setAdapter.setSets(sets)
+            }
+        }
 
         binding.buttonAddSet.setOnClickListener { onAddSetButtonClick() }
 
@@ -83,9 +88,9 @@ class ExerciseSetsFragment : Fragment() {
                 val newSet = ExerciseSet(exercise_id = currentExerciseId, reps = reps, weight = weight)
                 lifecycleScope.launch {
                     viewModel.insertExerciseSet(newSet)
-                    viewModel.getSetsForExercise(currentExerciseId).observe(viewLifecycleOwner, { sets ->
-                        setAdapter.setSets(sets)
-                    })
+                  //  viewModel.getSetsForExercise(currentExerciseId).observe(viewLifecycleOwner, { sets ->
+                  //      setAdapter.setSets(sets)
+                  //})
                 }
             } else {
                 // Update existing set
@@ -93,10 +98,10 @@ class ExerciseSetsFragment : Fragment() {
                     val updatedSet = ExerciseSet(id = set.id, exercise_id = currentExerciseId, reps = reps, weight = weight)
                     lifecycleScope.launch {
                         viewModel.updateExerciseSet(updatedSet)
-                        viewModel
-                        viewModel.getSetsForExercise(currentExerciseId).observe(viewLifecycleOwner, { sets ->
+
+                        /*viewModel.getSetsForExercise(currentExerciseId).observe(viewLifecycleOwner, { sets ->
                             setAdapter.setSets(sets)
-                        })
+                        })*/
                         // Reset input fields and button text
                         binding.editTextReps.text.clear()
                         binding.editTextWeight.text.clear()

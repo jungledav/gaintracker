@@ -20,7 +20,7 @@ class AddSetsFragment : Fragment() {
 
     private var _binding: FragmentAddSetsBinding? = null
     private val binding get() = _binding!!
-
+    private lateinit var setAdapter: SetAdapter
     private val viewModel: MainViewModel by activityViewModels()
     private val currentExerciseId by lazy { requireArguments().getLong("exerciseId", -1) }
 
@@ -58,29 +58,34 @@ class AddSetsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d("AddSetsFragment", "onViewCreated called") // Add this log message
 
         if (currentExerciseId == -1L) {
             requireActivity().finish()
             return
         }
 
-        val setAdapter = SetAdapter(object : SetAdapter.SetInteractionListener {
+        setAdapter = SetAdapter(object : SetAdapter.SetInteractionListener {
             override fun onSetEditClick(set: ExerciseSet) {
                 // Handle set edit click
             }
 
             override fun onSetDeleteClick(set: ExerciseSet) {
-                viewModel.deleteExerciseSet(set)
+                lifecycleScope.launch {
+                        viewModel.getSetsForExerciseFlow(currentExerciseId).collect { sets ->
+                            setAdapter.setSets(sets.reversed())
+                        }
+                    }
             }
         })
 
         binding.recyclerViewSets.adapter = setAdapter
         binding.recyclerViewSets.layoutManager = LinearLayoutManager(requireContext())
 
-        viewModel.getSetsForExercise(currentExerciseId).observe(viewLifecycleOwner, { sets ->
-            setAdapter.setSets(sets.reversed())
-        })
+        lifecycleScope.launch {
+            viewModel.getSetsForExerciseFlow(currentExerciseId).collect { sets ->
+                setAdapter.setSets(sets.reversed())
+            }
+        }
 
         binding.buttonAddSet.setOnClickListener { onAddSetButtonClick() }
     }

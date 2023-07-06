@@ -164,14 +164,16 @@ class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExerc
         val recyclerView: RecyclerView = findViewById(R.id.recyclerViewExercises)
         previousDate = null
         adapter = ExerciseAdapter({ exercise ->
-            viewModel.getSetsForExercise(exercise.id.toLong())
-                .observe(this, Observer { sets: List<ExerciseSet> ->
-                    val position = adapter.indexOfExercise(exercise)
-                    val viewHolder = recyclerView.findViewHolderForAdapterPosition(position)
-                    if (viewHolder is ExerciseAdapter.ExerciseViewHolder) {
-                        viewHolder.updateSetsCount(sets.size)
+            lifecycleScope.launch {
+                viewModel.getSetsForExerciseFlow(exercise.id.toLong())
+                    .collect { sets ->
+                        val position = adapter.indexOfExercise(exercise)
+                        val viewHolder = recyclerView.findViewHolderForAdapterPosition(position)
+                        if (viewHolder is ExerciseAdapter.ExerciseViewHolder) {
+                            viewHolder.updateSetsCount(sets.size)
+                        }
                     }
-                })
+            }
         }, this)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter

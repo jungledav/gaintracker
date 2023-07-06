@@ -12,14 +12,17 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class MainViewModel(private val repository: MainRepository) : ViewModel() {
 
     init {
         repository.viewModelScope = viewModelScope
     }
-
+    fun getSetsForExerciseFlow(exerciseId: Long): Flow<List<ExerciseSet>> {
+        return repository.getSetsForExercise(exerciseId).map { it.reversed() }
+    }
 
     fun deleteExercise(exercise: Exercise) {
         viewModelScope.launch {
@@ -68,12 +71,12 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
     val allExercisesWithGroupNames: LiveData<List<ExerciseWithGroupName>> =
         repository.getAllExercisesWithGroupNames()
 
-    fun getSetsForExercise(exerciseId: Long): LiveData<List<ExerciseSet>> {
+   /* fun getSetsForExercise(exerciseId: Long): LiveData<List<ExerciseSet>> {
         return liveData {
             val sets = repository.getSetsForExercise(exerciseId)
             emit(sets)
         }.distinctUntilChanged()
-    }
+    }*/
 
     fun getMaxWeightForExercise(exerciseId: Long): LiveData<Float> {
         return repository.getMaxWeightForExercise(exerciseId)

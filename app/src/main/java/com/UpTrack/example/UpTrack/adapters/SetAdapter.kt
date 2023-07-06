@@ -15,7 +15,7 @@ class SetAdapter(
 
     fun setSets(sets: List<ExerciseSet>) {
         this.sets.clear()
-        this.sets.addAll(sets.reversed())
+        this.sets.addAll(sets)
         notifyDataSetChanged()
     }
 
