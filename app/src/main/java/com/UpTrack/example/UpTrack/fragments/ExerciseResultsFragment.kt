@@ -41,6 +41,8 @@ class ExerciseResultsFragment : Fragment() {
                         card_max_rep.visibility = View.GONE
                         val card_total_rep = view.findViewById<MaterialCardView>(R.id.card_total_rep)
                         card_total_rep.visibility = View.GONE
+                        val card_one_max_rep = view.findViewById<MaterialCardView>(R.id.one_max_rep)
+                        card_one_max_rep.visibility = View.GONE
                         val card_exercise_volume = view.findViewById<MaterialCardView>(R.id.card_exercise_volume)
                         card_exercise_volume.visibility = View.GONE
                         val card_max_set_volume = view.findViewById<MaterialCardView>(R.id.card_max_set_volume)
