@@ -82,7 +82,7 @@ object PredefinedExercises {
             .filter { it.groupName == muscleGroup }
             .flatMap { it.exercises.map { exerciseInfo -> exerciseInfo.name } }
         val customExerciseNames = customExercises[muscleGroup]?.map { it.name } ?: emptyList()
-        return (predefinedExerciseNames + customExerciseNames).sorted() + "Add your own exercise"
+        return (predefinedExerciseNames + customExerciseNames).sorted() + "+ Add your own exercise"
     }
 
     fun getExerciseInfo(name: String): ExerciseInfo? {

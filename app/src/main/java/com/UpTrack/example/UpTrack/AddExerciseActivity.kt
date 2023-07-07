@@ -55,7 +55,7 @@ class AddExerciseActivity : AppCompatActivity() {
         buttonAddExercise.setOnClickListener {
             val exerciseName = exerciseSpinner.selectedItem.toString()
 
-            if (exerciseName.isNotBlank() && exerciseName != "Add your own exercise") {
+            if (exerciseName.isNotBlank() && exerciseName != "+ Add your own exercise") {
                 lifecycleScope.launch {
                     Log.d("AddExerciseActivity", "Inserting exercise: $exerciseName")
 
@@ -111,7 +111,7 @@ class AddExerciseActivity : AppCompatActivity() {
 
         exerciseSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                if (exerciseSpinner.selectedItem == "Add your own exercise") {
+                if (exerciseSpinner.selectedItem == "+ Add your own exercise") {
                     showAddCustomExerciseDialog()
                 }
             }
