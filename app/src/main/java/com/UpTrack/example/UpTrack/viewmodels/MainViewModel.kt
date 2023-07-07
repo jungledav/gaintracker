@@ -86,6 +86,7 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
         return repository.getMaxWeightForExerciseType(exerciseTypeId)
     }
 
+
     suspend fun getLatestExercise(): Exercise? {
         return repository.getLatestExercise()
     }
