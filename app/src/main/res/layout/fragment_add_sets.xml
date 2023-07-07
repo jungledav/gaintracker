@@ -15,20 +15,35 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/textViewInstruction"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/lighter_gray"
+        android:text="Please enter the number of reps and the weight of the set you want to save"
+        android:textAppearance="?attr/textAppearanceCaption"
+        android:padding="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/viewPager"/>
+
 
     <EditText
         android:id="@+id/editTextReps"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
-        android:hint="Reps"
+        android:hint="Reps:"
         android:inputType="number"
         android:minHeight="48dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/viewPager" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewInstruction" />
 
 
     <EditText
@@ -38,7 +53,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
-        android:hint="Weight"
+        android:hint="Weight:"
         android:inputType="numberDecimal"
         android:minHeight="48dp"
         app:layout_constraintTop_toBottomOf="@+id/editTextReps"
@@ -75,7 +90,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:layout_weight="1"
-                    android:text="Add Set" />
+                    android:text="Save Set" />
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView

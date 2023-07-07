@@ -31,9 +31,9 @@ class ExerciseResultsFragment : Fragment() {
             viewModel.doesExerciseSetExist(exerciseGroupId)
                 .observe(viewLifecycleOwner) { exerciseSetExists ->
                     if (!exerciseSetExists) {
-                        // If there is no set for the exerciseGroupId, show a message and return
+                        // If there is no set for the exerciseGroupId, show a message and returnx
                         val tvMessage = view.findViewById<TextView>(R.id.tv_message)
-                        tvMessage.text = "No results yet"
+                        tvMessage.text = "Results will be shown after a first set is added."
                         tvMessage.visibility = View.VISIBLE
                         val maxWeightCardView = view.findViewById<MaterialCardView>(R.id.card_max_weight)
                         maxWeightCardView.visibility = View.GONE
