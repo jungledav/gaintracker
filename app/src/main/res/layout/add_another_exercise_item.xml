@@ -9,6 +9,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="Add another exercise" />
+        android:text="Add Another Exercise"
+        android:padding="10dp"
+        android:layout_marginTop="25dp"
+        android:textSize="14sp"
+        android:textAllCaps="false"
+        />
 
 </RelativeLayout>

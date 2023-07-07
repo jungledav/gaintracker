@@ -12,6 +12,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar.IgnoreDarkMode"
         tools:targetApi="31">
+        <!-- Set SplashScreenActivity as the Launcher Activity -->
+        <activity
+            android:name=".SplashScreenActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".DashboardActivity"
             android:exported="true" />
