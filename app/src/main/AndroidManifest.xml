@@ -8,7 +8,7 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
-        android:label="Add Exercise"
+        android:label="UpTrack"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar.IgnoreDarkMode"
         tools:targetApi="31">

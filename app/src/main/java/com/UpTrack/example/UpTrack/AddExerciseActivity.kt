@@ -45,7 +45,7 @@ class AddExerciseActivity : AppCompatActivity() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar_add_exercise)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
+        supportActionBar?.title = "Add Exercise"
         muscleGroupSpinner = findViewById(R.id.muscleGroupSpinner)
         exerciseSpinner = findViewById(R.id.exerciseNameSpinner)
         buttonAddExercise = findViewById(R.id.buttonAddExercise)
