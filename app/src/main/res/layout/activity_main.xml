@@ -5,7 +5,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
 
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <!-- Custom title layout for centering -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="UpTrack"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="20sp" /> <!-- Change the font size to what you prefer -->
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
     <ImageView
         android:id="@+id/background_logo"
         android:layout_width="wrap_content"
