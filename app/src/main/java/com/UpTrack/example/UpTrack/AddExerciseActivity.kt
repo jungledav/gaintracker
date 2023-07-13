@@ -35,7 +35,7 @@ class AddExerciseActivity : AppCompatActivity() {
     private lateinit var buttonAddExercise: Button
 
     companion object {
-        const val EXTRA_FROM_MAIN_ACTIVITY = "com.UpTrack.example.gaintracker.EXTRA_FROM_MAIN_ACTIVITY"
+        const val EXTRA_FROM_MAIN_ACTIVITY = "com.UpTrack.example.UpTrack.EXTRA_FROM_MAIN_ACTIVITY"
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

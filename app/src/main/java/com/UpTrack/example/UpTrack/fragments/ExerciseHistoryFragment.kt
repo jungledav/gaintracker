@@ -103,6 +103,7 @@ class ExerciseHistoryFragment : Fragment() {
             setsWithExerciseDate?.let {
                 val setsByDate = it.groupBy { it.exerciseDate }
                     .map { (date, sets) -> ExerciseSetsByDate(Date(date), sets.map { ExerciseSet(it.id, it.exercise_id, it.date, it.reps, it.weight) }.sortedByDescending { it.date }) }
+                    .sortedByDescending { it.date } // sort the groups by exercise date in descending order
 
                 val recordSets = calculateRecordSets(setsByDate)
                 exerciseHistoryAdapter.submitList(setsByDate, recordSets)

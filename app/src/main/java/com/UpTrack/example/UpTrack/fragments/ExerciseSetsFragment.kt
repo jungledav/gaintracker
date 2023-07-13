@@ -95,13 +95,10 @@ class ExerciseSetsFragment : Fragment() {
             } else {
                 // Update existing set
                 selectedSetForEdit?.let { set ->
-                    val updatedSet = ExerciseSet(id = set.id, exercise_id = currentExerciseId, reps = reps, weight = weight)
+                    val updatedSet = ExerciseSet(id = set.id, exercise_id = currentExerciseId, reps = reps, weight = weight, date = set.date)
                     lifecycleScope.launch {
                         viewModel.updateExerciseSet(updatedSet)
-
-                        /*viewModel.getSetsForExercise(currentExerciseId).observe(viewLifecycleOwner, { sets ->
-                            setAdapter.setSets(sets)
-                        })*/
+                        // ...
                         // Reset input fields and button text
                         binding.editTextReps.text.clear()
                         binding.editTextWeight.text.clear()
