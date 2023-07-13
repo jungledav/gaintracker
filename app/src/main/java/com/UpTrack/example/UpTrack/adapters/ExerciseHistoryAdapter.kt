@@ -46,7 +46,7 @@ class ExerciseHistoryAdapter(
             val infoIcon = holder.binding.infoIcon
             if (isRecordSet(currentSet)) {
                 // Adding Tooltip
-                val tooltipText = "This is a record set because there is no other set with a greater or equal weight and reps."
+                val tooltipText = "Record set: unmatched in weight and reps."
                 TooltipCompat.setTooltipText(holder.binding.root, tooltipText)
                 infoIcon.visibility = View.VISIBLE
                 infoIcon.setOnClickListener { v ->
