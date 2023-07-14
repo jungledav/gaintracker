@@ -26,15 +26,16 @@
             android:layout_height="wrap_content"
             android:textSize="16sp" />
 
+
         <TextView
-            android:id="@+id/textViewReps"
+            android:id="@+id/textViewWeight"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/textViewWeight"
+            android:id="@+id/textViewReps"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
