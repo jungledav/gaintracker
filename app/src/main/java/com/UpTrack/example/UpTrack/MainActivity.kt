@@ -1,5 +1,6 @@
 package com.UpTrack.example.UpTrack
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -200,17 +201,24 @@ class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExerc
                 val exercise = adapter.getExerciseAt(position)
 
                 if (exercise != null) {
-                    viewModel.deleteExercise(exercise)
-                    adapter.notifyItemRemoved(position)
-                    Snackbar.make(recyclerView, "Exercise deleted", Snackbar.LENGTH_LONG)
-                        .setAction("Undo") {
-                            undoDeleteExercise(exercise)
-                        }.show()
+                    AlertDialog.Builder(this@MainActivity)
+                        .setTitle("Delete Exercise")
+                        .setMessage("Warning: A deleted exercise can not be recovered. Are you sure you want to delete this exercise?")
+                        .setPositiveButton("Yes") { dialog, which ->
+                            viewModel.deleteExercise(exercise)
+                            adapter.notifyItemRemoved(position)
+                            Snackbar.make(recyclerView, "Exercise deleted", Snackbar.LENGTH_LONG).show()
+                        }
+                        .setNegativeButton("No") { dialog, which ->
+                            adapter.notifyItemChanged(position)
+                        }
+                        .show()
                 } else {
                     adapter.notifyItemChanged(position) // In case it's a DividerItem, we reset the swipe
                 }
             }
         })
+
 
         itemTouchHelper.attachToRecyclerView(recyclerView)
         adapter.setOnItemClickListener(object : ExerciseAdapter.OnItemClickListener {
