@@ -1,5 +1,6 @@
 package com.UpTrack.example.UpTrack.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.UpTrack.example.UpTrack.data.models.Exercise
 import com.UpTrack.example.UpTrack.data.models.ExerciseGroup
@@ -14,6 +15,7 @@ import java.util.Date
 import java.util.Locale
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 
 class MainViewModel(private val repository: MainRepository) : ViewModel() {
 
@@ -21,7 +23,15 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
         repository.viewModelScope = viewModelScope
     }
     fun getSetsForExerciseFlow(exerciseId: Long): Flow<List<ExerciseSet>> {
+        Log.d("MainViewModel", "getSetsForExerciseFlow called with ID: $exerciseId")
+
         return repository.getSetsForExercise(exerciseId).map { it.reversed() }
+            .onEach { sets ->
+                Log.d("MainViewModel", "Fetched ${sets.size} sets for exercise: $exerciseId")
+            }
+    }
+    fun getSetsForExerciseLiveData(exerciseId: Long): LiveData<List<ExerciseSet>> {
+        return getSetsForExerciseFlow(exerciseId).asLiveData()
     }
 
     fun deleteExercise(exercise: Exercise) {

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.UpTrack.example.UpTrack.adapters.ExerciseAdapter
@@ -18,8 +19,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import java.util.*
 import androidx.lifecycle.Observer
+import androidx.lifecycle.asLiveData
+import androidx.recyclerview.widget.DefaultItemAnimator
 import com.UpTrack.example.UpTrack.viewmodels.ExerciseDetailsActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 
@@ -32,6 +37,7 @@ interface onAddAnotherExerciseClickListener {
 }
 
 class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExercisesTodayClickListener {
+    private lateinit var recyclerView: RecyclerView
 
     private lateinit var adapter: ExerciseAdapter
     private val viewModel: MainViewModel by viewModels { MainViewModelFactory(appContainer.mainRepository) }
@@ -107,8 +113,20 @@ class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExerc
         viewModel.allExercisesWithGroupNames.observe(this) { exercisesWithGroupNames ->
             val items = generateExerciseListItems(exercisesWithGroupNames)
             adapter.setItems(items)
+            for (item in items) {
+                if (item is ExerciseListItem.ExerciseItem) {
+                    viewModel.getSetsForExerciseLiveData(item.exercise.id.toLong()).observe(this, { sets ->
+                        val index = items.indexOf(item)
+                        val viewHolder = recyclerView.findViewHolderForAdapterPosition(index)
+                        if (viewHolder is ExerciseAdapter.ExerciseViewHolder) {
+                            viewHolder.updateSetsCount(sets.size)
+                        }
+                    })
+                }
+            }
         }
     }
+
 
     override fun onResume() {
         super.onResume()
@@ -164,18 +182,19 @@ class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExerc
 
         val recyclerView: RecyclerView = findViewById(R.id.recyclerViewExercises)
         previousDate = null
-        adapter = ExerciseAdapter({ exercise ->
-            lifecycleScope.launch {
-                viewModel.getSetsForExerciseFlow(exercise.id.toLong())
-                    .collect { sets ->
-                        val position = adapter.indexOfExercise(exercise)
-                        val viewHolder = recyclerView.findViewHolderForAdapterPosition(position)
-                        if (viewHolder is ExerciseAdapter.ExerciseViewHolder) {
-                            viewHolder.updateSetsCount(sets.size)
-                        }
-                    }
-            }
-        }, this)
+        adapter = ExerciseAdapter(this)
+
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.setHasFixedSize(true)
+        // assuming you have a swipe handler set up for your RecyclerView
+        recyclerView.itemAnimator = DefaultItemAnimator()
+
+        refreshExercises()
+
+
+
+
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
@@ -232,16 +251,7 @@ class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExerc
 
     }
 
-    private fun undoDeleteExercise(exercise: Exercise) {
-        viewModel.getExerciseGroupName(exercise.exerciseGroupId.toInt())
-            .observe(this, { exerciseName ->
-                if (exerciseName != null) {
-                    lifecycleScope.launch {
-                        viewModel.insertExercise(exerciseName)
-                    }
-                }
-            })
-    }
+
 
    fun openAddExerciseActivity() {
         val intent = Intent(this, AddExerciseActivity::class.java)

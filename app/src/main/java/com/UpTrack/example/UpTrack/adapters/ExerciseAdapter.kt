@@ -14,7 +14,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class ExerciseAdapter(
-    private val onFetchSets: (exercise: Exercise) -> Unit,
     private val context: MainActivity
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -22,7 +21,7 @@ class ExerciseAdapter(
 
     inner class ExerciseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textViewExerciseName: TextView = itemView.findViewById(R.id.textViewExerciseName)
-        private val textViewSetsCount: TextView = itemView.findViewById(R.id.textViewSetsCount)
+        val textViewSetsCount: TextView = itemView.findViewById(R.id.textViewSetsCount)
 
         init {
             itemView.setOnClickListener {
@@ -90,16 +89,12 @@ class ExerciseAdapter(
             is ExerciseViewHolder -> {
                 val exerciseItem = currentItem as ExerciseListItem.ExerciseItem
                 holder.textViewExerciseName.text = exerciseItem.exerciseGroupName
-                onFetchSets(exerciseItem.exercise)
             }
             is DividerViewHolder -> {
                 val dividerItem = currentItem as ExerciseListItem.DividerItem
                 holder.textViewDate.text = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(dividerItem.date)
             }
-            is NoExercisesTodayViewHolder -> {
-                // Nothing to bind
-            }
-            is AddAnotherExerciseViewHolder -> {
+            is NoExercisesTodayViewHolder, is AddAnotherExerciseViewHolder -> {
                 // Nothing to bind
             }
         }
@@ -111,13 +106,9 @@ class ExerciseAdapter(
         return when (items[position]) {
             is ExerciseListItem.ExerciseItem -> VIEW_TYPE_EXERCISE
             is ExerciseListItem.DividerItem -> VIEW_TYPE_DIVIDER
-            ExerciseListItem.NoExercisesTodayItem -> VIEW_TYPE_NO_EXERCISES_TODAY
-            ExerciseListItem.AddAnotherExerciseItem -> VIEW_TYPE_ADD_ANOTHER_EXERCISE
+            is ExerciseListItem.NoExercisesTodayItem -> VIEW_TYPE_NO_EXERCISES_TODAY
+            is ExerciseListItem.AddAnotherExerciseItem -> VIEW_TYPE_ADD_ANOTHER_EXERCISE
         }
-    }
-
-    fun indexOfExercise(exercise: Exercise): Int {
-        return items.indexOfFirst { it is ExerciseListItem.ExerciseItem && it.exercise == exercise }
     }
 
     fun setItems(items: List<ExerciseListItem>) {
@@ -130,10 +121,10 @@ class ExerciseAdapter(
     }
 
     private var listener: OnItemClickListener? = null
+
     fun setOnItemClickListener(listener: OnItemClickListener) {
         this.listener = listener
     }
-
     fun getExerciseAt(position: Int): Exercise? {
         val item = items[position]
         return if (item is ExerciseListItem.ExerciseItem) {
@@ -142,7 +133,6 @@ class ExerciseAdapter(
             null
         }
     }
-
     companion object {
         private const val VIEW_TYPE_EXERCISE = 1
         private const val VIEW_TYPE_DIVIDER = 2
