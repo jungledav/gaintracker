@@ -31,8 +31,6 @@
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop">
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
         </activity>
         <activity android:name=".SettingsActivity" />
         <activity
