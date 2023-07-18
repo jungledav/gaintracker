@@ -28,7 +28,6 @@
             android:padding="16dp">
 
             <TextView
-                android:id="@+id/tv_max_weight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Max Weight Lifted"
@@ -83,7 +82,6 @@
             android:padding="16dp">
 
             <TextView
-                android:id="@+id/tv_max_reps"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Max Reps in One Set"
@@ -147,7 +145,6 @@
 
 
             <TextView
-                android:id="@+id/tv_one_max_rep"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -207,7 +204,6 @@
 
 
             <TextView
-                android:id="@+id/tv_total_reps"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Max Reps in Workout"
@@ -270,7 +266,6 @@
             android:padding="16dp">
 
             <TextView
-                android:id="@+id/tv_exercise_volume"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Max Workout Volume"
@@ -329,7 +324,6 @@
             android:padding="16dp">
 
             <TextView
-                android:id="@+id/tv_max_set_volume"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Max Set Volume"

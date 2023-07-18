@@ -11,6 +11,7 @@
         android:label="UpTrack"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar.IgnoreDarkMode"
+        android:hasFragileUserData="true"
         tools:targetApi="31">
         <!-- Set SplashScreenActivity as the Launcher Activity -->
         <activity

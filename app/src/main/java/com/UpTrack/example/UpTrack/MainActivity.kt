@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.UpTrack.example.UpTrack.adapters.ExerciseAdapter
@@ -18,13 +17,9 @@ import kotlinx.coroutines.launch
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import java.util.*
-import androidx.lifecycle.Observer
-import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.DefaultItemAnimator
 import com.UpTrack.example.UpTrack.viewmodels.ExerciseDetailsActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 
 
@@ -47,8 +42,6 @@ class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExerc
 
     companion object {
         private const val ADD_EXERCISE_REQUEST_CODE = 1
-        const val EXTRA_EXERCISE_ID = "extra_exercise_id"
-        const val EXTRA_EXERCISE_NAME = "extra_exercise_name"
     }
 
     override fun onNoExercisesTodayClick() {
@@ -191,7 +184,6 @@ class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExerc
         bottomNavigationView.visibility = View.GONE
 
         recyclerView = findViewById<RecyclerView>(R.id.recyclerViewExercises)  // add this line to initialize recyclerView
-
         previousDate = null
         adapter = ExerciseAdapter(this)
 

@@ -6,7 +6,6 @@
     android:padding="16dp">
 
     <TextView
-        android:id="@+id/textViewNoExercisesToday"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Ready for a workout?"
@@ -16,7 +15,6 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
     <TextView
-        android:id="@+id/textViewPlus"
         android:layout_width="120dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="25dp"
