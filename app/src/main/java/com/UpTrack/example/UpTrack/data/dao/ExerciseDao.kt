@@ -289,6 +289,8 @@ LEFT JOIN
     exercise_sets ON exercises.id = exercise_sets.exercise_id
 GROUP BY 
     exercises.id
+    ORDER BY 
+    exercises.date DESC
 """)
     fun getAllExerciseData(): Flow<List<ExerciseData>>
 

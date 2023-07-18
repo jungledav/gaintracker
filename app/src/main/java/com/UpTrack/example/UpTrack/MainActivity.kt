@@ -89,10 +89,9 @@ class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExerc
                 )
             )
 
-
-
             previousDate = currentDate
         }
+
 
         if (exerciseData.isEmpty() || !isSameDay(Date(), Date(exerciseData[0].exerciseDate))) {
             items.add(0, ExerciseListItem.NoExercisesTodayItem)
