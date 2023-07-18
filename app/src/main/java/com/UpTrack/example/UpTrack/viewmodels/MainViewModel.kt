@@ -36,10 +36,6 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
             }
     }
 
-    fun getSetsForExerciseLiveData(exerciseId: Long): LiveData<List<ExerciseSet>> {
-        return getSetsForExerciseFlow(exerciseId).asLiveData()
-    }
-
     fun deleteExercise(exercise: Exercise) {
         viewModelScope.launch {
             repository.deleteExercise(exercise)
@@ -84,20 +80,6 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
         return repository.getExerciseGroupNameById(exerciseGroupId)
     }
 
-    val allExercisesWithGroupNames: LiveData<List<ExerciseWithGroupName>> =
-        repository.getAllExercisesWithGroupNames()
-
-   /* fun getSetsForExercise(exerciseId: Long): LiveData<List<ExerciseSet>> {
-        return liveData {
-            val sets = repository.getSetsForExercise(exerciseId)
-            emit(sets)
-        }.distinctUntilChanged()
-    }*/
-
-    fun getMaxWeightForExercise(exerciseId: Long): LiveData<Float> {
-        return repository.getMaxWeightForExercise(exerciseId)
-    }
-
     fun getMaxWeightForExerciseType(exerciseTypeId: Long): LiveData<Float> {
         return repository.getMaxWeightForExerciseType(exerciseTypeId)
     }
@@ -117,13 +99,6 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
 
     suspend fun countTotalWeight() = repository.countTotalWeight()
 
-    fun getMaxRepForExercise(exerciseId: Long): LiveData<Int> {
-        return repository.getMaxRepForExercise(exerciseId)
-    }
-
-    fun getTotalRepsForExercise(exerciseId: Long): LiveData<Int> {
-        return repository.getTotalRepsForExercise(exerciseId)
-    }
 
     fun getExerciseVolumeForExercise(exerciseId: Long): LiveData<Double> {
         return repository.getExerciseVolumeForExercise(exerciseId)
@@ -132,36 +107,37 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
     fun getMaxSetVolumeForExercise(exerciseId: Long): LiveData<Double> {
         return repository.getMaxSetVolumeForExercise(exerciseId)
     }
+    private fun formatTimestamp(timestamp: Long?): String {
+        if (timestamp != null) {
+            val date = Date(timestamp)
+            val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+            val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())
 
+            val day = dayFormat.format(date).toInt()
+            val daySuffix = getDayOfMonthSuffix(day)
+            val month = monthFormat.format(date)
+            val year = SimpleDateFormat("yyyy", Locale.getDefault()).format(date)
+
+            return "$month $day$daySuffix, $year"
+        } else {
+            // Handle null timestamp here.
+            val date = Date()
+            val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+            val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())
+
+            val day = dayFormat.format(date).toInt()
+            val daySuffix = getDayOfMonthSuffix(day)
+            val month = monthFormat.format(date)
+            val year = SimpleDateFormat("yyyy", Locale.getDefault()).format(date)
+
+            return "$month $day$daySuffix, $year"
+        }
+    }
 
     fun getMaxWeightDateForExercise(exerciseId: Long): LiveData<String> {
         val timestampLiveData: LiveData<Long?> = repository.getMaxWeightDateForExercise(exerciseId)
         return timestampLiveData.map { timestamp: Long? ->
-            if (timestamp != null) {
-                val date = Date(timestamp)
-                val dayFormat = SimpleDateFormat("d", Locale.getDefault())
-                val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())
-
-                val day = dayFormat.format(date).toInt()
-                val daySuffix = getDayOfMonthSuffix(day)
-                val month = monthFormat.format(date)
-                val year = SimpleDateFormat("yyyy", Locale.getDefault()).format(date)
-
-                "$month $day$daySuffix, $year"
-            } else {
-                // Handle null timestamp here.
-                // You could, for example, return the current date.
-                val date = Date()
-                val dayFormat = SimpleDateFormat("d", Locale.getDefault())
-                val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())
-
-                val day = dayFormat.format(date).toInt()
-                val daySuffix = getDayOfMonthSuffix(day)
-                val month = monthFormat.format(date)
-                val year = SimpleDateFormat("yyyy", Locale.getDefault()).format(date)
-
-                "$month $day$daySuffix, $year"
-            }
+            formatTimestamp(timestamp)
         }
     }
     suspend fun getExerciseGroupByName(name: String): ExerciseGroup? {
@@ -174,22 +150,7 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
     fun getMaxRepsDateForExerciseGroup(exerciseId: Long): LiveData<String> {
         val timestampLiveData = repository.getMaxRepsDateForExerciseGroup(exerciseId)
         return timestampLiveData.map { timestamp ->
-            if (timestamp != null) {
-                val date = Date(timestamp)
-                val dayFormat = SimpleDateFormat("d", Locale.getDefault())
-                val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())
-
-                val day = dayFormat.format(date).toInt()
-                val daySuffix = getDayOfMonthSuffix(day)
-                val month = monthFormat.format(date)
-                val year = SimpleDateFormat("yyyy", Locale.getDefault()).format(date)
-
-                "$month $day$daySuffix, $year"
-            } else {
-                // Handle null timestamp here.
-                // You could, for example, return a fallback value.
-                "No date available"
-            }
+            formatTimestamp(timestamp)
         }
     }
 
