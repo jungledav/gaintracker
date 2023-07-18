@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.UpTrack.example.UpTrack.data.dao.ExerciseDao
 import com.UpTrack.example.UpTrack.data.dao.ExerciseGroupDao
 import com.UpTrack.example.UpTrack.data.dao.ExerciseSetDao
@@ -14,6 +15,7 @@ import com.UpTrack.example.UpTrack.data.models.ExerciseSet
 import com.UpTrack.example.UpTrack.data.models.ExerciseHistory
 
 @Database(entities = [Exercise::class, ExerciseSet::class, ExerciseHistory::class, ExerciseGroup::class], version = 3, exportSchema = false)
+@TypeConverters(Converters::class)
 abstract class GainTrackerDatabase : RoomDatabase() {
 
     abstract fun exerciseDao(): ExerciseDao

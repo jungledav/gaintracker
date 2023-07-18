@@ -5,13 +5,16 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.UpTrack.example.UpTrack.data.models.Exercise
+import com.UpTrack.example.UpTrack.data.models.ExerciseData
 import com.UpTrack.example.UpTrack.data.models.ExerciseMaxReps
 import com.UpTrack.example.UpTrack.data.models.ExerciseSet
 import com.UpTrack.example.UpTrack.data.models.ExerciseSetVolume
 import com.UpTrack.example.UpTrack.data.models.MaxOneRepForExercise
 import com.UpTrack.example.UpTrack.fragments.ExerciseHistoryFragment
+import kotlinx.coroutines.flow.Flow
 
 
 
@@ -270,6 +273,26 @@ interface ExerciseDao {
 """
     )
     fun getMaxExerciseVolumeForGroup(exerciseId: Long): LiveData<ExerciseSetVolume?>
+    @Transaction
+    @Query("""
+SELECT 
+    exercises.id AS exerciseId, 
+    exercises.exerciseGroupId, 
+    exercises.date AS exerciseDate, 
+    exercise_groups.name AS groupName,
+    COUNT(exercise_sets.id) AS setsCount
+FROM 
+    exercises 
+JOIN 
+    exercise_groups ON exercise_groups.id = exercises.exerciseGroupId 
+LEFT JOIN 
+    exercise_sets ON exercises.id = exercise_sets.exercise_id
+GROUP BY 
+    exercises.id
+""")
+    fun getAllExerciseData(): Flow<List<ExerciseData>>
+
 
 }
+
 

@@ -27,10 +27,12 @@ class ExerciseAdapter(
             itemView.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    listener?.onItemClick((items[position] as ExerciseListItem.ExerciseItem).exercise)
+                    val exerciseItem = items[position] as ExerciseListItem.ExerciseItem
+                    listener?.onItemClick(Exercise(exerciseItem.exerciseId.toInt(), exerciseItem.exerciseGroupId, exerciseItem.exerciseDate))
                 }
             }
         }
+
 
         fun updateSetsCount(setsCount: Int) {
             val text = if (setsCount == 1) "set" else "sets"
@@ -89,6 +91,7 @@ class ExerciseAdapter(
             is ExerciseViewHolder -> {
                 val exerciseItem = currentItem as ExerciseListItem.ExerciseItem
                 holder.textViewExerciseName.text = exerciseItem.exerciseGroupName
+                holder.updateSetsCount(exerciseItem.totalSets)
             }
             is DividerViewHolder -> {
                 val dividerItem = currentItem as ExerciseListItem.DividerItem
@@ -99,6 +102,7 @@ class ExerciseAdapter(
             }
         }
     }
+
 
     override fun getItemCount() = items.size
 
@@ -128,11 +132,12 @@ class ExerciseAdapter(
     fun getExerciseAt(position: Int): Exercise? {
         val item = items[position]
         return if (item is ExerciseListItem.ExerciseItem) {
-            item.exercise
+            Exercise(item.exerciseId.toInt(), item.exerciseGroupId, item.exerciseDate)
         } else {
             null
         }
     }
+
     companion object {
         private const val VIEW_TYPE_EXERCISE = 1
         private const val VIEW_TYPE_DIVIDER = 2

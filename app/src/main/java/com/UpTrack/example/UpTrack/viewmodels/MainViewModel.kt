@@ -3,6 +3,7 @@ package com.UpTrack.example.UpTrack.viewmodels
 import android.util.Log
 import androidx.lifecycle.*
 import com.UpTrack.example.UpTrack.data.models.Exercise
+import com.UpTrack.example.UpTrack.data.models.ExerciseData
 import com.UpTrack.example.UpTrack.data.models.ExerciseGroup
 import com.UpTrack.example.UpTrack.data.models.ExerciseMaxReps
 import com.UpTrack.example.UpTrack.data.models.ExerciseSet
@@ -22,6 +23,10 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
     init {
         repository.viewModelScope = viewModelScope
     }
+
+
+    val allExerciseData: LiveData<List<ExerciseData>> = repository.getAllExerciseData().asLiveData()
+
     fun getSetsForExerciseFlow(exerciseId: Long): Flow<List<ExerciseSet>> {
         Log.d("MainViewModel", "getSetsForExerciseFlow called with ID: $exerciseId")
 
@@ -30,6 +35,7 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
                 Log.d("MainViewModel", "Fetched ${sets.size} sets for exercise: $exerciseId")
             }
     }
+
     fun getSetsForExerciseLiveData(exerciseId: Long): LiveData<List<ExerciseSet>> {
         return getSetsForExerciseFlow(exerciseId).asLiveData()
     }

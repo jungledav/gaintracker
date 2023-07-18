@@ -58,14 +58,14 @@ class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExerc
    override fun onAddAnotherExerciseClick() {
         openAddExerciseActivity()
     }
-    private fun generateExerciseListItems(exercisesWithGroupNames: List<ExerciseWithGroupName>): List<ExerciseListItem> {
+    private fun generateExerciseListItems(exerciseData: List<ExerciseData>): List<ExerciseListItem> {
         val items = mutableListOf<ExerciseListItem>()
         var previousDate: Date? = null
         var currentDate: Date
         var isExerciseForCurrentDayAdded = false
 
-        exercisesWithGroupNames.forEach { exerciseWithGroupName ->
-            currentDate = Date(exerciseWithGroupName.exercise.date)
+        exerciseData.forEach { data ->
+            currentDate = Date(data.exerciseDate)
 
             if (previousDate?.let { isSameDay(it, currentDate) } != true) {
                 items.add(ExerciseListItem.DividerItem(currentDate))
@@ -81,21 +81,30 @@ class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExerc
 
             items.add(
                 ExerciseListItem.ExerciseItem(
-                    exercise = exerciseWithGroupName.exercise,
-                    exerciseGroupName = exerciseWithGroupName.groupName
+                    exerciseId = data.exerciseId,
+                    exerciseGroupId = data.exerciseGroupId,
+                    exerciseDate = data.exerciseDate,
+                    exerciseGroupName = data.groupName,
+                    totalSets = data.setsCount  // totalSets is the calculated number of sets
                 )
             )
+
+
 
             previousDate = currentDate
         }
 
-        if (exercisesWithGroupNames.isEmpty() || !isSameDay(Date(), Date(exercisesWithGroupNames[0].exercise.date))) {
-         //   items.add(0, ExerciseListItem.DividerItem(Date()))
+        if (exerciseData.isEmpty() || !isSameDay(Date(), Date(exerciseData[0].exerciseDate))) {
             items.add(0, ExerciseListItem.NoExercisesTodayItem)
         }
 
         return items
     }
+
+
+
+
+
 
     private fun isSameDay(date1: Date, date2: Date): Boolean {
         val calendar1 = Calendar.getInstance()
@@ -109,21 +118,23 @@ class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExerc
 
     private var previousDate: Date? = null
 
+    private var isRefreshingExercises = false
+
     private fun refreshExercises() {
-        viewModel.allExercisesWithGroupNames.observe(this) { exercisesWithGroupNames ->
-            val items = generateExerciseListItems(exercisesWithGroupNames)
+        if (isRefreshingExercises) {
+            return
+        }
+
+        isRefreshingExercises = true
+
+        viewModel.allExerciseData.observe(this) { exerciseData ->
+            Log.d("MainActivity", "Start updating exercises")
+
+            val items = generateExerciseListItems(exerciseData)
             adapter.setItems(items)
-            for (item in items) {
-                if (item is ExerciseListItem.ExerciseItem) {
-                    viewModel.getSetsForExerciseLiveData(item.exercise.id.toLong()).observe(this, { sets ->
-                        val index = items.indexOf(item)
-                        val viewHolder = recyclerView.findViewHolderForAdapterPosition(index)
-                        if (viewHolder is ExerciseAdapter.ExerciseViewHolder) {
-                            viewHolder.updateSetsCount(sets.size)
-                        }
-                    })
-                }
-            }
+
+            Log.d("MainActivity", "End updating exercises")
+            isRefreshingExercises = false
         }
     }
 
@@ -180,7 +191,8 @@ class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExerc
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
         bottomNavigationView.visibility = View.GONE
 
-        val recyclerView: RecyclerView = findViewById(R.id.recyclerViewExercises)
+        recyclerView = findViewById<RecyclerView>(R.id.recyclerViewExercises)  // add this line to initialize recyclerView
+
         previousDate = null
         adapter = ExerciseAdapter(this)
 
@@ -199,8 +211,8 @@ class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExerc
         recyclerView.adapter = adapter
 
 
-        viewModel.allExercisesWithGroupNames.observe(this) { exercisesWithGroupNames ->
-            val items = generateExerciseListItems(exercisesWithGroupNames)
+        viewModel.allExerciseData.observe(this) { exerciseData ->
+            val items = generateExerciseListItems(exerciseData)
             adapter.setItems(items)
         }
 

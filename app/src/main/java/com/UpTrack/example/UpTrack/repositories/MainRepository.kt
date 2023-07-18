@@ -218,4 +218,7 @@ class MainRepository(
     fun getMaxExerciseVolumeForGroup(exerciseId: Long): LiveData<ExerciseSetVolume?> {
         return exerciseDao.getMaxExerciseVolumeForGroup(exerciseId)
     }
+    fun getAllExerciseData(): Flow<List<ExerciseData>> {
+        return exerciseDao.getAllExerciseData()
+    }
 }
