@@ -247,6 +247,12 @@ class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExerc
                     adapter.notifyItemChanged(position) // In case it's a DividerItem, we reset the swipe
                 }
             }
+            override fun getSwipeDirs(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
+                if (viewHolder is ExerciseAdapter.DividerViewHolder) {
+                    return 0
+                }
+                return super.getSwipeDirs(recyclerView, viewHolder)
+            }
         })
 
 
