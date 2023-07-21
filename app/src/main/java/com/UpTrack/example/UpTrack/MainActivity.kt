@@ -1,10 +1,12 @@
 package com.UpTrack.example.UpTrack
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -18,6 +20,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import java.util.*
 import androidx.recyclerview.widget.DefaultItemAnimator
+import com.UpTrack.example.UpTrack.fragments.SettingsDialogFragment
 import com.UpTrack.example.UpTrack.viewmodels.ExerciseDetailsActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -175,11 +178,23 @@ class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExerc
     }
 
      */
-
+    private fun getSavedUnit(): String {
+        val sharedPref = getPreferences(Context.MODE_PRIVATE)
+        val defaultUnit = "kg"
+        return sharedPref.getString("unit_key", defaultUnit) ?: defaultUnit
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         layoutInflater.inflate(R.layout.activity_main, findViewById(R.id.activity_content))
+
+        // Setup settings icon click listener
+        val settingsIcon = findViewById<ImageView>(R.id.settings_icon)
+        settingsIcon.setOnClickListener {
+            val dialog = SettingsDialogFragment()
+            dialog.show(supportFragmentManager, "SettingsDialogFragment")
+        }
+
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
         bottomNavigationView.visibility = View.GONE
 
@@ -262,6 +277,7 @@ class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExerc
                 }
             }
         })
+        val unit = getSavedUnit()
 
     }
 

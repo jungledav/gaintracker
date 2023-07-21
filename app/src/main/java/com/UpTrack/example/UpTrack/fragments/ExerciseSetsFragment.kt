@@ -1,6 +1,7 @@
 package com.UpTrack.example.UpTrack.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,7 +42,7 @@ class ExerciseSetsFragment : Fragment() {
         val currentExerciseId = arguments?.getLong("exerciseId") ?: throw IllegalStateException("No exerciseId provided")
         val application = requireActivity().application as GainTrackerApplication
         val repository = application.appContainer.mainRepository
-
+        val savedUnit = viewModel.getSavedUnit()
         setAdapter = SetAdapter(object : SetAdapter.SetInteractionListener {
 
             override fun onSetEditClick(set: ExerciseSet) {
@@ -60,7 +61,7 @@ class ExerciseSetsFragment : Fragment() {
                    // setAdapter.setSets(updatedSets)
                 }
             }
-        })
+        }, false, savedUnit)
 
         binding.recyclerViewSets.adapter = setAdapter
         binding.recyclerViewSets.layoutManager = LinearLayoutManager(requireContext())
@@ -72,6 +73,9 @@ class ExerciseSetsFragment : Fragment() {
         }
 
         binding.buttonAddSet.setOnClickListener { onAddSetButtonClick() }
+// Retrieve the saved unit and update the EditText's hint
+        binding.editTextWeight.hint = "Lifted weight in $savedUnit:"
+        binding.editTextReps.hint = "Number of repetitions:"
 
     }
 
@@ -100,8 +104,8 @@ class ExerciseSetsFragment : Fragment() {
                         viewModel.updateExerciseSet(updatedSet)
                         // ...
                         // Reset input fields and button text
-                        binding.editTextReps.text.clear()
-                        binding.editTextWeight.text.clear()
+                        binding.editTextReps.setText("")
+                        binding.editTextWeight.setText("")
                         binding.buttonAddSet.text = "Add Set"
                         selectedSetForEdit = null
                     }

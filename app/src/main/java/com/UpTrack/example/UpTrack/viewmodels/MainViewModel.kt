@@ -1,5 +1,6 @@
 package com.UpTrack.example.UpTrack.viewmodels
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.*
 import com.UpTrack.example.UpTrack.data.models.Exercise
@@ -308,6 +309,9 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
                 _groupMaxOneRepDate.value = null
             }
         }
+    }
+    fun getSavedUnit(): String {
+        return repository.getSavedUnit()
     }
 
 }

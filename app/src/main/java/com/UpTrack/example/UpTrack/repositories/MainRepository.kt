@@ -1,5 +1,6 @@
 package com.UpTrack.example.UpTrack.repositories
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,12 +14,12 @@ import androidx.lifecycle.switchMap
 import kotlinx.coroutines.flow.Flow
 
 
-
-
 class MainRepository(
     private val exerciseDao: ExerciseDao,
     private val exerciseSetDao: ExerciseSetDao,
-    private val exerciseGroupDao: ExerciseGroupDao
+    private val exerciseGroupDao: ExerciseGroupDao,
+    private val context: Context
+
 ) {
     lateinit var viewModelScope: CoroutineScope
 
@@ -220,5 +221,10 @@ class MainRepository(
     }
     fun getAllExerciseData(): Flow<List<ExerciseData>> {
         return exerciseDao.getAllExerciseData()
+    }
+    fun getSavedUnit(): String {
+        val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val defaultUnit = "kg"
+        return sharedPref.getString("unit_key", defaultUnit) ?: defaultUnit
     }
 }

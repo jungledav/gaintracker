@@ -7,8 +7,9 @@ import com.UpTrack.example.UpTrack.data.models.ExerciseSet
 import com.UpTrack.example.UpTrack.databinding.ItemSetBinding
 
 class SetAdapter(
-    private val listener: SetInteractionListener,
-    private val isHistoryView: Boolean = false
+private val listener: SetInteractionListener,
+private val isHistoryView: Boolean = false,
+private val savedUnit: String
 ) : RecyclerView.Adapter<SetAdapter.SetViewHolder>() {
 
     private val sets = mutableListOf<ExerciseSet>()
@@ -28,7 +29,7 @@ class SetAdapter(
         val currentSet = sets[position]
         holder.binding.textViewSetNumber.text = "Set ${sets.size - position}"
         holder.binding.textViewReps.text = "${currentSet.reps} reps"
-        holder.binding.textViewWeight.text = "${currentSet.weight} kg"
+        holder.binding.textViewWeight.text = "${currentSet.weight} $savedUnit"
 
         holder.binding.imageViewDeleteSet.setOnClickListener {
             listener.onSetDeleteClick(currentSet)

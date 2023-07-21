@@ -26,6 +26,7 @@ class ExerciseResultsFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
         val view = inflater.inflate(R.layout.fragment_exercise_results, container, false)
         val exerciseId = arguments?.getLong("exerciseId")
             ?: throw IllegalStateException("No exerciseId provided")
@@ -43,6 +44,8 @@ class ExerciseResultsFragment : Fragment() {
         return view
     }
     private fun updateUI(view: View, exerciseSetExists: Boolean, exerciseId: Long) {
+        val savedUnit = viewModel.getSavedUnit()
+
         if (!exerciseSetExists) {
             Log.d("ExerciseResultsFragment", "Entered if block when exerciseSetExists is $exerciseSetExists")
 
@@ -88,7 +91,7 @@ class ExerciseResultsFragment : Fragment() {
 
             viewModel.getMaxWeightForExerciseType(exerciseId)
                 .observe(viewLifecycleOwner, { maxWeight ->
-                    tvMaxWeightValue.text = "$maxWeight kg"
+                    tvMaxWeightValue.text = "$maxWeight $savedUnit"
                 })
 
             viewModel.getMaxWeightDateForExercise(exerciseId)
@@ -98,7 +101,7 @@ class ExerciseResultsFragment : Fragment() {
 
             viewModel.getTodayMaxWeightForExercise(exerciseId).observe(viewLifecycleOwner, { maxWeightToday ->
                 maxWeightToday?.let{
-                    tvMaxWeightToday.text = "This workout: $maxWeightToday kg"
+                    tvMaxWeightToday.text = "This workout: $maxWeightToday $savedUnit"
                 }
                     ?: run {
                         tvMaxWeightToday.text = "This workout: N/A"
@@ -112,7 +115,7 @@ class ExerciseResultsFragment : Fragment() {
             viewModel.groupMaxOneRep.observe(viewLifecycleOwner, { oneGroupRepMax ->
                 oneGroupRepMax?.let {
                     val formattedOnegroupRepMax = String.format("%.2f", it)
-                    tvOneMaxRep.text = "$formattedOnegroupRepMax kg"
+                    tvOneMaxRep.text = "$formattedOnegroupRepMax $savedUnit"
                 } ?: run {
                     tvOneMaxRep.text = "N/A"
                 }
@@ -132,7 +135,7 @@ class ExerciseResultsFragment : Fragment() {
             viewModel.oneRepMax.observe(viewLifecycleOwner, { oneRepMax ->
                 oneRepMax?.let {
                     val formattedOneRepMax = String.format("%.2f", it)
-                    tvOneMaxRepToday.text = "This workout: $formattedOneRepMax kg"
+                    tvOneMaxRepToday.text = "This workout: $formattedOneRepMax $savedUnit"
                 } ?: run {
                     tvOneMaxRepToday.text = "This workout: N/A"
                 }
@@ -167,7 +170,7 @@ class ExerciseResultsFragment : Fragment() {
             viewModel.getExerciseVolumeForExercise(exerciseId)
                 .observe(viewLifecycleOwner, { exerciseVolume ->
                     exerciseVolume?.let{
-                        tvExerciseVolumetoday.text = "This workout: $exerciseVolume kg"
+                        tvExerciseVolumetoday.text = "This workout: $exerciseVolume $savedUnit"
                     }?: run {
                         tvExerciseVolumetoday.text = "This workout: N/A"}
                 })
@@ -176,7 +179,7 @@ class ExerciseResultsFragment : Fragment() {
             viewModel.getMaxExerciseVolumeForGroup(exerciseId)
                 .observe(viewLifecycleOwner, { MaxExerciseVolumeForGroup ->
                     tvMaxExerciseVolumeDate.text = "${MaxExerciseVolumeForGroup.date}"
-                    tvMaxExerciseVolumeTotal.text = "${MaxExerciseVolumeForGroup.max_volume} kg"
+                    tvMaxExerciseVolumeTotal.text = "${MaxExerciseVolumeForGroup.max_volume} $savedUnit"
                 })
 // Values for "Max Set Volume in One Workout" Card
             val tvMaxSetVolumetoday =
@@ -189,13 +192,13 @@ class ExerciseResultsFragment : Fragment() {
             viewModel.getMaxSetVolumeForGroup(exerciseId)
                 .observe(viewLifecycleOwner, { exerciseSetVolume ->
                     tvMaxSetVolumeDate.text = "${exerciseSetVolume.date}"
-                    tvMaxSetVolumeValueTotal.text = "${exerciseSetVolume.max_volume} kg"
+                    tvMaxSetVolumeValueTotal.text = "${exerciseSetVolume.max_volume} $savedUnit"
                 })
 
             viewModel.getMaxSetVolumeForExercise(exerciseId)
                 .observe(viewLifecycleOwner, { maxSetVolume ->
                     maxSetVolume?.let{
-                        tvMaxSetVolumetoday.text = "This workout: $maxSetVolume kg"
+                        tvMaxSetVolumetoday.text = "This workout: $maxSetVolume $savedUnit"
                     }?: run {
                         tvMaxSetVolumetoday.text = "This workout: N/A"
                     }

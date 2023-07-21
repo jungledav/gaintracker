@@ -70,7 +70,9 @@ class ExerciseHistoryFragment : Fragment() {
         val exerciseId = arguments?.getLong(ARG_EXERCISE_GROUP_ID) ?: -1
 
         viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
-        exerciseHistoryAdapter = ExerciseHistoryAdapter()
+        val savedUnit = viewModel.getSavedUnit()
+
+        exerciseHistoryAdapter = ExerciseHistoryAdapter(savedUnit=savedUnit)
         exerciseDao = GainTrackerDatabase.getDatabase(requireContext()).exerciseDao()
 
         binding.recyclerViewExerciseHistory.apply {

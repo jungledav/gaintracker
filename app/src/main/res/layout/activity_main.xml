@@ -25,6 +25,13 @@
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 android:textSize="20sp" /> <!-- Change the font size to what you prefer -->
+            <ImageView
+                android:id="@+id/settings_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:padding="10dp"
+                android:src="@drawable/baseline_settings_24_white" />
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
     <ImageView

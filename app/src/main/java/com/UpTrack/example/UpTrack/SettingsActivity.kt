@@ -35,7 +35,7 @@ class SettingsActivity : AppCompatActivity() {
         val exerciseGroupDao = database.exerciseGroupDao()
         val exerciseDao = database.exerciseDao()
         val exerciseSetDao = database.exerciseSetDao()
-        val repository = MainRepository(exerciseDao, exerciseSetDao,exerciseGroupDao)
+        val repository = MainRepository(exerciseDao, exerciseSetDao, exerciseGroupDao,applicationContext)
         val viewModelFactory = MainViewModelFactory(repository)
         viewModel = ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
 

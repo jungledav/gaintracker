@@ -16,7 +16,9 @@ import java.util.Locale
 
 class ExerciseHistoryAdapter(
     private var exerciseSetsByDate: List<ExerciseHistoryFragment.ExerciseSetsByDate> = emptyList(),
-    private var recordSetIds: Set<Long> = setOf()) :
+    private var recordSetIds: Set<Long> = setOf(),
+    private val savedUnit: String // Receive saved unit here
+) :
     RecyclerView.Adapter<ExerciseHistoryAdapter.ExerciseHistoryViewHolder>() {
 
     inner class ExerciseHistoryViewHolder(val binding: ItemExerciseHistoryBinding) :
@@ -41,7 +43,7 @@ class ExerciseHistoryAdapter(
             val currentSet = sets[reversedPosition]
             holder.binding.textViewSetNumber.text = "Set ${reversedPosition + 1}"
             holder.binding.textViewReps.text = "${currentSet.reps} reps"
-            holder.binding.textViewWeight.text = "${currentSet.weight} kg"
+            holder.binding.textViewWeight.text = "${currentSet.weight} $savedUnit" // Use saved unit here
 
             val infoIcon = holder.binding.infoIcon
             if (isRecordSet(currentSet)) {
