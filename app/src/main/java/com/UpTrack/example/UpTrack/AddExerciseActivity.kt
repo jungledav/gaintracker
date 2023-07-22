@@ -49,7 +49,8 @@ class AddExerciseActivity : AppCompatActivity() {
         muscleGroupSpinner = findViewById(R.id.muscleGroupSpinner)
         exerciseSpinner = findViewById(R.id.exerciseNameSpinner)
         buttonAddExercise = findViewById(R.id.buttonAddExercise)
-
+        // Initially deactivate the buttonAddExercise
+        buttonAddExercise.isEnabled = false
         setupSpinners()
 
         buttonAddExercise.setOnClickListener {
@@ -87,25 +88,42 @@ class AddExerciseActivity : AppCompatActivity() {
     }
 
     private fun setupSpinners() {
+        val muscleGroupList = PredefinedExercises.getMuscleGroupNames().toMutableList()
+        muscleGroupList.add(0, "Please select...")
         val muscleGroupAdapter = ArrayAdapter<String>(
-            this, android.R.layout.simple_spinner_item, PredefinedExercises.getMuscleGroupNames()
+            this, android.R.layout.simple_spinner_item, muscleGroupList
         )
         muscleGroupAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         muscleGroupSpinner.adapter = muscleGroupAdapter
 
+        // Initially deactivate the exerciseSpinner
+        exerciseSpinner.isEnabled = false
+
         muscleGroupSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 val muscleGroupName = muscleGroupSpinner.selectedItem.toString()
-                val exerciseAdapter = ArrayAdapter<String>(
-                    this@AddExerciseActivity, android.R.layout.simple_spinner_item,
-                    PredefinedExercises.getExerciseNamesForMuscleGroup(muscleGroupName)
-                )
-                exerciseAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                exerciseSpinner.adapter = exerciseAdapter
+
+                if(muscleGroupName == "Please select...") {
+                    // If 'Please select' is chosen, deactivate the exerciseSpinner
+                    exerciseSpinner.isEnabled = false
+                    buttonAddExercise.isEnabled = false // Deactivate the buttonAddExercise
+
+                } else {
+                    // If a muscle group is selected, activate the exerciseSpinner and load associated exercises
+                    exerciseSpinner.isEnabled = true
+                    val exerciseList = PredefinedExercises.getExerciseNamesForMuscleGroup(muscleGroupName).toMutableList()
+                    exerciseList.add(0, "Please select...")
+                    val exerciseAdapter = ArrayAdapter<String>(
+                        this@AddExerciseActivity, android.R.layout.simple_spinner_item, exerciseList
+                    )
+                    exerciseAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    exerciseSpinner.adapter = exerciseAdapter
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                // Do nothing
+                buttonAddExercise.isEnabled = false // Deactivate the buttonAddExercise
+
             }
         }
 
@@ -114,11 +132,20 @@ class AddExerciseActivity : AppCompatActivity() {
                 if (exerciseSpinner.selectedItem == "+ Add your own exercise") {
                     showAddCustomExerciseDialog()
                 }
+                // If an exercise is selected and it is not 'Please select...', activate the buttonAddExercise
+                if (exerciseSpinner.selectedItem != "Please select...") {
+                    buttonAddExercise.isEnabled = true
+                } else {
+                    buttonAddExercise.isEnabled = false
+                }
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>) {}
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                buttonAddExercise.isEnabled = false // Deactivate the buttonAddExercise
+            }
         }
     }
+
 
     private fun showAddCustomExerciseDialog() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_custom_exercise, null)
