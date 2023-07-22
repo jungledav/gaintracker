@@ -74,7 +74,7 @@ class ExerciseSetsFragment : Fragment() {
 
         binding.buttonAddSet.setOnClickListener { onAddSetButtonClick() }
 // Retrieve the saved unit and update the EditText's hint
-        binding.editTextWeight.hint = "Lifted weight in $savedUnit:"
+        binding.editTextWeight.hint = "Weight ($savedUnit):"
         binding.editTextReps.hint = "Number of repetitions:"
 
     }
