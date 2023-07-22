@@ -36,7 +36,6 @@ interface onAddAnotherExerciseClickListener {
 
 class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExercisesTodayClickListener {
     private lateinit var recyclerView: RecyclerView
-
     private lateinit var adapter: ExerciseAdapter
     private val viewModel: MainViewModel by viewModels { MainViewModelFactory(appContainer.mainRepository) }
     private val appContainer by lazy {
@@ -194,7 +193,18 @@ class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExerc
             val dialog = SettingsDialogFragment()
             dialog.show(supportFragmentManager, "SettingsDialogFragment")
         }
+        val sharedPref = getPreferences(Context.MODE_PRIVATE)
+        if (sharedPref.getBoolean("first_time", true)) {
+            // Change 'first_time' flag to false
+            with(sharedPref.edit()) {
+                putBoolean("first_time", false)
+                apply()
+            }
 
+            // Launch settings dialog fragment
+            val dialog = SettingsDialogFragment()
+            dialog.show(supportFragmentManager, "SettingsDialogFragment")
+        }
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
         bottomNavigationView.visibility = View.GONE
 
@@ -209,9 +219,6 @@ class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExerc
         recyclerView.itemAnimator = DefaultItemAnimator()
 
         refreshExercises()
-
-
-
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
