@@ -321,9 +321,10 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
     }
 
     fun daysBetween(startDate: Date, endDate: Date): Int {
-        val diffInMillis = endDate.time - startDate.time
+        val diffInMillis = endDate.time + TimeUnit.HOURS.toMillis(12) - startDate.time
         return TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS).toInt()
     }
+
     suspend fun getDaysSinceLastTrained(exerciseGroupId: Long): Int? {
         val lastTrainedTimestamp = repository.getLastTrainedDate(exerciseGroupId)
         return if (lastTrainedTimestamp != null) {

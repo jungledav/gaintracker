@@ -125,8 +125,16 @@ class AddExerciseActivity : AppCompatActivity() {
                             val exerciseGroupId = viewModel.getExerciseGroupIdByName(exerciseName)
                             val daysAgo = if (exerciseGroupId != null) viewModel.getDaysSinceLastTrained(exerciseGroupId) else null
 
+                            val daysAgoLong = daysAgo?.toLong()
+                            val daysAgoString = when (daysAgoLong) {
+                                null -> ""
+                                0L -> "today"
+                                1L -> "yesterday"
+                                else -> "$daysAgo days ago"
+                            }
+
                             val exerciseItem = if (daysAgo != null) {
-                                "$exerciseName ($daysAgo days ago)"
+                                "$exerciseName ($daysAgoString)"
                             } else {
                                 exerciseName
                             }
@@ -149,6 +157,7 @@ class AddExerciseActivity : AppCompatActivity() {
                         exerciseAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                         exerciseSpinner.adapter = exerciseAdapter
                     }
+
 
 
 
