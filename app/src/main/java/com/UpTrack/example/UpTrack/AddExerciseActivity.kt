@@ -60,7 +60,8 @@ class AddExerciseActivity : AppCompatActivity() {
             if (exerciseName.isNotBlank() && exerciseName != "+ Add your own exercise") {
                 lifecycleScope.launch {
                     Log.d("AddExerciseActivity", "Inserting exercise: $exerciseName")
-
+                    val fullExerciseName = exerciseSpinner.selectedItem.toString()
+                    val exerciseName = fullExerciseName.substringBefore(" (").trim()
                     val exerciseId = viewModel.insertExercise(exerciseName)
                     Log.d("AddExerciseActivityy", "Exercise inserted with ID: $exerciseId")
 
