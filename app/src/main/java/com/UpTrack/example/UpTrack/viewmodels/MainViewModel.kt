@@ -1,6 +1,5 @@
 package com.UpTrack.example.UpTrack.viewmodels
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.*
 import com.UpTrack.example.UpTrack.data.models.Exercise
@@ -9,7 +8,6 @@ import com.UpTrack.example.UpTrack.data.models.ExerciseGroup
 import com.UpTrack.example.UpTrack.data.models.ExerciseMaxReps
 import com.UpTrack.example.UpTrack.data.models.ExerciseSet
 import com.UpTrack.example.UpTrack.data.models.ExerciseSetVolume
-import com.UpTrack.example.UpTrack.data.models.ExerciseWithGroupName
 import com.UpTrack.example.UpTrack.repositories.MainRepository
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -18,6 +16,8 @@ import java.util.Locale
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import java.time.LocalDate
+import java.util.concurrent.TimeUnit
 
 class MainViewModel(private val repository: MainRepository) : ViewModel() {
 
@@ -312,6 +312,25 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
     }
     fun getSavedUnit(): String {
         return repository.getSavedUnit()
+    }
+    suspend fun getExerciseGroupIdByName(name: String): Long? {
+        return repository.getExerciseGroupIdByName(name)
+    }
+    fun longToDate(timestamp: Long): Date {
+        return Date(timestamp)
+    }
+
+    fun daysBetween(startDate: Date, endDate: Date): Int {
+        val diffInMillis = endDate.time - startDate.time
+        return TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS).toInt()
+    }
+    suspend fun getDaysSinceLastTrained(exerciseGroupId: Long): Int? {
+        val lastTrainedTimestamp = repository.getLastTrainedDate(exerciseGroupId)
+        return if (lastTrainedTimestamp != null) {
+            daysBetween(longToDate(lastTrainedTimestamp), Date())
+        } else {
+            null
+        }
     }
 
 }

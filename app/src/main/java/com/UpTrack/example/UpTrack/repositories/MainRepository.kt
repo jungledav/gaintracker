@@ -227,4 +227,11 @@ class MainRepository(
         val defaultUnit = "kg"
         return sharedPref.getString("unit_key", defaultUnit) ?: defaultUnit
     }
+    suspend fun getExerciseGroupIdByName(name: String): Long? {
+        return exerciseGroupDao.getExerciseGroupIdByName(name)
+    }
+    suspend fun getLastTrainedDate(exerciseGroupId: Long): Long? {
+        val lastTraining = exerciseDao.getLastTraining(exerciseGroupId)
+        return lastTraining?.date
+    }
 }

@@ -24,5 +24,6 @@ interface ExerciseGroupDao {
     @Query("SELECT name FROM exercise_groups WHERE id = :id")
     suspend fun getExerciseGroupNameById(id: Int): String
 
-
+    @Query("SELECT id FROM exercise_groups WHERE name = :name LIMIT 1")
+    suspend fun getExerciseGroupIdByName(name: String): Long?
 }

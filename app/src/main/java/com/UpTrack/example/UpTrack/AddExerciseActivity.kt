@@ -20,7 +20,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import androidx.appcompat.widget.Toolbar
 import com.UpTrack.example.UpTrack.viewmodels.ExerciseDetailsActivity
-
+import com.jakewharton.threetenabp.AndroidThreeTen
 
 
 class AddExerciseActivity : AppCompatActivity() {
@@ -39,6 +39,7 @@ class AddExerciseActivity : AppCompatActivity() {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AndroidThreeTen.init(this)
         setContentView(R.layout.activity_add_exercise)
         loadCustomExercises()
         // Set up the toolbar
@@ -111,14 +112,50 @@ class AddExerciseActivity : AppCompatActivity() {
                 } else {
                     // If a muscle group is selected, activate the exerciseSpinner and load associated exercises
                     exerciseSpinner.isEnabled = true
-                    val exerciseList = PredefinedExercises.getExerciseNamesForMuscleGroup(muscleGroupName).toMutableList()
-                    exerciseList.add(0, "Please select...")
-                    val exerciseAdapter = ArrayAdapter<String>(
-                        this@AddExerciseActivity, android.R.layout.simple_spinner_item, exerciseList
-                    )
-                    exerciseAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    exerciseSpinner.adapter = exerciseAdapter
+                    val muscleGroupName = muscleGroupSpinner.selectedItem.toString()
+                    val exerciseNames = PredefinedExercises.getExerciseNamesForMuscleGroup(muscleGroupName).filter { it != "Please select..." }
+
+                    val exerciseListWithDates = mutableListOf<String>("Please select...")
+
+                    lifecycleScope.launch {
+                        val exercisedListWithDates = mutableListOf<String>()
+                        val nonExercisedListWithDates = mutableListOf<String>()
+
+                        for (exerciseName in exerciseNames) {
+                            val exerciseGroupId = viewModel.getExerciseGroupIdByName(exerciseName)
+                            val daysAgo = if (exerciseGroupId != null) viewModel.getDaysSinceLastTrained(exerciseGroupId) else null
+
+                            val exerciseItem = if (daysAgo != null) {
+                                "$exerciseName ($daysAgo days ago)"
+                            } else {
+                                exerciseName
+                            }
+
+                            if (daysAgo != null) {
+                                exercisedListWithDates.add(exerciseItem)
+                            } else {
+                                nonExercisedListWithDates.add(exerciseItem)
+                            }
+                        }
+
+                        val exerciseListWithDates = mutableListOf("Please select...")
+                        exerciseListWithDates.addAll(exercisedListWithDates)
+                        exerciseListWithDates.addAll(nonExercisedListWithDates)
+
+                        val exerciseAdapter = ArrayAdapter<String>(
+                            this@AddExerciseActivity, android.R.layout.simple_spinner_item, exerciseListWithDates
+                        )
+
+                        exerciseAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                        exerciseSpinner.adapter = exerciseAdapter
+                    }
+
+
+
+
+
                 }
+
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {

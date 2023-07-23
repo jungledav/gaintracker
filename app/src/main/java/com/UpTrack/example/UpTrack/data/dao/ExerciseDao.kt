@@ -293,6 +293,8 @@ GROUP BY
     exercises.date DESC
 """)
     fun getAllExerciseData(): Flow<List<ExerciseData>>
+    @Query("SELECT * FROM exercises WHERE exerciseGroupId = :exerciseGroupId ORDER BY date DESC LIMIT 1")
+    suspend fun getLastTraining(exerciseGroupId: Long): Exercise?
 
 
 }
