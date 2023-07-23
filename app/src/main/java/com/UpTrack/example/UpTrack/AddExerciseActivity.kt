@@ -128,8 +128,8 @@ class AddExerciseActivity : AppCompatActivity() {
                             val daysAgoLong = daysAgo?.toLong()
                             val daysAgoString = when (daysAgoLong) {
                                 null -> ""
-                                0L -> "today"
-                                1L -> "yesterday"
+                                0L -> "Today"
+                                1L -> "Yesterday"
                                 else -> "$daysAgo days ago"
                             }
 
