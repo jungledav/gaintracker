@@ -228,6 +228,7 @@ class MainRepository(
         return sharedPref.getString("unit_key", defaultUnit) ?: defaultUnit
     }
     suspend fun getExerciseGroupIdByName(name: String): Long? {
+        Log.d("Mainrepository", "exercisename: $name")
         return exerciseGroupDao.getExerciseGroupIdByName(name)
     }
     suspend fun getLastTrainedDate(exerciseGroupId: Long): Long? {

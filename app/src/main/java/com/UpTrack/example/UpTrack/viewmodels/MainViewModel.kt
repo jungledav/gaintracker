@@ -8,6 +8,7 @@ import com.UpTrack.example.UpTrack.data.models.ExerciseGroup
 import com.UpTrack.example.UpTrack.data.models.ExerciseMaxReps
 import com.UpTrack.example.UpTrack.data.models.ExerciseSet
 import com.UpTrack.example.UpTrack.data.models.ExerciseSetVolume
+import com.UpTrack.example.UpTrack.data.models.ExerciseWithLastTraining
 import com.UpTrack.example.UpTrack.repositories.MainRepository
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -20,6 +21,9 @@ import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 
 class MainViewModel(private val repository: MainRepository) : ViewModel() {
+    val isLoading = MutableLiveData(true)
+    val lastTrainedDays = MutableLiveData<Int?>()
+    val exercisesWithLastTraining = MutableLiveData<List<ExerciseWithLastTraining>>()
 
     init {
         repository.viewModelScope = viewModelScope
@@ -46,6 +50,7 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
     suspend fun insertExercise(name: String): Long {
         return repository.insertExercise(name)
     }
+
     suspend fun insertExerciseWithDetails(exercise: Exercise): Long {
         val insertedId = repository.insertExerciseWithDetails(exercise)
         return insertedId
@@ -108,6 +113,7 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
     fun getMaxSetVolumeForExercise(exerciseId: Long): LiveData<Double> {
         return repository.getMaxSetVolumeForExercise(exerciseId)
     }
+
     private fun formatTimestamp(timestamp: Long?): String {
         if (timestamp != null) {
             val date = Date(timestamp)
@@ -141,9 +147,11 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
             formatTimestamp(timestamp)
         }
     }
+
     suspend fun getExerciseGroupByName(name: String): ExerciseGroup? {
         return repository.getExerciseGroupByName(name)
     }
+
     suspend fun insertExerciseGroup(exerciseGroup: ExerciseGroup): Long {
         return repository.insertExerciseGroup(exerciseGroup)
     }
@@ -154,7 +162,6 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
             formatTimestamp(timestamp)
         }
     }
-
 
 
     fun getDayOfMonthSuffix(n: Int): String {
@@ -179,11 +186,9 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
     }
 
 
-
     fun getTodayMaxWeightForExercise(exerciseId: Long): LiveData<Double> {
         return repository.getWorkoutMaxWeightForExercise(exerciseId)
     }
-
 
 
     fun getTodayTotalRepsForExercise(exerciseId: Long): LiveData<Int> {
@@ -192,7 +197,8 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
 
 
     fun getMaxTotalRepsForExerciseGroup(exerciseId: Long): LiveData<ExerciseMaxReps> {
-        val maxRepsLiveData = repository.getMaxRepsExercise(exerciseId).map { it?.let { it } ?: ExerciseMaxReps("No History yet", 0, 0) }
+        val maxRepsLiveData = repository.getMaxRepsExercise(exerciseId)
+            .map { it?.let { it } ?: ExerciseMaxReps("No History yet", 0, 0) }
         return maxRepsLiveData.map { maxRepsExercise ->
             // maxRepsExercise is guaranteed to be non-null at this point
 
@@ -214,9 +220,14 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
                 "No History yet"
             }
 
-            ExerciseMaxReps(formattedDate, maxRepsExercise.totalReps, maxRepsExercise.exerciseGroupId)
+            ExerciseMaxReps(
+                formattedDate,
+                maxRepsExercise.totalReps,
+                maxRepsExercise.exerciseGroupId
+            )
         }
     }
+
     fun doesExerciseSetExist(exerciseGroupId: Long): LiveData<Boolean> {
         return repository.doesExerciseSetExist(exerciseGroupId)
     }
@@ -280,6 +291,7 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
             _oneRepMax.value = repository.calculateOneRepMax(exerciseId)
         }
     }
+
     private val _groupMaxOneRep = MutableLiveData<Double?>()
     val groupMaxOneRep: LiveData<Double?>
         get() = _groupMaxOneRep
@@ -310,12 +322,15 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
             }
         }
     }
+
     fun getSavedUnit(): String {
         return repository.getSavedUnit()
     }
+
     suspend fun getExerciseGroupIdByName(name: String): Long? {
         return repository.getExerciseGroupIdByName(name)
     }
+
     fun longToDate(timestamp: Long): Date {
         return Date(timestamp)
     }
@@ -326,12 +341,39 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
     }
 
     suspend fun getDaysSinceLastTrained(exerciseGroupId: Long): Int? {
+
         val lastTrainedTimestamp = repository.getLastTrainedDate(exerciseGroupId)
         return if (lastTrainedTimestamp != null) {
             daysBetween(longToDate(lastTrainedTimestamp), Date())
         } else {
             null
         }
+
     }
+
+    fun loadDaysSinceLastTrained(exerciseNames: List<String>) {
+        isLoading.value = true  // Indicate that data loading has started
+        viewModelScope.launch {
+            try {
+                val exercisesWithLastTraining = exerciseNames.map { exerciseName ->
+                    val exerciseGroupId = getExerciseGroupIdByName(exerciseName)
+                    Log.d("MainviewModel", "groupID: $exerciseGroupId and exercisename:$exerciseName" )
+
+                    val daysAgo = if (exerciseGroupId != null) {
+                        getDaysSinceLastTrained(exerciseGroupId)
+                    } else {
+                        null
+                    }
+                    ExerciseWithLastTraining(exerciseName, daysAgo)
+                }
+                this@MainViewModel.exercisesWithLastTraining.value = exercisesWithLastTraining
+            } catch (e: Exception) {
+                // Handle exception...
+            } finally {
+                isLoading.value = false  // Indicate that data loading has ended
+            }
+        }
+    }
+
 
 }

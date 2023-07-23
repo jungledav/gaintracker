@@ -21,6 +21,7 @@ import kotlinx.serialization.json.Json
 import androidx.appcompat.widget.Toolbar
 import com.UpTrack.example.UpTrack.viewmodels.ExerciseDetailsActivity
 import com.jakewharton.threetenabp.AndroidThreeTen
+import androidx.lifecycle.Observer
 
 
 class AddExerciseActivity : AppCompatActivity() {
@@ -50,10 +51,17 @@ class AddExerciseActivity : AppCompatActivity() {
         muscleGroupSpinner = findViewById(R.id.muscleGroupSpinner)
         exerciseSpinner = findViewById(R.id.exerciseNameSpinner)
         buttonAddExercise = findViewById(R.id.buttonAddExercise)
+        // Observe the isLoading LiveData
+
         // Initially deactivate the buttonAddExercise
         buttonAddExercise.isEnabled = false
         setupSpinners()
+        viewModel.isLoading.observe(this, Observer { isLoading ->
+            // Enable or disable UI components based on `isLoading`
 
+            exerciseSpinner.isEnabled = !isLoading
+            buttonAddExercise.isEnabled = !isLoading
+        })
         buttonAddExercise.setOnClickListener {
             val exerciseName = exerciseSpinner.selectedItem.toString()
 
@@ -63,7 +71,7 @@ class AddExerciseActivity : AppCompatActivity() {
                     val fullExerciseName = exerciseSpinner.selectedItem.toString()
                     val exerciseName = fullExerciseName.substringBefore(" (").trim()
                     val exerciseId = viewModel.insertExercise(exerciseName)
-                    Log.d("AddExerciseActivityy", "Exercise inserted with ID: $exerciseId")
+                    Log.d("AddExerciseActivity", "Exercise inserted with ID: $exerciseId")
 
                     if (exerciseId != 0L) {
                         Log.d("AddExerciseActivity", "Navigating to ExerciseDetailsActivity with ID: $exerciseId and Name: $exerciseName")
@@ -115,66 +123,53 @@ class AddExerciseActivity : AppCompatActivity() {
                     exerciseSpinner.isEnabled = true
                     val muscleGroupName = muscleGroupSpinner.selectedItem.toString()
                     val exerciseNames = PredefinedExercises.getExerciseNamesForMuscleGroup(muscleGroupName).filter { it != "Please select..." }
+                    Log.d("AddExerciseActivity", "exercisename:$exerciseNames" )
 
-                    val exerciseListWithDates = mutableListOf<String>("Please select...")
-
-                    lifecycleScope.launch {
-                        val exercisedListWithDates = mutableListOf<String>()
-                        val nonExercisedListWithDates = mutableListOf<String>()
-
-                        for (exerciseName in exerciseNames) {
-                            val exerciseGroupId = viewModel.getExerciseGroupIdByName(exerciseName)
-                            val daysAgo = if (exerciseGroupId != null) viewModel.getDaysSinceLastTrained(exerciseGroupId) else null
-                            // Add logging here to see the values of exerciseName, exerciseGroupId, and daysAgo
-                            Log.d("AddExerciseActivity", "exerciseName: $exerciseName, exerciseGroupId: $exerciseGroupId, daysAgo: $daysAgo")
-
-                            val daysAgoLong = daysAgo?.toLong()
-                            val daysAgoString = when (daysAgoLong) {
-                                null -> ""
-                                0L -> "Today"
-                                1L -> "Yesterday"
-                                else -> "$daysAgo days ago"
-                            }
-
-                            val exerciseItem = if (daysAgo != null) {
-                                "$exerciseName ($daysAgoString)"
-                            } else {
-                                exerciseName
-                            }
-
-                            if (daysAgo != null) {
-                                exercisedListWithDates.add(exerciseItem)
-                            } else {
-                                nonExercisedListWithDates.add(exerciseItem)
-                            }
-                        }
-
-                        val exerciseListWithDates = mutableListOf("Please select...")
-                        exerciseListWithDates.addAll(exercisedListWithDates)
-                        exerciseListWithDates.addAll(nonExercisedListWithDates)
-
-                        val exerciseAdapter = ArrayAdapter<String>(
-                            this@AddExerciseActivity, android.R.layout.simple_spinner_item, exerciseListWithDates
-                        )
-
-                        exerciseAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                        exerciseSpinner.adapter = exerciseAdapter
-                    }
-
-
-
-
-
-
+                    viewModel.loadDaysSinceLastTrained(exerciseNames)
                 }
-
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 buttonAddExercise.isEnabled = false // Deactivate the buttonAddExercise
-
             }
         }
+
+        viewModel.exercisesWithLastTraining.observe(this, { exercises ->
+            val exerciseListWithDates = mutableListOf("Please select...")
+            val exercisedListWithDates = mutableListOf<String>()
+            val nonExercisedListWithDates = mutableListOf<String>()
+
+            for (exercise in exercises) {
+                val daysAgoLong = exercise.daysAgo?.toLong()
+                val daysAgoString = when (daysAgoLong) {
+                    null -> ""
+                    0L -> "Today"
+                    1L -> "Yesterday"
+                    else -> "${exercise.daysAgo} days ago"
+                }
+
+                val exerciseItem = if (exercise.daysAgo != null) {
+                    "${exercise.exerciseName} ($daysAgoString)"
+                } else {
+                    exercise.exerciseName
+                }
+
+                if (exercise.daysAgo != null) {
+                    exercisedListWithDates.add(exerciseItem)
+                } else {
+                    nonExercisedListWithDates.add(exerciseItem)
+                }
+            }
+
+            exerciseListWithDates.addAll(exercisedListWithDates)
+            exerciseListWithDates.addAll(nonExercisedListWithDates)
+
+            val exerciseAdapter = ArrayAdapter<String>(
+                this@AddExerciseActivity, android.R.layout.simple_spinner_item, exerciseListWithDates
+            )
+            exerciseAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            exerciseSpinner.adapter = exerciseAdapter
+        })
 
         exerciseSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
@@ -211,7 +206,7 @@ class AddExerciseActivity : AppCompatActivity() {
         builder.setView(dialogView)
         builder.setTitle("Add Custom Exercise")
         builder.setPositiveButton("Add") { _, _ ->
-            val customExerciseName = editTextCustomExerciseName.text.toString()
+            val customExerciseName = editTextCustomExerciseName.text.toString().trim()
             val selectedEquipmentType = spinnerEquipmentType.selectedItem.toString()
             if (customExerciseName.isNotBlank()) {
                 PredefinedExercises.addCustomExercise(this, muscleGroupSpinner.selectedItem.toString(), customExerciseName, selectedEquipmentType)
@@ -235,7 +230,6 @@ class AddExerciseActivity : AppCompatActivity() {
         customExerciseDialog = builder.create()
         customExerciseDialog?.show()
     }
-
 
     private fun navigateToExerciseDetailsActivity(exerciseId: Long, exerciseName: String) {
         Log.d("AddExerciseActivity", "Navigating to ExerciseDetailsActivity with ID: $exerciseId and Name: $exerciseName")
@@ -265,4 +259,6 @@ class AddExerciseActivity : AppCompatActivity() {
         customExerciseDialog?.dismiss()
         customExerciseDialog = null
     }
+
 }
+
