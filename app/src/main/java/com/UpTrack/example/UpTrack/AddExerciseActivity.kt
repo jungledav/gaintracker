@@ -125,6 +125,8 @@ class AddExerciseActivity : AppCompatActivity() {
                         for (exerciseName in exerciseNames) {
                             val exerciseGroupId = viewModel.getExerciseGroupIdByName(exerciseName)
                             val daysAgo = if (exerciseGroupId != null) viewModel.getDaysSinceLastTrained(exerciseGroupId) else null
+                            // Add logging here to see the values of exerciseName, exerciseGroupId, and daysAgo
+                            Log.d("AddExerciseActivity", "exerciseName: $exerciseName, exerciseGroupId: $exerciseGroupId, daysAgo: $daysAgo")
 
                             val daysAgoLong = daysAgo?.toLong()
                             val daysAgoString = when (daysAgoLong) {
@@ -193,10 +195,11 @@ class AddExerciseActivity : AppCompatActivity() {
         }
     }
 
+    private var customExerciseDialog: AlertDialog? = null
 
     private fun showAddCustomExerciseDialog() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_custom_exercise, null)
-            val editTextCustomExerciseName = dialogView.findViewById<EditText>(R.id.editTextCustomExerciseName)
+        val editTextCustomExerciseName = dialogView.findViewById<EditText>(R.id.editTextCustomExerciseName)
         val spinnerEquipmentType = dialogView.findViewById<Spinner>(R.id.spinnerEquipmentType)
 
         val equipmentTypes = listOf("Bodyweight", "Dumbbell", "Barbell", "Machine")
@@ -229,8 +232,10 @@ class AddExerciseActivity : AppCompatActivity() {
             }
         }
         builder.setNegativeButton("Cancel", null)
-        builder.show()
+        customExerciseDialog = builder.create()
+        customExerciseDialog?.show()
     }
+
 
     private fun navigateToExerciseDetailsActivity(exerciseId: Long, exerciseName: String) {
         Log.d("AddExerciseActivity", "Navigating to ExerciseDetailsActivity with ID: $exerciseId and Name: $exerciseName")
@@ -254,5 +259,10 @@ class AddExerciseActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        customExerciseDialog?.dismiss()
+        customExerciseDialog = null
     }
 }

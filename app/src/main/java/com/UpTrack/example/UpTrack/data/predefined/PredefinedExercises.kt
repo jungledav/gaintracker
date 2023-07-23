@@ -64,6 +64,7 @@ object PredefinedExercises {
         )),
         MuscleGroup("Legs", listOf(
             ExerciseInfo("Squats", "Barbell"),
+            ExerciseInfo("Front Squats", "Barbell"),
             ExerciseInfo("Seated Leg Press", "Machine"),
             ExerciseInfo("Lunges", "Dumbbell"),
             ExerciseInfo("Dead lift", "Barbell"),
