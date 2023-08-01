@@ -374,6 +374,28 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
             }
         }
     }
+    suspend fun getAllExercisesForBackup(): List<Exercise> {
+        return repository.getAllExercisesForBackup()
+    }
+
+    suspend fun insertAllExercisesFromBackup(exercises: List<Exercise>) {
+        return repository.insertAllExercisesFromBackup(exercises)
+    }
+    suspend fun getAllExerciseSetsForBackup(): List<ExerciseSet> {
+        return repository.getAllExerciseSetsForBackup()
+    }
+
+    suspend fun insertAllExerciseSetsFromBackup(exerciseSets: List<ExerciseSet>) {
+        return repository.insertAllExerciseSetsFromBackup(exerciseSets)
+    }
+
+    suspend fun getAllExerciseGroupsForBackup(): List<ExerciseGroup> {
+        return repository.getAllExerciseGroupsForBackup()
+    }
+
+    suspend fun insertAllExerciseGroupsFromBackup(exerciseGroups: List<ExerciseGroup>) {
+        return repository.insertAllExerciseGroupsFromBackup(exerciseGroups)
+    }
 
 
 }

@@ -30,4 +30,9 @@ interface ExerciseSetDao {
     suspend fun deleteExerciseSet(exerciseSet: ExerciseSet)
     @Query("SELECT EXISTS(SELECT * FROM exercise_sets WHERE exercise_id IN (SELECT id FROM exercises WHERE exerciseGroupId = :exerciseGroupId))")
     fun doesExerciseSetExist(exerciseGroupId: Long): LiveData<Boolean>
+    @Query("SELECT * FROM exercise_sets")
+    fun getAllExerciseSetsForBackup(): List<ExerciseSet>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun restoreAllExerciseSetsFromBackup(exerciseSets: List<ExerciseSet>)
 }

@@ -3,8 +3,14 @@ package com.UpTrack.example.UpTrack.data.dao
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.UpTrack.example.UpTrack.data.models.ExerciseGroup
+import kotlinx.coroutines.flow.Flow
+
+
+
+
 
 @Dao
 interface ExerciseGroupDao {
@@ -26,4 +32,9 @@ interface ExerciseGroupDao {
 
     @Query("SELECT id FROM exercise_groups WHERE name = :name LIMIT 1")
     suspend fun getExerciseGroupIdByName(name: String): Long?
+    @Query("SELECT * FROM exercise_groups")
+    fun getAllExerciseGroupsForBackup(): List<ExerciseGroup>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun restoreAllExerciseGroupsFromBackup(exerciseGroups: List<ExerciseGroup>)
 }

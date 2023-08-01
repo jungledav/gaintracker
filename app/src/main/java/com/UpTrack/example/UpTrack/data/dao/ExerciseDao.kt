@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
@@ -295,7 +296,11 @@ GROUP BY
     fun getAllExerciseData(): Flow<List<ExerciseData>>
     @Query("SELECT * FROM exercises WHERE exerciseGroupId = :exerciseGroupId ORDER BY date DESC LIMIT 1")
     suspend fun getLastTraining(exerciseGroupId: Long): Exercise?
+    @Query("SELECT * FROM exercises")
+    fun getAllExercisesForBackup(): List<Exercise>
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun restoreAllExercisesFromBackup(exercises: List<Exercise>)
 
 }
 

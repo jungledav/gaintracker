@@ -235,4 +235,28 @@ class MainRepository(
         val lastTraining = exerciseDao.getLastTraining(exerciseGroupId)
         return lastTraining?.date
     }
+
+    suspend fun getAllExercisesForBackup(): List<Exercise> {
+        return exerciseDao.getAllExercisesForBackup()
+    }
+
+    suspend fun insertAllExercisesFromBackup(exercises: List<Exercise>) {
+        return exerciseDao.restoreAllExercisesFromBackup(exercises)
+    }
+    suspend fun getAllExerciseSetsForBackup(): List<ExerciseSet> {
+        return exerciseSetDao.getAllExerciseSetsForBackup()
+    }
+
+    suspend fun insertAllExerciseSetsFromBackup(exerciseSets: List<ExerciseSet>) {
+        return exerciseSetDao.restoreAllExerciseSetsFromBackup(exerciseSets)
+    }
+
+    suspend fun getAllExerciseGroupsForBackup(): List<ExerciseGroup> {
+        return exerciseGroupDao.getAllExerciseGroupsForBackup()
+    }
+
+    suspend fun insertAllExerciseGroupsFromBackup(exerciseGroups: List<ExerciseGroup>) {
+        return exerciseGroupDao.restoreAllExerciseGroupsFromBackup(exerciseGroups)
+    }
+
 }

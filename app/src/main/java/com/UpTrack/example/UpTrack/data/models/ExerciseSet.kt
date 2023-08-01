@@ -21,4 +21,21 @@ data class ExerciseSet(
     val date: Long = System.currentTimeMillis(),
     val reps: Int,
     val weight: Double
-)
+) {
+    fun toCsvStringForBackup(): String {
+        return "$id,$exercise_id,$date,$reps,$weight"
+    }
+
+    companion object {
+        fun fromCsvStringFromBackup(csvString: String): ExerciseSet {
+            val parts = csvString.split(",")
+            return ExerciseSet(
+                id = parts[0].toLong(),
+                exercise_id = parts[1].toLong(),
+                date = parts[2].toLong(),
+                reps = parts[3].toInt(),
+                weight = parts[4].toDouble()
+            )
+        }
+    }
+}
