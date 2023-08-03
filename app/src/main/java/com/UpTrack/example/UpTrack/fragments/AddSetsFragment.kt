@@ -1,6 +1,9 @@
 package com.UpTrack.example.UpTrack.fragments
 
+import android.content.Context
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -43,10 +46,24 @@ class AddSetsFragment : Fragment() {
             }
             binding.editTextWeight.setText("")
             binding.editTextReps.setText("")
+
+            // Add vibration feedback here
+            val vibrator = context?.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+            if (vibrator?.hasVibrator() == true) {
+                if (android.os.Build.VERSION.SDK_INT >= 26) {
+                    // API level 26 or higher
+                    vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
+                } else {
+                    // API level 25 or lower
+                    vibrator.vibrate(200)
+                }
+            }
+
         } else {
             Toast.makeText(requireContext(), "Please enter valid values for weight and reps.", Toast.LENGTH_SHORT).show()
         }
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -89,7 +106,21 @@ class AddSetsFragment : Fragment() {
             }
         }
 
-        binding.buttonAddSet.setOnClickListener { onAddSetButtonClick() }
+        binding.buttonAddSet.setOnClickListener {
+            onAddSetButtonClick()
+
+            // Add vibration feedback here
+            val vibrator = context?.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+            if (vibrator?.hasVibrator() == true) {
+                if (android.os.Build.VERSION.SDK_INT >= 26) {
+                    // API level 26 or higher
+                    vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
+                } else {
+                    // API level 25 or lower
+                    vibrator.vibrate(200)
+                }
+            }
+        }
 
 
     }

@@ -3,8 +3,11 @@ package com.UpTrack.example.UpTrack.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.UpTrack.example.UpTrack.R
 import com.UpTrack.example.UpTrack.data.models.ExerciseSet
 import com.UpTrack.example.UpTrack.databinding.ItemSetBinding
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 
 class SetAdapter(
 private val listener: SetInteractionListener,
@@ -38,7 +41,15 @@ private val savedUnit: String
         holder.binding.imageViewEditSet.setOnClickListener {
             listener.onSetEditClick(currentSet)
         }
+
+        // Apply animation
+        if (position == 0) {  // New items appear at position 0
+            val animation: Animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.fade_in)
+            holder.itemView.startAnimation(animation)
+        }
     }
+
+
 
     override fun getItemCount() = sets.size
 

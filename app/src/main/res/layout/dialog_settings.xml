@@ -55,23 +55,33 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_sub_header" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/backupButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Backup"
+        style="?attr/materialButtonOutlinedStyle"
+        android:textColor="@color/white"
+        app:strokeColor="@color/black"
+        app:backgroundTint="@color/black"
+        android:background="@drawable/ripple_effect"
         app:layout_constraintTop_toBottomOf="@+id/tv_help_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/restoreButton"
         app:layout_constraintHorizontal_chainStyle="spread" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/restoreButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Restore"
+        style="?attr/materialButtonOutlinedStyle"
+        android:textColor="@color/white"
+        app:backgroundTint="@color/black"
+        android:background="@drawable/ripple_effect"
         app:layout_constraintTop_toBottomOf="@+id/tv_help_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/backupButton" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

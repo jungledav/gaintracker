@@ -1,6 +1,9 @@
 package com.UpTrack.example.UpTrack.fragments
 
+import android.content.Context
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -82,7 +85,17 @@ class ExerciseSetsFragment : Fragment() {
     private fun onAddSetButtonClick() {
         val reps = binding.editTextReps.text.toString().toIntOrNull()
         val weight = binding.editTextWeight.text.toString().toDoubleOrNull()
-
+// Add vibration feedback here
+        val vibrator = context?.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+        if (vibrator?.hasVibrator() == true) {
+            if (android.os.Build.VERSION.SDK_INT >= 26) {
+                // API level 26 or higher
+                vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE))
+            } else {
+                // API level 25 or lower
+                vibrator.vibrate(100)
+            }
+        }
         if (reps != null && weight != null) {
             val currentExerciseId = arguments?.getLong("exerciseId")
                 ?: throw IllegalStateException("No exerciseId provided")
