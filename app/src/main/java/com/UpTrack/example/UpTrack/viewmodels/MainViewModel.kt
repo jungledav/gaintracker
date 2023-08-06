@@ -397,5 +397,15 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
         return repository.insertAllExerciseGroupsFromBackup(exerciseGroups)
     }
 
+    fun getMaxWeightOverTime(exerciseId: Long): LiveData<List<Pair<Date, Float>>> {
+        val data = listOf(
+            Pair(Date(2021, 1, 1), 150f),
+            Pair(Date(2021, 2, 1), 155f),
+            Pair(Date(2021, 3, 1), 160f),
+            Pair(Date(2021, 4, 1), 155f),
+            Pair(Date(2021, 5, 1), 165f),
+        )
+        return MutableLiveData(data)
+    }
 
 }
