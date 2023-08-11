@@ -23,6 +23,7 @@ import com.UpTrack.example.UpTrack.R
 import com.UpTrack.example.UpTrack.viewmodels.MainViewModel
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
@@ -31,11 +32,17 @@ import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.launch
 import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
+import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 class ExerciseResultsFragment : Fragment() {
 
@@ -153,7 +160,7 @@ class ExerciseResultsFragment : Fragment() {
             card_one_max_rep.setOnClickListener {
                 dataChoice = "onemaxrep"
                 viewModel.getMaxOneRepOverTime(exerciseId).observe(viewLifecycleOwner, { data ->
-                    updateLineChart(lineChart, data,dataChoice)
+                    updateLineChart(lineChart, data, dataChoice)
                 })
             }
 
@@ -296,16 +303,15 @@ class ExerciseResultsFragment : Fragment() {
         }
     }
 
-    private fun updateLineChart(lineChart: LineChart, data: List<Pair<Date, Float>>,dataChoice: String) {
+    private fun updateLineChart(lineChart: LineChart, data: List<Pair<Date, Float>>, dataChoice: String) {
         // Convert your data to 'entries'
-        val entries = data.mapIndexed { index, (date, weight) ->
+        val entries = data.reversed().mapIndexed { index, (_, weight) ->
             Entry(index.toFloat(), weight)
         }
         val dataSet = LineDataSet(entries, "Max Weight")
 
-        // Set line mode
+        // Set line mode and styles
         dataSet.mode = LineDataSet.Mode.LINEAR
-        // To draw circles on each data point
         dataSet.setDrawCircles(true)
         dataSet.setDrawCircleHole(true)
 
@@ -315,25 +321,56 @@ class ExerciseResultsFragment : Fragment() {
             dataSet.setCircleColor(ContextCompat.getColor(it, R.color.black))
         }
 
-
-
         // Create a LineData object and set it to the chart
         val lineData = LineData(dataSet)
         lineChart.data = lineData
         lineChart.legend.isEnabled = false
         lineChart.description.isEnabled = false
+
+        // X-Axis customization with Date labels
+        val dates = data.map { it.first }.reversed()
+        lineChart.xAxis.valueFormatter = object : ValueFormatter() {
+            private val dateFormat = SimpleDateFormat("MMM dd", Locale.getDefault())
+            override fun getFormattedValue(value: Float): String {
+                return if (value.toInt() >= 0 && value.toInt() < dates.size) {
+                    dateFormat.format(dates[value.toInt()])
+                } else {
+                    ""
+                }
+            }
+        }
+
+        lineChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
+        lineChart.xAxis.setDrawGridLines(false)
+        lineChart.xAxis.granularity = 1f
+
+        // Determine the window size based on the data
+        val numDays = if (dates.isNotEmpty()) {
+            val diff = daysBetween(dates.first(), dates.last())
+            Math.min(diff, 90f) // We want a max of 3 months, i.e., approx 90 days
+        } else {
+            0f
+        }
+        lineChart.xAxis.axisMaximum = numDays
+
         val tvChartDescription = view?.findViewById<TextView>(R.id.tv_chart_description)
         tvChartDescription?.text = when(dataChoice) {
             "maxwight" -> "Max Weight over last 3 months"
             "onemaxrep" -> "Calculated maximum one rep over last 3 months"
             "MaxRepsOneSet" -> "Maximum Reps in one Set over last 3 months"
             "MaxRepsOneWorkout" -> "Maximum Reps in one Workout over last 3 months"
-           "MaxSetVolume" -> "Maximum Volume in one Set over last 3 months"
+            "MaxSetVolume" -> "Maximum Volume in one Set over last 3 months"
             "MaxWorkoutVolume" -> "Maximum Volume in one Workout over last 3 months"
             else -> "Max Weight over last 3 months"
         }
+
         lineChart.invalidate() // refreshes the chart
     }
+    private fun daysBetween(d1: Date, d2: Date): Float {
+        return TimeUnit.DAYS.convert(d2.time - d1.time, TimeUnit.MILLISECONDS).toFloat()
+    }
+
+
 
 
 

@@ -12,6 +12,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import androidx.lifecycle.switchMap
 import kotlinx.coroutines.flow.Flow
+import java.util.Calendar
+import java.util.Date
 
 
 class MainRepository(
@@ -215,7 +217,16 @@ class MainRepository(
     suspend fun calculateGroupMaxOneRep(exerciseId: Long): MaxOneRepForExercise? {
         return exerciseDao.calculateGroupMaxOneRep(exerciseId)
     }
+    suspend fun getMaxOneRepForLastThreeMonths(exerciseId: Long): List<MaxOneRepForExercise> {
+        val endDate = Date().time  // Now it's a long timestamp
+        val calendar = Calendar.getInstance().apply {
+            timeInMillis = endDate
+            add(Calendar.MONTH, -3)
+        }
+        val startDate = calendar.timeInMillis
 
+        return exerciseDao.calculateMaxOneRepForLastThreeMonths(exerciseId, startDate, endDate)
+    }
     fun getMaxExerciseVolumeForGroup(exerciseId: Long): LiveData<ExerciseSetVolume?> {
         return exerciseDao.getMaxExerciseVolumeForGroup(exerciseId)
     }

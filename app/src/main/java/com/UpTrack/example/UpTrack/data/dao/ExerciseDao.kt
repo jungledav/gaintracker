@@ -16,7 +16,7 @@ import com.UpTrack.example.UpTrack.data.models.ExerciseSetVolume
 import com.UpTrack.example.UpTrack.data.models.MaxOneRepForExercise
 import com.UpTrack.example.UpTrack.fragments.ExerciseHistoryFragment
 import kotlinx.coroutines.flow.Flow
-
+import java.util.Date
 
 
 @Dao
@@ -257,6 +257,26 @@ interface ExerciseDao {
         )
 """)
     suspend fun calculateGroupMaxOneRep(exerciseId: Long): MaxOneRepForExercise?
+    @Query("""
+    SELECT 
+        E.date AS exerciseDate,
+        MAX(ES.weight * (1 + 0.0333 * ES.reps)) AS oneRepMax
+    FROM 
+        exercise_sets AS ES
+    JOIN 
+        exercises AS E ON ES.exercise_id = E.id
+    WHERE 
+        E.exerciseGroupId = (
+            SELECT exerciseGroupId FROM exercises WHERE id = :exerciseId
+        )
+    AND
+        E.date BETWEEN :startDate AND :endDate
+    GROUP BY
+        E.date
+    ORDER BY
+        E.date DESC
+""")
+    suspend fun calculateMaxOneRepForLastThreeMonths(exerciseId: Long, startDate: Long, endDate: Long): List<MaxOneRepForExercise>
 
     @Query(
         """

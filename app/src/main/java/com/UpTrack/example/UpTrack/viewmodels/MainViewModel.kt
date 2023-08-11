@@ -409,14 +409,18 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
     }
 
     fun getMaxOneRepOverTime(exerciseId: Long): LiveData<List<Pair<Date, Float>>> {
-        val data = listOf(
-            Pair(Date(2021, 1, 1), 100f),
-            Pair(Date(2021, 2, 1), 105f),
-            Pair(Date(2021, 3, 1), 107f),
-            Pair(Date(2021, 4, 1), 110f),
-            Pair(Date(2021, 5, 1), 112f),
-        )
-        return MutableLiveData(data)
+        val liveData = MutableLiveData<List<Pair<Date, Float>>>()
+
+        viewModelScope.launch {
+            val result = repository.getMaxOneRepForLastThreeMonths(exerciseId)
+            val transformedData = result.map {
+                Pair(Date(it.exerciseDate), it.oneRepMax.toFloat())
+            }
+
+            liveData.value = transformedData
+        }
+
+        return liveData
     }
     fun getMaxRepsOneSetOverTime(exerciseId: Long): LiveData<List<Pair<Date, Float>>> {
         val data = listOf(
