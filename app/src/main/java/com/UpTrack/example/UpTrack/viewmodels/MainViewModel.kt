@@ -408,4 +408,55 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
         return MutableLiveData(data)
     }
 
+    fun getMaxOneRepOverTime(exerciseId: Long): LiveData<List<Pair<Date, Float>>> {
+        val data = listOf(
+            Pair(Date(2021, 1, 1), 100f),
+            Pair(Date(2021, 2, 1), 105f),
+            Pair(Date(2021, 3, 1), 107f),
+            Pair(Date(2021, 4, 1), 110f),
+            Pair(Date(2021, 5, 1), 112f),
+        )
+        return MutableLiveData(data)
+    }
+    fun getMaxRepsOneSetOverTime(exerciseId: Long): LiveData<List<Pair<Date, Float>>> {
+        val data = listOf(
+            Pair(Date(2021, 1, 1), 100f),
+            Pair(Date(2021, 2, 1), 103f),
+            Pair(Date(2021, 3, 1), 109f),
+            Pair(Date(2021, 4, 1), 110f),
+            Pair(Date(2021, 5, 1), 112f),
+        )
+        return MutableLiveData(data)
+    }
+    fun getMaxRepsInWorkoutOverTime(exerciseId: Long): LiveData<List<Pair<Date, Float>>> {
+        val data = listOf(
+            Pair(Date(2021, 1, 1), 100f),
+            Pair(Date(2021, 2, 1), 113f),
+            Pair(Date(2021, 3, 1), 109f),
+            Pair(Date(2021, 4, 1), 120f),
+            Pair(Date(2021, 5, 1), 112f),
+        )
+        return MutableLiveData(data)
+    }
+
+    fun getMaxSetVolumeOverTime(exerciseId: Long): LiveData<List<Pair<Date, Float>>> {
+        val data = listOf(
+            Pair(Date(2021, 1, 1), 90f),
+            Pair(Date(2021, 2, 1), 133f),
+            Pair(Date(2021, 3, 1), 109f),
+            Pair(Date(2021, 4, 1), 140f),
+            Pair(Date(2021, 5, 1), 109f),
+        )
+        return MutableLiveData(data)
+    }
+    fun getMaxWorkoutVolumeOverTime(exerciseId: Long): LiveData<List<Pair<Date, Float>>> {
+        val data = listOf(
+            Pair(Date(2021, 1, 1), 90f),
+            Pair(Date(2021, 2, 1), 133f),
+            Pair(Date(2021, 3, 1), 10f),
+            Pair(Date(2021, 4, 1), 140f),
+            Pair(Date(2021, 5, 1), 109f),
+        )
+        return MutableLiveData(data)
+    }
 }

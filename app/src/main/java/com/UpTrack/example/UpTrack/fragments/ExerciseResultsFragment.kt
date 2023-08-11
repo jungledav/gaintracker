@@ -73,6 +73,8 @@ class ExerciseResultsFragment : Fragment() {
         val card_max_set_volume = view.findViewById<MaterialCardView>(R.id.card_max_set_volume)
         //val barChart: BarChart = view.findViewById(R.id.barChart)
         val lineChart: LineChart = view.findViewById(R.id.lineChart)
+        var dataChoice = "default"
+
         if (!exerciseSetExists) {
             Log.d("ExerciseResultsFragment", "Entered if block when exerciseSetExists is $exerciseSetExists")
 
@@ -101,7 +103,7 @@ class ExerciseResultsFragment : Fragment() {
             lineChart.visibility = View.VISIBLE
 
 
-// Values for Max Weight Card on Exercise Result tab
+// Values for "Max Weight Lifted" Card on Exercise Result tab
             val tvMaxWeightDate = view.findViewById<TextView>(R.id.tv_max_weight_date)
             val tvMaxWeightValue = view.findViewById<TextView>(R.id.tv_max_weight_value)
             val tvMaxWeightToday = view.findViewById<TextView>(R.id.tv_max_weight_today)
@@ -123,11 +125,12 @@ class ExerciseResultsFragment : Fragment() {
                     }
             })
             maxWeightCardView.setOnClickListener {
+                dataChoice = "maxweight"
                 viewModel.getMaxWeightOverTime(exerciseId).observe(viewLifecycleOwner, { data ->
-                    updateLineChart(lineChart, data)
+                    updateLineChart(lineChart, data,dataChoice)
                 })
             }
-            /// Values for Max One Rep Card
+ // Values for "Calculated One Max Rep" Card
             val tvOneMaxRep = view.findViewById<TextView>(R.id.tv_one_max_rep_value)
             val tvOneMaxRepDate = view.findViewById<TextView>(R.id.tv_one_max_rep_date)
             viewModel.calculateGroupMaxOneRep(exerciseId)
@@ -147,8 +150,14 @@ class ExerciseResultsFragment : Fragment() {
                     tvOneMaxRepDate.text = "N/A"
                 }
             })
+            card_one_max_rep.setOnClickListener {
+                dataChoice = "onemaxrep"
+                viewModel.getMaxOneRepOverTime(exerciseId).observe(viewLifecycleOwner, { data ->
+                    updateLineChart(lineChart, data,dataChoice)
+                })
+            }
 
-// Calculate the one rep max
+            // Calculate the one rep max
             val tvOneMaxRepToday = view.findViewById<TextView>(R.id.tv_one_max_rep_today)
             viewModel.calculateOneRepMax(exerciseId)
             viewModel.oneRepMax.observe(viewLifecycleOwner, { oneRepMax ->
@@ -181,9 +190,15 @@ class ExerciseResultsFragment : Fragment() {
                     }?: run {
                         tvTotalRepsToday.text = "This workout: N/A"}
                 })
+            card_total_rep.setOnClickListener {
+                dataChoice = "MaxRepsOneWorkout"
+                viewModel.getMaxRepsInWorkoutOverTime(exerciseId).observe(viewLifecycleOwner, { data ->
+                    updateLineChart(lineChart, data,dataChoice)
+                })
+            }
 
 
-// Values for "Max Exercise per workout Volume" Card
+// Values for "Max Workout Volume" Card
 
             val tvExerciseVolumetoday = view.findViewById<TextView>(R.id.tv_exercise_volume_today)
             viewModel.getExerciseVolumeForExercise(exerciseId)
@@ -200,7 +215,14 @@ class ExerciseResultsFragment : Fragment() {
                     tvMaxExerciseVolumeDate.text = "${MaxExerciseVolumeForGroup.date}"
                     tvMaxExerciseVolumeTotal.text = "${MaxExerciseVolumeForGroup.max_volume} $savedUnit"
                 })
-// Values for "Max Set Volume in One Workout" Card
+            card_exercise_volume.setOnClickListener {
+                dataChoice = "MaxWorkoutVolume"
+                viewModel.getMaxWorkoutVolumeOverTime(exerciseId).observe(viewLifecycleOwner, { data ->
+                    updateLineChart(lineChart, data,dataChoice)
+                })
+            }
+
+// Values for "Max Set Volume" Card
             val tvMaxSetVolumetoday =
                 view.findViewById<TextView>(R.id.tv_max_set_volume_today)
             val tvMaxSetVolumeDate =
@@ -222,7 +244,14 @@ class ExerciseResultsFragment : Fragment() {
                         tvMaxSetVolumetoday.text = "This workout: N/A"
                     }
                 })
+            card_max_set_volume.setOnClickListener {
+                dataChoice = "MaxSetVolume"
+                viewModel.getMaxSetVolumeOverTime(exerciseId).observe(viewLifecycleOwner, { data ->
+                    updateLineChart(lineChart, data,dataChoice)
+                })
+            }
 
+// Values for "Max reps in One Set" Card
 
             val tvMaxRepsGroupDate = view.findViewById<TextView>(R.id.tv_max_reps_date)
             val tvMaxRepsValue = view.findViewById<TextView>(R.id.tv_max_reps_value)
@@ -248,7 +277,12 @@ class ExerciseResultsFragment : Fragment() {
                     tvMaxRepsGroupDate.text = "$maxRepsDateGroup"
                 })
 
-
+            card_max_rep.setOnClickListener {
+                dataChoice = "MaxRepsOneSet"
+                viewModel.getMaxRepsOneSetOverTime(exerciseId).observe(viewLifecycleOwner, { data ->
+                    updateLineChart(lineChart, data,dataChoice)
+                })
+            }
         }
         }
 
@@ -262,7 +296,7 @@ class ExerciseResultsFragment : Fragment() {
         }
     }
 
-    private fun updateLineChart(lineChart: LineChart, data: List<Pair<Date, Float>>) {
+    private fun updateLineChart(lineChart: LineChart, data: List<Pair<Date, Float>>,dataChoice: String) {
         // Convert your data to 'entries'
         val entries = data.mapIndexed { index, (date, weight) ->
             Entry(index.toFloat(), weight)
@@ -289,7 +323,15 @@ class ExerciseResultsFragment : Fragment() {
         lineChart.legend.isEnabled = false
         lineChart.description.isEnabled = false
         val tvChartDescription = view?.findViewById<TextView>(R.id.tv_chart_description)
-        tvChartDescription?.text = "Max Weight over last 3 months"
+        tvChartDescription?.text = when(dataChoice) {
+            "maxwight" -> "Max Weight over last 3 months"
+            "onemaxrep" -> "Calculated maximum one rep over last 3 months"
+            "MaxRepsOneSet" -> "Maximum Reps in one Set over last 3 months"
+            "MaxRepsOneWorkout" -> "Maximum Reps in one Workout over last 3 months"
+           "MaxSetVolume" -> "Maximum Volume in one Set over last 3 months"
+            "MaxWorkoutVolume" -> "Maximum Volume in one Workout over last 3 months"
+            else -> "Max Weight over last 3 months"
+        }
         lineChart.invalidate() // refreshes the chart
     }
 
