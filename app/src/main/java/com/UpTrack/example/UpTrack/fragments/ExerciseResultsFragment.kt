@@ -1,8 +1,5 @@
 package com.UpTrack.example.UpTrack.fragments
 
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -14,32 +11,20 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.UpTrack.example.UpTrack.GainTrackerApplication
 import com.UpTrack.example.UpTrack.R
 import com.UpTrack.example.UpTrack.viewmodels.MainViewModel
-import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.components.AxisBase
-import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarDataSet
-import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.IAxisValueFormatter
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.launch
-import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -134,8 +119,11 @@ class ExerciseResultsFragment : Fragment() {
             maxWeightCardView.setOnClickListener {
                 dataChoice = "maxweight"
                 viewModel.getMaxWeightOverTime(exerciseId).observe(viewLifecycleOwner, { data ->
-                    updateLineChart(lineChart, data,dataChoice)
+                    val chartData = data.map { Pair(Date(it.exerciseDate), it.maxWeight) } // Convert Long to Date
+                    updateLineChart(lineChart, chartData, dataChoice)
+
                 })
+
             }
  // Values for "Calculated One Max Rep" Card
             val tvOneMaxRep = view.findViewById<TextView>(R.id.tv_one_max_rep_value)
@@ -285,10 +273,15 @@ class ExerciseResultsFragment : Fragment() {
                 })
 
             card_max_rep.setOnClickListener {
+                Log.d("FragmentDebug", "Card Clicked!")
+
                 dataChoice = "MaxRepsOneSet"
                 viewModel.getMaxRepsOneSetOverTime(exerciseId).observe(viewLifecycleOwner, { data ->
                     updateLineChart(lineChart, data,dataChoice)
+                    Log.d("FragmentDebug", "MaxRepsOneSet Data sent to chart $data")
+
                 })
+
             }
         }
         }
@@ -323,6 +316,7 @@ class ExerciseResultsFragment : Fragment() {
 
         // Create a LineData object and set it to the chart
         val lineData = LineData(dataSet)
+        lineChart.clear()
         lineChart.data = lineData
         lineChart.legend.isEnabled = false
         lineChart.description.isEnabled = false
@@ -351,7 +345,9 @@ class ExerciseResultsFragment : Fragment() {
         } else {
             0f
         }
-        lineChart.xAxis.axisMaximum = numDays
+       // lineChart.xAxis.axisMaximum = numDays
+        lineChart.xAxis.axisMaximum = data.size.toFloat() - 1
+
 
         val tvChartDescription = view?.findViewById<TextView>(R.id.tv_chart_description)
         tvChartDescription?.text = when(dataChoice) {

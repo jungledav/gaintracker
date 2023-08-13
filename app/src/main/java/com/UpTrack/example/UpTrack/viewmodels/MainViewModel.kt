@@ -9,6 +9,7 @@ import com.UpTrack.example.UpTrack.data.models.ExerciseMaxReps
 import com.UpTrack.example.UpTrack.data.models.ExerciseSet
 import com.UpTrack.example.UpTrack.data.models.ExerciseSetVolume
 import com.UpTrack.example.UpTrack.data.models.ExerciseWithLastTraining
+import com.UpTrack.example.UpTrack.data.models.MaxWeightForExercise
 import com.UpTrack.example.UpTrack.repositories.MainRepository
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -397,16 +398,12 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
         return repository.insertAllExerciseGroupsFromBackup(exerciseGroups)
     }
 
-    fun getMaxWeightOverTime(exerciseId: Long): LiveData<List<Pair<Date, Float>>> {
-        val data = listOf(
-            Pair(Date(2021, 1, 1), 150f),
-            Pair(Date(2021, 2, 1), 155f),
-            Pair(Date(2021, 3, 1), 160f),
-            Pair(Date(2021, 4, 1), 155f),
-            Pair(Date(2021, 5, 1), 165f),
-        )
-        return MutableLiveData(data)
+
+    fun getMaxWeightOverTime(exerciseId: Long): LiveData<List<MaxWeightForExercise>> {
+        return repository.getMaxWeightForLast30Days(exerciseId)
     }
+
+
 
     fun getMaxOneRepOverTime(exerciseId: Long): LiveData<List<Pair<Date, Float>>> {
         val liveData = MutableLiveData<List<Pair<Date, Float>>>()
@@ -423,15 +420,26 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
         return liveData
     }
     fun getMaxRepsOneSetOverTime(exerciseId: Long): LiveData<List<Pair<Date, Float>>> {
-        val data = listOf(
-            Pair(Date(2021, 1, 1), 100f),
-            Pair(Date(2021, 2, 1), 103f),
-            Pair(Date(2021, 3, 1), 109f),
-            Pair(Date(2021, 4, 1), 110f),
-            Pair(Date(2021, 5, 1), 112f),
-        )
-        return MutableLiveData(data)
+        val liveData = MutableLiveData<List<Pair<Date, Float>>>()
+        viewModelScope.launch {
+            try {
+                val result = repository.getMaxRepsOneSetForLastThreeMonths(exerciseId) // No `.value` needed now
+                val transformedData = result?.map { item ->
+                    Pair(Date(item.exerciseDate), item.maxReps.toFloat())
+                } ?: emptyList()
+
+                liveData.postValue(transformedData)
+            } catch (e: Exception) {
+                Log.e("ViewModelError", "Error in getMaxRepsOneSetOverTime: ", e)
+            }
+        }
+        return liveData
     }
+
+
+
+
+
     fun getMaxRepsInWorkoutOverTime(exerciseId: Long): LiveData<List<Pair<Date, Float>>> {
         val data = listOf(
             Pair(Date(2021, 1, 1), 100f),

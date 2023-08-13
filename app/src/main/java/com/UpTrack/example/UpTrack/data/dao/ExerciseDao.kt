@@ -14,9 +14,10 @@ import com.UpTrack.example.UpTrack.data.models.ExerciseMaxReps
 import com.UpTrack.example.UpTrack.data.models.ExerciseSet
 import com.UpTrack.example.UpTrack.data.models.ExerciseSetVolume
 import com.UpTrack.example.UpTrack.data.models.MaxOneRepForExercise
+import com.UpTrack.example.UpTrack.data.models.MaxRepsForExercise
+import com.UpTrack.example.UpTrack.data.models.MaxWeightForExercise
 import com.UpTrack.example.UpTrack.fragments.ExerciseHistoryFragment
 import kotlinx.coroutines.flow.Flow
-import java.util.Date
 
 
 @Dao
@@ -322,6 +323,40 @@ GROUP BY
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun restoreAllExercisesFromBackup(exercises: List<Exercise>)
 
+    @Query("""
+    SELECT 
+        E.date AS exerciseDate,
+        MAX(ES.weight) AS maxWeight
+    FROM 
+        exercise_sets AS ES
+    JOIN 
+        exercises AS E ON ES.exercise_id = E.id
+    WHERE 
+        E.exerciseGroupId = (
+            SELECT exerciseGroupId FROM exercises WHERE id = :exerciseId
+        )
+    AND
+        E.date BETWEEN :startDate AND :endDate
+    GROUP BY
+        E.date
+    ORDER BY
+        E.date DESC
+""")
+
+    suspend fun getMaxWeightForLast30Days(exerciseId: Long, startDate: Long, endDate: Long): List<MaxWeightForExercise>
+
+    @Query("""
+         SELECT E.date as exerciseDate, MAX(ES.reps) as maxReps
+FROM exercise_sets AS ES
+JOIN exercises AS E ON ES.exercise_id = E.id
+WHERE E.exerciseGroupId = (
+            SELECT exerciseGroupId FROM exercises WHERE id = :exerciseId
+        )
+AND E.date BETWEEN :startDate AND :endDate
+GROUP BY E.date
+ORDER BY E.date DESC
+""")
+    suspend fun getMaxRepsOneSetForLastThreeMonths(exerciseId: Long, startDate: Long, endDate: Long): List<MaxRepsForExercise>
 }
 
 
