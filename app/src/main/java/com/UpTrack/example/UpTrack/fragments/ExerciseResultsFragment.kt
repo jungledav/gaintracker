@@ -375,7 +375,9 @@ class ExerciseResultsFragment : Fragment() {
             Entry(index.toFloat(), weight)
         }
         val dataSet = LineDataSet(entries, "Max Weight")
-        lineChart.setPinchZoom(false)
+        lineChart.setScaleEnabled(false)  // Disables pinch zooming and double tap zooming.
+        lineChart.setPinchZoom(false)     // If set to true, both x and y axis can be scaled separately. If false, x and y axis will be scaled simultaneously.
+
         // Set line mode and styles
         dataSet.mode = LineDataSet.Mode.LINEAR
         dataSet.setDrawCircles(true)
