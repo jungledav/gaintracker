@@ -9,8 +9,6 @@ import androidx.lifecycle.map
 import com.UpTrack.example.UpTrack.data.dao.*
 import com.UpTrack.example.UpTrack.data.models.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import androidx.lifecycle.switchMap
 import kotlinx.coroutines.flow.Flow
 import java.util.Calendar
 import java.util.Date
@@ -25,13 +23,6 @@ class MainRepository(
 ) {
     lateinit var viewModelScope: CoroutineScope
 
-    val allExercises: LiveData<List<Exercise>> = exerciseDao.getAllExercises()
-
-    val allExerciseSets: LiveData<List<ExerciseSet>> = exerciseSetDao.getAllExerciseSets()
-    val allExerciseNames: LiveData<List<String>> =
-        exerciseGroupDao.getAllExerciseGroupNames().map { exerciseGroups ->
-            exerciseGroups.map { it.name }
-        }
 
     suspend fun getExerciseGroupByName(name: String): ExerciseGroup? {
         return exerciseGroupDao.getExerciseGroupByName(name)
@@ -66,9 +57,7 @@ class MainRepository(
         }
     }
 
-    suspend fun updateExercise(exercise: Exercise) {
-        exerciseDao.update(exercise)
-    }
+
 
     suspend fun insertExerciseSet(exerciseSet: ExerciseSet) {
         exerciseSetDao.insert(exerciseSet)
@@ -90,23 +79,6 @@ class MainRepository(
         exerciseSetDao.deleteExerciseSet(exerciseSet)
     }
 
-    // Update this function to use the exerciseGroupId
-    fun getExerciseHistory(exerciseGroupId: Int): LiveData<List<ExerciseSet>> {
-        return exerciseDao.getSetsForExerciseGroup(exerciseGroupId)
-    }
-
-    suspend fun insertOrGetExerciseGroup(name: String): ExerciseGroup {
-        var exerciseGroup = exerciseGroupDao.getExerciseGroupByName(name)
-        if (exerciseGroup == null) {
-            val exerciseGroupId = exerciseGroupDao.insertExerciseGroup(ExerciseGroup(name = name))
-            exerciseGroup = ExerciseGroup(id = exerciseGroupId, name = name)
-        }
-        return exerciseGroup
-    }
-
-    suspend fun getAllExerciseGroups(): List<ExerciseGroup> {
-        return exerciseGroupDao.getAllExerciseGroupNames().value ?: emptyList()
-    }
 
     fun getExerciseGroupName(exerciseGroupId: Int): LiveData<String> {
         return exerciseGroupDao.getExerciseGroupName(exerciseGroupId)
@@ -116,26 +88,7 @@ class MainRepository(
         return exerciseGroupDao.getExerciseGroupNameById(id)
     }
 
-    fun getAllExercisesWithGroupNames(): LiveData<List<ExerciseWithGroupName>> {
-        val exercisesLiveData = exerciseDao.getAllExercises()
-        return exercisesLiveData.switchMap { exercises ->
-            liveData(Dispatchers.IO) {
-                val exerciseWithGroupNames = exercises.map { exercise ->
-                    val groupName = getExerciseGroupNameById(exercise.exerciseGroupId.toInt())
-                    ExerciseWithGroupName(exercise, groupName)
-                }
-                emit(exerciseWithGroupNames)
-            }
-        }
-    }
 
-    fun getSetsForExerciseGroup(exerciseGroupId: Int): LiveData<List<ExerciseSet>> {
-        return exerciseDao.getSetsForExerciseGroup(exerciseGroupId)
-    }
-
-    fun getMaxWeightForExercise(exerciseId: Long): LiveData<Float> {
-        return exerciseDao.getMaxWeightForExercise(exerciseId.toInt())
-    }
 
     fun getMaxWeightForExerciseType(exerciseTypeId: Long): LiveData<Float> {
         return exerciseDao.getMaxWeightForExerciseType(exerciseTypeId)
@@ -155,9 +108,6 @@ class MainRepository(
 
     suspend fun countTotalWeight() = exerciseDao.countTotalWeight()
 
-    fun getMaxRepForExercise(exerciseId: Long): LiveData<Int> {
-        return exerciseDao.getMaxRepForExercise(exerciseId)
-    }
 
     fun getTotalRepsForExercise(exerciseId: Long): LiveData<Int> {
         return exerciseDao.getTotalRepsForExercise(exerciseId)
@@ -185,9 +135,6 @@ class MainRepository(
         return exerciseDao.getMaxRepsForExercise(exerciseId)
     }
 
-    fun getMaxRepsDateForExercise(exerciseId: Long): LiveData<Long> {
-        return exerciseDao.getMaxRepsDateForExercise(exerciseId)
-    }
 
     fun getMaxRepsForExerciseGroup(exerciseId: Long): LiveData<Int> {
         return exerciseDao.getMaxRepsForExerciseGroup(exerciseId)
@@ -248,6 +195,16 @@ class MainRepository(
         return exerciseDao.getMaxRepsOneSetForLastThreeMonths(exerciseId, startDate, endDate)
     }
 
+    suspend fun getTotalRepsForLastThreeMonths(exerciseId: Long): List<TotalRepsForExercise>? {
+        val endDate = Date().time
+        val calendar = Calendar.getInstance().apply {
+            timeInMillis = endDate
+            add(Calendar.MONTH, -3)
+        }
+        val startDate = calendar.timeInMillis
+
+        return exerciseDao.getTotalRepsForLastThreeMonths(exerciseId, startDate, endDate)
+    }
 
 
 
@@ -293,6 +250,26 @@ class MainRepository(
 
     suspend fun insertAllExerciseGroupsFromBackup(exerciseGroups: List<ExerciseGroup>) {
         return exerciseGroupDao.restoreAllExerciseGroupsFromBackup(exerciseGroups)
+    }
+    suspend fun getMaxSetVolumeForLastThreeMonths(exerciseId: Long): List<MaxSetVolumeForExercise>? {
+        val endDate = Date().time
+        val calendar = Calendar.getInstance().apply {
+            timeInMillis = endDate
+            add(Calendar.MONTH, -3)
+        }
+        val startDate = calendar.timeInMillis
+
+        return exerciseDao.getMaxSetVolumeForLastThreeMonths(exerciseId, startDate, endDate)
+    }
+    suspend fun getTotalWorkoutVolumeForLastThreeMonths(exerciseId: Long): List<TotalWorkoutVolumeForExercise>? {
+        val endDate = Date().time
+        val calendar = Calendar.getInstance().apply {
+            timeInMillis = endDate
+            add(Calendar.MONTH, -3)
+        }
+        val startDate = calendar.timeInMillis
+
+        return exerciseDao.getTotalWorkoutVolumeForLastThreeMonths(exerciseId, startDate, endDate)
     }
 
 }

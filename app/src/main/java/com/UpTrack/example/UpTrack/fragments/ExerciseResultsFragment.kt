@@ -63,9 +63,10 @@ class ExerciseResultsFragment : Fragment() {
         val card_one_max_rep = view.findViewById<MaterialCardView>(R.id.one_max_rep)
         val card_exercise_volume = view.findViewById<MaterialCardView>(R.id.card_exercise_volume)
         val card_max_set_volume = view.findViewById<MaterialCardView>(R.id.card_max_set_volume)
-        //val barChart: BarChart = view.findViewById(R.id.barChart)
         val lineChart: LineChart = view.findViewById(R.id.lineChart)
         var dataChoice = "default"
+        var selectedCard: MaterialCardView? = null
+
 
         if (!exerciseSetExists) {
             Log.d("ExerciseResultsFragment", "Entered if block when exerciseSetExists is $exerciseSetExists")
@@ -84,6 +85,8 @@ class ExerciseResultsFragment : Fragment() {
 
             Log.d("ExerciseResultsFragment", "Entered else block when exerciseSetExists is $exerciseSetExists")
             // reversing view setting first
+            lineChart.visibility = View.GONE
+
             tvMessage.visibility = View.GONE
             maxWeightCardView.visibility = View.VISIBLE
             card_max_rep.visibility = View.VISIBLE
@@ -91,8 +94,7 @@ class ExerciseResultsFragment : Fragment() {
             card_one_max_rep.visibility = View.VISIBLE
             card_exercise_volume.visibility = View.VISIBLE
             card_max_set_volume.visibility = View.VISIBLE
-           // barChart.visibility = View.VISIBLE
-            lineChart.visibility = View.VISIBLE
+
 
 
 // Values for "Max Weight Lifted" Card on Exercise Result tab
@@ -117,6 +119,19 @@ class ExerciseResultsFragment : Fragment() {
                     }
             })
             maxWeightCardView.setOnClickListener {
+                // If this card was not already selected
+                if (selectedCard != maxWeightCardView)
+                {
+                    // Unselect the previously selected card
+                    selectedCard?.isSelected = false
+
+                    // Set the current card as selected
+                    maxWeightCardView.isSelected = true
+
+                    // Set this card as the currently selected card
+                    selectedCard = maxWeightCardView
+                }
+                lineChart.visibility = View.VISIBLE
                 dataChoice = "maxweight"
                 viewModel.getMaxWeightOverTime(exerciseId).observe(viewLifecycleOwner, { data ->
                     val chartData = data.map { Pair(Date(it.exerciseDate), it.maxWeight) } // Convert Long to Date
@@ -146,6 +161,18 @@ class ExerciseResultsFragment : Fragment() {
                 }
             })
             card_one_max_rep.setOnClickListener {
+                if (selectedCard != card_one_max_rep)
+                {
+                    // Unselect the previously selected card
+                    selectedCard?.isSelected = false
+
+                    // Set the current card as selected
+                    card_one_max_rep.isSelected = true
+
+                    // Set this card as the currently selected card
+                    selectedCard = card_one_max_rep
+                }
+                lineChart.visibility = View.VISIBLE
                 dataChoice = "onemaxrep"
                 viewModel.getMaxOneRepOverTime(exerciseId).observe(viewLifecycleOwner, { data ->
                     updateLineChart(lineChart, data, dataChoice)
@@ -186,6 +213,18 @@ class ExerciseResultsFragment : Fragment() {
                         tvTotalRepsToday.text = "This workout: N/A"}
                 })
             card_total_rep.setOnClickListener {
+                if (selectedCard != card_total_rep)
+                {
+                    // Unselect the previously selected card
+                    selectedCard?.isSelected = false
+
+                    // Set the current card as selected
+                    card_total_rep.isSelected = true
+
+                    // Set this card as the currently selected card
+                    selectedCard = card_total_rep
+                }
+                lineChart.visibility = View.VISIBLE
                 dataChoice = "MaxRepsOneWorkout"
                 viewModel.getMaxRepsInWorkoutOverTime(exerciseId).observe(viewLifecycleOwner, { data ->
                     updateLineChart(lineChart, data,dataChoice)
@@ -211,6 +250,18 @@ class ExerciseResultsFragment : Fragment() {
                     tvMaxExerciseVolumeTotal.text = "${MaxExerciseVolumeForGroup.max_volume} $savedUnit"
                 })
             card_exercise_volume.setOnClickListener {
+                if (selectedCard != card_exercise_volume)
+                {
+                    // Unselect the previously selected card
+                    selectedCard?.isSelected = false
+
+                    // Set the current card as selected
+                    card_exercise_volume.isSelected = true
+
+                    // Set this card as the currently selected card
+                    selectedCard = card_exercise_volume
+                }
+                lineChart.visibility = View.VISIBLE
                 dataChoice = "MaxWorkoutVolume"
                 viewModel.getMaxWorkoutVolumeOverTime(exerciseId).observe(viewLifecycleOwner, { data ->
                     updateLineChart(lineChart, data,dataChoice)
@@ -240,6 +291,18 @@ class ExerciseResultsFragment : Fragment() {
                     }
                 })
             card_max_set_volume.setOnClickListener {
+                if (selectedCard != card_max_set_volume)
+                {
+                    // Unselect the previously selected card
+                    selectedCard?.isSelected = false
+
+                    // Set the current card as selected
+                    card_max_set_volume.isSelected = true
+
+                    // Set this card as the currently selected card
+                    selectedCard = card_max_set_volume
+                }
+                lineChart.visibility = View.VISIBLE
                 dataChoice = "MaxSetVolume"
                 viewModel.getMaxSetVolumeOverTime(exerciseId).observe(viewLifecycleOwner, { data ->
                     updateLineChart(lineChart, data,dataChoice)
@@ -273,8 +336,18 @@ class ExerciseResultsFragment : Fragment() {
                 })
 
             card_max_rep.setOnClickListener {
-                Log.d("FragmentDebug", "Card Clicked!")
+                if (selectedCard != card_max_rep)
+                {
+                    // Unselect the previously selected card
+                    selectedCard?.isSelected = false
 
+                    // Set the current card as selected
+                    card_max_rep.isSelected = true
+
+                    // Set this card as the currently selected card
+                    selectedCard = card_max_rep
+                }
+                lineChart.visibility = View.VISIBLE
                 dataChoice = "MaxRepsOneSet"
                 viewModel.getMaxRepsOneSetOverTime(exerciseId).observe(viewLifecycleOwner, { data ->
                     updateLineChart(lineChart, data,dataChoice)

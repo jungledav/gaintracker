@@ -15,7 +15,10 @@ import com.UpTrack.example.UpTrack.data.models.ExerciseSet
 import com.UpTrack.example.UpTrack.data.models.ExerciseSetVolume
 import com.UpTrack.example.UpTrack.data.models.MaxOneRepForExercise
 import com.UpTrack.example.UpTrack.data.models.MaxRepsForExercise
+import com.UpTrack.example.UpTrack.data.models.MaxSetVolumeForExercise
 import com.UpTrack.example.UpTrack.data.models.MaxWeightForExercise
+import com.UpTrack.example.UpTrack.data.models.TotalRepsForExercise
+import com.UpTrack.example.UpTrack.data.models.TotalWorkoutVolumeForExercise
 import com.UpTrack.example.UpTrack.fragments.ExerciseHistoryFragment
 import kotlinx.coroutines.flow.Flow
 
@@ -244,7 +247,8 @@ interface ExerciseDao {
     suspend fun calculateOneRepMax(exerciseId: Long): Double?
 
 
-    @Query("""
+    @Query(
+        """
     SELECT 
         E.date AS exerciseDate,
          MAX(ES.weight * (1 + 0.0333 * ES.reps)) AS oneRepMax
@@ -256,9 +260,12 @@ interface ExerciseDao {
         E.exerciseGroupId = (
             SELECT exerciseGroupId FROM exercises WHERE id = :exerciseId
         )
-""")
+"""
+    )
     suspend fun calculateGroupMaxOneRep(exerciseId: Long): MaxOneRepForExercise?
-    @Query("""
+
+    @Query(
+        """
     SELECT 
         E.date AS exerciseDate,
         MAX(ES.weight * (1 + 0.0333 * ES.reps)) AS oneRepMax
@@ -276,8 +283,13 @@ interface ExerciseDao {
         E.date
     ORDER BY
         E.date DESC
-""")
-    suspend fun calculateMaxOneRepForLastThreeMonths(exerciseId: Long, startDate: Long, endDate: Long): List<MaxOneRepForExercise>
+"""
+    )
+    suspend fun calculateMaxOneRepForLastThreeMonths(
+        exerciseId: Long,
+        startDate: Long,
+        endDate: Long
+    ): List<MaxOneRepForExercise>
 
     @Query(
         """
@@ -295,8 +307,10 @@ interface ExerciseDao {
 """
     )
     fun getMaxExerciseVolumeForGroup(exerciseId: Long): LiveData<ExerciseSetVolume?>
+
     @Transaction
-    @Query("""
+    @Query(
+        """
 SELECT 
     exercises.id AS exerciseId, 
     exercises.exerciseGroupId, 
@@ -313,17 +327,21 @@ GROUP BY
     exercises.id
     ORDER BY 
     exercises.date DESC
-""")
+"""
+    )
     fun getAllExerciseData(): Flow<List<ExerciseData>>
+
     @Query("SELECT * FROM exercises WHERE exerciseGroupId = :exerciseGroupId ORDER BY date DESC LIMIT 1")
     suspend fun getLastTraining(exerciseGroupId: Long): Exercise?
+
     @Query("SELECT * FROM exercises")
     fun getAllExercisesForBackup(): List<Exercise>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun restoreAllExercisesFromBackup(exercises: List<Exercise>)
 
-    @Query("""
+    @Query(
+        """
     SELECT 
         E.date AS exerciseDate,
         MAX(ES.weight) AS maxWeight
@@ -341,11 +359,17 @@ GROUP BY
         E.date
     ORDER BY
         E.date DESC
-""")
+"""
+    )
 
-    suspend fun getMaxWeightForLast30Days(exerciseId: Long, startDate: Long, endDate: Long): List<MaxWeightForExercise>
+    suspend fun getMaxWeightForLast30Days(
+        exerciseId: Long,
+        startDate: Long,
+        endDate: Long
+    ): List<MaxWeightForExercise>
 
-    @Query("""
+    @Query(
+        """
          SELECT E.date as exerciseDate, MAX(ES.reps) as maxReps
 FROM exercise_sets AS ES
 JOIN exercises AS E ON ES.exercise_id = E.id
@@ -355,8 +379,66 @@ WHERE E.exerciseGroupId = (
 AND E.date BETWEEN :startDate AND :endDate
 GROUP BY E.date
 ORDER BY E.date DESC
-""")
-    suspend fun getMaxRepsOneSetForLastThreeMonths(exerciseId: Long, startDate: Long, endDate: Long): List<MaxRepsForExercise>
-}
+"""
+    )
+    suspend fun getMaxRepsOneSetForLastThreeMonths(
+        exerciseId: Long,
+        startDate: Long,
+        endDate: Long
+    ): List<MaxRepsForExercise>
 
+
+    @Query(
+        """
+SELECT E.date as exerciseDate, SUM(ES.reps) as totalReps
+FROM exercise_sets AS ES
+JOIN exercises AS E ON ES.exercise_id = E.id
+WHERE E.exerciseGroupId = (
+            SELECT exerciseGroupId FROM exercises WHERE id = :exerciseId
+        )
+AND E.date BETWEEN :startDate AND :endDate
+GROUP BY E.date
+ORDER BY E.date DESC
+"""
+    )
+    suspend fun getTotalRepsForLastThreeMonths(
+        exerciseId: Long,
+        startDate: Long,
+        endDate: Long
+    ): List<TotalRepsForExercise>
+
+
+    @Query(
+        """
+    SELECT E.date as exerciseDate, MAX(ES.weight * ES.reps) as maxSetVolume
+    FROM exercise_sets AS ES
+    JOIN exercises AS E ON ES.exercise_id = E.id
+    WHERE E.exerciseGroupId = (
+            SELECT exerciseGroupId FROM exercises WHERE id = :exerciseId
+        )
+    AND E.date BETWEEN :startDate AND :endDate
+    GROUP BY E.date
+    ORDER BY E.date DESC
+"""
+    )
+    suspend fun getMaxSetVolumeForLastThreeMonths(
+        exerciseId: Long,
+        startDate: Long,
+        endDate: Long
+    ): List<MaxSetVolumeForExercise>
+
+    @Query("""
+    SELECT E.date as exerciseDate, SUM(ES.weight * ES.reps) as totalWorkoutVolume
+    FROM exercise_sets AS ES
+    JOIN exercises AS E ON ES.exercise_id = E.id
+    WHERE E.exerciseGroupId = (
+            SELECT exerciseGroupId FROM exercises WHERE id = :exerciseId
+        )
+    AND E.date BETWEEN :startDate AND :endDate
+    GROUP BY E.date
+    ORDER BY E.date DESC
+""")
+    suspend fun getTotalWorkoutVolumeForLastThreeMonths(exerciseId: Long, startDate: Long, endDate: Long): List<TotalWorkoutVolumeForExercise>
+
+}
 

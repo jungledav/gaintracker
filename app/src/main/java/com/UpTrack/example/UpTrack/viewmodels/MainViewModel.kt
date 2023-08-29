@@ -18,12 +18,10 @@ import java.util.Locale
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 
 class MainViewModel(private val repository: MainRepository) : ViewModel() {
     val isLoading = MutableLiveData(true)
-    val lastTrainedDays = MutableLiveData<Int?>()
     val exercisesWithLastTraining = MutableLiveData<List<ExerciseWithLastTraining>>()
 
     init {
@@ -77,10 +75,6 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
 
     fun getExerciseGroupId(exerciseId: Long): LiveData<Long> {
         return repository.getExerciseGroupId(exerciseId)
-    }
-
-    fun getExerciseGroupName(exerciseGroupId: Int): LiveData<String> {
-        return repository.getExerciseGroupName(exerciseGroupId)
     }
 
     suspend fun getExerciseGroupNameById(exerciseGroupId: Int): String {
@@ -441,34 +435,52 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
 
 
     fun getMaxRepsInWorkoutOverTime(exerciseId: Long): LiveData<List<Pair<Date, Float>>> {
-        val data = listOf(
-            Pair(Date(2021, 1, 1), 100f),
-            Pair(Date(2021, 2, 1), 113f),
-            Pair(Date(2021, 3, 1), 109f),
-            Pair(Date(2021, 4, 1), 120f),
-            Pair(Date(2021, 5, 1), 112f),
-        )
-        return MutableLiveData(data)
+        val liveData = MutableLiveData<List<Pair<Date, Float>>>()
+        viewModelScope.launch {
+            try {
+                val result = repository.getTotalRepsForLastThreeMonths(exerciseId)
+                val transformedData = result?.map { item ->
+                    Pair(Date(item.exerciseDate), item.totalReps.toFloat())
+                } ?: emptyList()
+
+                liveData.postValue(transformedData)
+            } catch (e: Exception) {
+                Log.e("ViewModelError", "Error in getTotalRepsOverTime: ", e)
+            }
+        }
+        return liveData
     }
 
     fun getMaxSetVolumeOverTime(exerciseId: Long): LiveData<List<Pair<Date, Float>>> {
-        val data = listOf(
-            Pair(Date(2021, 1, 1), 90f),
-            Pair(Date(2021, 2, 1), 133f),
-            Pair(Date(2021, 3, 1), 109f),
-            Pair(Date(2021, 4, 1), 140f),
-            Pair(Date(2021, 5, 1), 109f),
-        )
-        return MutableLiveData(data)
+        val liveData = MutableLiveData<List<Pair<Date, Float>>>()
+        viewModelScope.launch {
+            try {
+                val result = repository.getMaxSetVolumeForLastThreeMonths(exerciseId)
+                val transformedData = result?.map { item ->
+                    Pair(Date(item.exerciseDate), item.maxSetVolume)
+                } ?: emptyList()
+
+                liveData.postValue(transformedData)
+            } catch (e: Exception) {
+                Log.e("ViewModelError", "Error in getMaxSetVolumeOverTime: ", e)
+            }
+        }
+        return liveData
     }
     fun getMaxWorkoutVolumeOverTime(exerciseId: Long): LiveData<List<Pair<Date, Float>>> {
-        val data = listOf(
-            Pair(Date(2021, 1, 1), 90f),
-            Pair(Date(2021, 2, 1), 133f),
-            Pair(Date(2021, 3, 1), 10f),
-            Pair(Date(2021, 4, 1), 140f),
-            Pair(Date(2021, 5, 1), 109f),
-        )
-        return MutableLiveData(data)
+        val liveData = MutableLiveData<List<Pair<Date, Float>>>()
+        viewModelScope.launch {
+            try {
+                val result = repository.getTotalWorkoutVolumeForLastThreeMonths(exerciseId)
+                val transformedData = result?.map { item ->
+                    Pair(Date(item.exerciseDate), item.totalWorkoutVolume)
+                } ?: emptyList()
+
+                liveData.postValue(transformedData)
+            } catch (e: Exception) {
+                Log.e("ViewModelError", "Error in getTotalWorkoutVolumeOverTime: ", e)
+            }
+        }
+        return liveData
     }
 }

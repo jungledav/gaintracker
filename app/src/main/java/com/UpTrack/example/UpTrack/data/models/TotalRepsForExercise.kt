@@ -1,9 +1,6 @@
 package com.UpTrack.example.UpTrack.data.models
 
-
-
-data class MaxRepsForExercise(
+class TotalRepsForExercise (
     val exerciseDate: Long,
-    val maxReps: Float
+    val totalReps: Float
 )
-

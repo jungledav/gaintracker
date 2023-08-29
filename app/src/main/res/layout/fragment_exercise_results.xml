@@ -16,6 +16,7 @@
         android:layout_margin="8dp"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp"
+        app:cardBackgroundColor="@color/card_background_color"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/guideline"
         app:layout_constraintTop_toTopOf="parent">
@@ -71,6 +72,7 @@
         android:layout_margin="8dp"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp"
+        app:cardBackgroundColor="@color/card_background_color"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/card_max_weight">
@@ -133,6 +135,7 @@
         android:visibility="visible"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp"
+        app:cardBackgroundColor="@color/card_background_color"
         app:layout_constraintStart_toEndOf="@id/guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -191,6 +194,7 @@
         android:visibility="visible"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp"
+        app:cardBackgroundColor="@color/card_background_color"
         app:layout_constraintStart_toEndOf="@id/guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/one_max_rep"
@@ -255,6 +259,7 @@
         android:visibility="visible"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp"
+        app:cardBackgroundColor="@color/card_background_color"
         app:layout_constraintStart_toEndOf="@id/guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/card_total_rep">
@@ -313,6 +318,7 @@
         android:visibility="visible"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp"
+        app:cardBackgroundColor="@color/card_background_color"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/card_max_rep">
