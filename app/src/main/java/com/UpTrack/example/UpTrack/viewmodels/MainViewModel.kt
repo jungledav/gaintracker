@@ -394,7 +394,7 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
 
 
     fun getMaxWeightOverTime(exerciseId: Long): LiveData<List<MaxWeightForExercise>> {
-        return repository.getMaxWeightForLast30Days(exerciseId)
+        return repository.getMaxWeightForLastThreeMonths(exerciseId)
     }
 
 

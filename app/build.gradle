@@ -13,8 +13,8 @@ android {
         namespace "com.UpTrack.example.UpTrack"
         minSdk 21
         targetSdk 33
-        versionCode 20
-        versionName "20"
+        versionCode 21
+        versionName "22"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

@@ -174,12 +174,13 @@ class MainRepository(
         return exerciseDao.calculateMaxOneRepForLastThreeMonths(exerciseId, startDate, endDate)
     }
 
-    fun getMaxWeightForLast30Days(exerciseId: Long): LiveData<List<MaxWeightForExercise>> {
+    fun getMaxWeightForLastThreeMonths(exerciseId: Long): LiveData<List<MaxWeightForExercise>> {
         val endDate = Date().time // current timestamp
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.DAY_OF_YEAR, -30)
-        val startDate = calendar.timeInMillis // timestamp 30 days ago
-
+        val calendar = Calendar.getInstance().apply {
+            timeInMillis = endDate
+            add(Calendar.MONTH, -3)
+        }
+        val startDate = calendar.timeInMillis
         return liveData {
             emit(exerciseDao.getMaxWeightForLast30Days(exerciseId, startDate, endDate))
         }
