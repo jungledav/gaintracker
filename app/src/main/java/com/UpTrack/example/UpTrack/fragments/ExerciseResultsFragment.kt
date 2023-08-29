@@ -375,7 +375,7 @@ class ExerciseResultsFragment : Fragment() {
             Entry(index.toFloat(), weight)
         }
         val dataSet = LineDataSet(entries, "Max Weight")
-
+        lineChart.setPinchZoom(false)
         // Set line mode and styles
         dataSet.mode = LineDataSet.Mode.LINEAR
         dataSet.setDrawCircles(true)
