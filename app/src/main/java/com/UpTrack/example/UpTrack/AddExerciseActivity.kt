@@ -69,7 +69,7 @@ class AddExerciseActivity : AppCompatActivity() {
                 lifecycleScope.launch {
                     Log.d("AddExerciseActivity", "Inserting exercise: $exerciseName")
                     val fullExerciseName = exerciseSpinner.selectedItem.toString()
-                    val exerciseName = fullExerciseName.substringBefore(" (").trim()
+                   val exerciseName = fullExerciseName.substringBefore(" (").trim()
                     val exerciseId = viewModel.insertExercise(exerciseName)
                     Log.d("AddExerciseActivity", "Exercise inserted with ID: $exerciseId")
 
@@ -208,10 +208,12 @@ class AddExerciseActivity : AppCompatActivity() {
         builder.setPositiveButton("Add") { _, _ ->
             val customExerciseName = editTextCustomExerciseName.text.toString().trim()
             val selectedEquipmentType = spinnerEquipmentType.selectedItem.toString()
-            if (customExerciseName.isNotBlank()) {
+            if (customExerciseName.contains("(") || customExerciseName.contains(")")) {
+                Toast.makeText(this, "Brackets are not allowed in exercise names.", Toast.LENGTH_SHORT).show()
+                showAddCustomExerciseDialog()
+            } else if (customExerciseName.isNotBlank()) {
                 PredefinedExercises.addCustomExercise(this, muscleGroupSpinner.selectedItem.toString(), customExerciseName, selectedEquipmentType)
 
-                // Update the exerciseSpinner with the new list of exercises
                 val muscleGroupName = muscleGroupSpinner.selectedItem.toString()
                 val updatedExercises = PredefinedExercises.getExerciseNamesForMuscleGroup(muscleGroupName)
                 val customExerciseIndex = updatedExercises.indexOf(customExerciseName)
@@ -224,12 +226,16 @@ class AddExerciseActivity : AppCompatActivity() {
                 exerciseSpinner.setSelection(customExerciseIndex)
             } else {
                 Toast.makeText(this, "Please enter a custom exercise name", Toast.LENGTH_SHORT).show()
+                showAddCustomExerciseDialog()
             }
         }
         builder.setNegativeButton("Cancel", null)
         customExerciseDialog = builder.create()
         customExerciseDialog?.show()
     }
+
+
+
 
     private fun navigateToExerciseDetailsActivity(exerciseId: Long, exerciseName: String) {
         Log.d("AddExerciseActivity", "Navigating to ExerciseDetailsActivity with ID: $exerciseId and Name: $exerciseName")
