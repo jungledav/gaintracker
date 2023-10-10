@@ -101,14 +101,15 @@ class ExerciseAdapter(
 
                 // Match the exercise's group name to the correct icon
                 val muscleGroupIcon = when (muscleGroupName)  {
-                    "Chest" -> R.drawable.chest
-                    "Back" -> R.drawable.back
-                    "Shoulders" -> R.drawable.shoulder
-                    "Biceps" -> R.drawable.bizeps
-                    "Triceps" -> R.drawable.trizeps
-                    "Legs" -> R.drawable.leg
-                    "Abs" -> R.drawable.leg
-                    "Gluteus" -> R.drawable.leg
+                    "Chest" -> R.drawable.chestistock
+                    "Back" -> R.drawable.backistock
+                    "Shoulders" -> R.drawable.shoulderistock
+                    "Biceps" -> R.drawable.bizepsistock
+                    "Triceps" -> R.drawable.tricepsistock
+                    "Legs" -> R.drawable.legsistock
+                    "Abs" -> R.drawable.absistock
+                    "Gluteus" -> R.drawable.gluteusistock
+                    "Forearms" -> R.drawable.forearmistock
                     else -> R.drawable.background_image // Fallback icon
                 }
                 holder.imageViewMuscleGroup.setImageResource(muscleGroupIcon)

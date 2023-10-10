@@ -63,6 +63,15 @@ object PredefinedExercises {
             ExerciseInfo("Kickbacks", "Dumbbell"),
             ExerciseInfo("Machine Triceps Extension", "Machine")
         )),
+        MuscleGroup("Forearms", listOf(
+            ExerciseInfo("Wrist Curls", "Barbell"),
+            ExerciseInfo("Reverse Wrist Curls", "Barbell"),
+            ExerciseInfo("Farmer's Walk", "Dumbbell"),
+            ExerciseInfo("Hammer Curls", "Dumbbell"),
+            ExerciseInfo("Zottman Curls", "Dumbbell"),
+            ExerciseInfo("Behind-the-Back Wrist Curl", "Barbell"),
+            ExerciseInfo("Plate Pinches", "Weight Plate")
+        )),
         MuscleGroup("Abs", listOf(
             ExerciseInfo("Crunches", "Bodyweight"),
             ExerciseInfo("Plank", "Bodyweight"),
