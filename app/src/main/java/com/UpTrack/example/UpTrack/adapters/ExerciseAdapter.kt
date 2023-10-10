@@ -4,12 +4,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.UpTrack.example.UpTrack.MainActivity
 import com.UpTrack.example.UpTrack.R
 import com.UpTrack.example.UpTrack.data.models.Exercise
 import com.UpTrack.example.UpTrack.data.models.ExerciseListItem
+import com.UpTrack.example.UpTrack.data.predefined.PredefinedExercises
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -22,6 +24,8 @@ class ExerciseAdapter(
     inner class ExerciseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textViewExerciseName: TextView = itemView.findViewById(R.id.textViewExerciseName)
         val textViewSetsCount: TextView = itemView.findViewById(R.id.textViewSetsCount)
+        val imageViewMuscleGroup: ImageView = itemView.findViewById(R.id.imageViewMuscleGroup)
+
 
         init {
             itemView.setOnClickListener {
@@ -92,6 +96,22 @@ class ExerciseAdapter(
                 val exerciseItem = currentItem as ExerciseListItem.ExerciseItem
                 holder.textViewExerciseName.text = exerciseItem.exerciseGroupName
                 holder.updateSetsCount(exerciseItem.totalSets)
+                // Lookup the muscle group using the new method
+                val muscleGroupName = PredefinedExercises.findMuscleGroupByExerciseName(exerciseItem.exerciseGroupName)
+
+                // Match the exercise's group name to the correct icon
+                val muscleGroupIcon = when (muscleGroupName)  {
+                    "Chest" -> R.drawable.chest
+                    "Back" -> R.drawable.back
+                    "Shoulders" -> R.drawable.shoulder
+                    "Biceps" -> R.drawable.bizeps
+                    "Triceps" -> R.drawable.trizeps
+                    "Legs" -> R.drawable.leg
+                    "Abs" -> R.drawable.leg
+                    "Gluteus" -> R.drawable.leg
+                    else -> R.drawable.background_image // Fallback icon
+                }
+                holder.imageViewMuscleGroup.setImageResource(muscleGroupIcon)
             }
             is DividerViewHolder -> {
                 val dividerItem = currentItem as ExerciseListItem.DividerItem

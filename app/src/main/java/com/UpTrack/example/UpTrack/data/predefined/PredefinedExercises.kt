@@ -53,6 +53,7 @@ object PredefinedExercises {
             ExerciseInfo("Cable Curl", "Machine"),
             ExerciseInfo("Seated Machine Curl", "Machine")
         )),
+
         MuscleGroup("Triceps", listOf(
             ExerciseInfo("Triceps Dips", "Bodyweight"),
             ExerciseInfo("Close Grip Bench Press", "Barbell"),
@@ -61,6 +62,26 @@ object PredefinedExercises {
             ExerciseInfo("Dumbbell Overhead Triceps Extension", "Dumbbell"),
             ExerciseInfo("Kickbacks", "Dumbbell"),
             ExerciseInfo("Machine Triceps Extension", "Machine")
+        )),
+        MuscleGroup("Abs", listOf(
+            ExerciseInfo("Crunches", "Bodyweight"),
+            ExerciseInfo("Plank", "Bodyweight"),
+            ExerciseInfo("Hanging Leg Raise", "Bodyweight"),
+            ExerciseInfo("Russian Twists", "Dumbbell"),
+            ExerciseInfo("Sit-Ups", "Bodyweight"),
+            ExerciseInfo("Leg Raises", "Bodyweight"),
+            ExerciseInfo("Bicycle Crunches", "Bodyweight"),
+            ExerciseInfo("Cable Crunch", "Machine")
+        )),
+        MuscleGroup("Gluteus", listOf(
+            ExerciseInfo("Hip Thrust", "Barbell"),
+            ExerciseInfo("Glute Bridge", "Barbell"),
+            ExerciseInfo("Donkey Kicks", "Bodyweight"),
+            ExerciseInfo("Cable Kickbacks", "Machine"),
+            ExerciseInfo("Step Ups", "Dumbbell"),
+            ExerciseInfo("Bulgarian Split Squats", "Dumbbell"),
+            ExerciseInfo("Box Squats", "Barbell"),
+            ExerciseInfo("Romanian Deadlift", "Barbell")
         )),
         MuscleGroup("Legs", listOf(
             ExerciseInfo("Squats", "Barbell"),
@@ -112,6 +133,24 @@ object PredefinedExercises {
         // Pass the context when calling saveCustomExercises.
         saveCustomExercises(context)
     }
+    fun findMuscleGroupByExerciseName(exerciseName: String): String? {
+        // Check in predefined exercises
+        for (muscleGroup in predefinedExercises) {
+            if (muscleGroup.exercises.any { it.name == exerciseName }) {
+                return muscleGroup.groupName
+            }
+        }
+
+        // Check in custom exercises
+        for ((muscleGroupName, exercises) in customExercises) {
+            if (exercises.any { it.name == exerciseName }) {
+                return muscleGroupName
+            }
+        }
+
+        return null // return null if exercise name doesn't match any predefined or custom exercise
+    }
+
 
 
 }
