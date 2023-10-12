@@ -1,6 +1,7 @@
 package com.UpTrack.example.UpTrack.data.predefined
 
 import android.content.Context
+import android.util.Log
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.Serializable
@@ -10,7 +11,7 @@ object PredefinedExercises {
     @Serializable
     data class ExerciseInfo(val name: String, val equipment: String)
     data class MuscleGroup(val groupName: String, val exercises: List<ExerciseInfo>)
-    private val customExercises = mutableMapOf<String, MutableList<ExerciseInfo>>()
+    private val customExercises = java.util.concurrent.ConcurrentHashMap<String, MutableList<ExerciseInfo>>()
 
     val predefinedExercises: List<MuscleGroup> = listOf(
         MuscleGroup("Chest", listOf(
@@ -121,8 +122,12 @@ object PredefinedExercises {
             .find { it.name == name } ?: customExercises.flatMap { it.value }.find { it.name == name }
     }
     fun setCustomExercises(customExercisesMap: MutableMap<String, MutableList<ExerciseInfo>>) {
-        customExercises.clear()
-        customExercises.putAll(customExercisesMap)
+        synchronized(customExercises) {
+            customExercises.clear()
+            customExercises.putAll(customExercisesMap)
+        }
+        Log.d("PredefinedExercises", "Custom exercises set at: ${System.currentTimeMillis()}")
+
     }
 
     private fun saveCustomExercises(context: Context) {
@@ -133,20 +138,23 @@ object PredefinedExercises {
         editor.apply()
     }
     fun addCustomExercise(context: Context, muscleGroupName: String, exerciseName: String, equipmentType: String) {
-        if (customExercises[muscleGroupName] == null) {
-            customExercises[muscleGroupName] = mutableListOf()
+        synchronized(customExercises) {
+            if (customExercises[muscleGroupName] == null) {
+                customExercises[muscleGroupName] = mutableListOf()
+            }
+            customExercises[muscleGroupName]!!.add(ExerciseInfo(name = exerciseName, equipment = equipmentType))
         }
-        customExercises[muscleGroupName]!!.add(ExerciseInfo(name = exerciseName, equipment = equipmentType))
-
-        // Pass the context when calling saveCustomExercises.
-        saveCustomExercises(context)
+        saveCustomExercises(context) // Assuming this is also thread-safe
     }
     fun findMuscleGroupByExerciseName(exerciseName: String): String? {
         // Check in predefined exercises
+        Log.d("PredefinedExercises", "Finding muscle group for exercise $exerciseName at: ${System.currentTimeMillis()}")
+
         for (muscleGroup in predefinedExercises) {
             if (muscleGroup.exercises.any { it.name == exerciseName }) {
                 return muscleGroup.groupName
             }
+
         }
 
         // Check in custom exercises
@@ -157,6 +165,7 @@ object PredefinedExercises {
         }
 
         return null // return null if exercise name doesn't match any predefined or custom exercise
+
     }
 
 

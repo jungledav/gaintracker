@@ -1,5 +1,6 @@
 package com.UpTrack.example.UpTrack.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -113,11 +114,19 @@ class ExerciseAdapter(
                     else -> null
                 }
                 if (muscleGroupIcon != null) {
-                holder.imageViewMuscleGroup.setImageResource(muscleGroupIcon)
+                    holder.imageViewMuscleGroup.setImageResource(muscleGroupIcon)
                     holder.imageViewMuscleGroup.visibility = View.VISIBLE
+
+                    holder.imageViewMuscleGroup.postDelayed({
+                        val drawable = holder.imageViewMuscleGroup.drawable
+                        Log.d("ExerciseAdapter", "Delayed Drawable check: $drawable")
+                    }, 100)
                 } else {
                     holder.imageViewMuscleGroup.visibility = View.GONE
                 }
+                Log.d("ExerciseAdapter", "Exercise Group Name: ${exerciseItem.exerciseGroupName}")
+                Log.d("ExerciseAdapter", "Muscle Group Name: $muscleGroupName")
+
             }
             is DividerViewHolder -> {
                 val dividerItem = currentItem as ExerciseListItem.DividerItem

@@ -20,10 +20,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import java.util.*
 import androidx.recyclerview.widget.DefaultItemAnimator
+import com.UpTrack.example.UpTrack.data.predefined.PredefinedExercises
 import com.UpTrack.example.UpTrack.fragments.SettingsDialogFragment
 import com.UpTrack.example.UpTrack.viewmodels.ExerciseDetailsActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
-
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
 
 interface OnNoExercisesTodayClickListener {
@@ -52,6 +54,14 @@ class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExerc
 
    override fun onAddAnotherExerciseClick() {
         openAddExerciseActivity()
+    }
+    private fun loadCustomExercises() {
+        val sharedPreferences = getSharedPreferences("custom_exercises", Context.MODE_PRIVATE)
+        val json = sharedPreferences.getString("custom_exercises_data", null)
+
+        if (json != null) {
+            PredefinedExercises.setCustomExercises(Json.decodeFromString(json))
+        }
     }
     private fun generateExerciseListItems(exerciseData: List<ExerciseData>): List<ExerciseListItem> {
         val items = mutableListOf<ExerciseListItem>()
@@ -187,6 +197,7 @@ class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExerc
 
         layoutInflater.inflate(R.layout.activity_main, findViewById(R.id.activity_content))
 
+
         // Setup settings icon click listener
         val settingsIcon = findViewById<ImageView>(R.id.settings_icon)
         settingsIcon.setOnClickListener {
@@ -205,6 +216,8 @@ class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExerc
             val dialog = SettingsDialogFragment()
             dialog.show(supportFragmentManager, "SettingsDialogFragment")
         }
+        // Load custom exercises
+        loadCustomExercises()
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
         bottomNavigationView.visibility = View.GONE
 
@@ -261,6 +274,7 @@ class MainActivity : BaseActivity(), onAddAnotherExerciseClickListener,OnNoExerc
                     adapter.notifyItemChanged(position) // In case it's a DividerItem, we reset the swipe
                 }
             }
+
             override fun getSwipeDirs(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder
