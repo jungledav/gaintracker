@@ -22,6 +22,7 @@ import androidx.appcompat.widget.Toolbar
 import com.UpTrack.example.UpTrack.viewmodels.ExerciseDetailsActivity
 import com.jakewharton.threetenabp.AndroidThreeTen
 import androidx.lifecycle.Observer
+import com.UpTrack.example.UpTrack.adapters.MuscleGroupSpinnerAdapter
 
 
 class AddExerciseActivity : AppCompatActivity() {
@@ -30,7 +31,7 @@ class AddExerciseActivity : AppCompatActivity() {
         (application as GainTrackerApplication).appContainer
     }
     private val viewModel: MainViewModel by viewModels { MainViewModelFactory(appContainer.mainRepository) }
-
+    private lateinit var muscleGroupAdapter: ArrayAdapter<String>
     private lateinit var muscleGroupSpinner: Spinner
     private lateinit var exerciseSpinner: Spinner
     private lateinit var buttonAddExercise: Button
@@ -98,12 +99,10 @@ class AddExerciseActivity : AppCompatActivity() {
     }
 
     private fun setupSpinners() {
-        val muscleGroupList = PredefinedExercises.getMuscleGroupNames().toMutableList()
-        muscleGroupList.add(0, "Please select...")
-        val muscleGroupAdapter = ArrayAdapter<String>(
-            this, android.R.layout.simple_spinner_item, muscleGroupList
-        )
-        muscleGroupAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        val muscleGroupNames = PredefinedExercises.getMuscleGroupNames()
+        val fullMuscleGroupNameList = listOf("Please select...") + muscleGroupNames
+
+        muscleGroupAdapter = MuscleGroupSpinnerAdapter(this, fullMuscleGroupNameList)
         muscleGroupSpinner.adapter = muscleGroupAdapter
 
         // Initially deactivate the exerciseSpinner

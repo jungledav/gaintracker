@@ -110,9 +110,14 @@ class ExerciseAdapter(
                     "Abs" -> R.drawable.abscropped
                     "Gluteus" -> R.drawable.gluteuscropped
                     "Forearms" -> R.drawable.forearmcropped
-                    else -> R.drawable.background_image // Fallback icon
+                    else -> null
                 }
+                if (muscleGroupIcon != null) {
                 holder.imageViewMuscleGroup.setImageResource(muscleGroupIcon)
+                    holder.imageViewMuscleGroup.visibility = View.VISIBLE
+                } else {
+                    holder.imageViewMuscleGroup.visibility = View.GONE
+                }
             }
             is DividerViewHolder -> {
                 val dividerItem = currentItem as ExerciseListItem.DividerItem

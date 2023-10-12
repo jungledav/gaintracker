@@ -66,7 +66,6 @@ object PredefinedExercises {
         MuscleGroup("Forearms", listOf(
             ExerciseInfo("Wrist Curls", "Barbell"),
             ExerciseInfo("Reverse Wrist Curls", "Barbell"),
-            ExerciseInfo("Farmer's Walk", "Dumbbell"),
             ExerciseInfo("Hammer Curls", "Dumbbell"),
             ExerciseInfo("Zottman Curls", "Dumbbell"),
             ExerciseInfo("Behind-the-Back Wrist Curl", "Barbell"),
