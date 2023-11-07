@@ -3,19 +3,20 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="16dp">
+    android:padding="5dp"
+    android:gravity="center_vertical">
 
     <ImageView
         android:id="@+id/imageViewMuscleGroupSpinner"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="16dp" />
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="5dp" />
 
     <TextView
         android:id="@+id/textViewMuscleGroupSpinner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textSize="16sp" />
+        android:textSize="16dp" />
 
 </LinearLayout>

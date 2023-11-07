@@ -30,15 +30,15 @@ class MuscleGroupSpinnerAdapter(context: Context, private val muscleGroupNames: 
         textView.text = muscleGroupName
 
         val iconRes = when (muscleGroupName) {
-            "Chest" -> R.drawable.chestcropped
-            "Back" -> R.drawable.backcropped
-            "Shoulders" -> R.drawable.shouldercropped
-            "Biceps" -> R.drawable.bizepscropped
-            "Triceps" -> R.drawable.tricepscropped
-            "Legs" -> R.drawable.legsistock
-            "Abs" -> R.drawable.abscropped
-            "Gluteus" -> R.drawable.gluteuscropped
-            "Forearms" -> R.drawable.forearmcropped
+            "Chest" -> R.drawable.chestcropped_small
+            "Back" -> R.drawable.backcropped_small
+            "Shoulders" -> R.drawable.shouldercropped_small
+            "Biceps" -> R.drawable.bizepscropped_small
+            "Triceps" -> R.drawable.tricepscropped_small
+            "Legs" -> R.drawable.legscropped_small
+            "Abs" -> R.drawable.abscropped_small
+            "Gluteus" -> R.drawable.gluteuscropped_small
+            "Forearms" -> R.drawable.forearmcropped_small
             else -> null
         }
 
