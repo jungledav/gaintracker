@@ -133,7 +133,7 @@ object PredefinedExercises {
     private fun saveCustomExercises(context: Context) {
         val sharedPreferences = context.getSharedPreferences("custom_exercises", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-        val json = Json.encodeToString(customExercises)
+        val json = Json.encodeToString(HashMap(customExercises))
         editor.putString("custom_exercises_data", json)
         editor.apply()
     }

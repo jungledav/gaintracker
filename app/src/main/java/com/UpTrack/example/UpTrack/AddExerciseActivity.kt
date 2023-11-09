@@ -43,6 +43,14 @@ class AddExerciseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         AndroidThreeTen.init(this)
         setContentView(R.layout.activity_add_exercise)
+        // Initialization of muscleGroupAdapter should happen here
+        val muscleGroupNames = PredefinedExercises.getMuscleGroupNames()
+        val fullMuscleGroupNameList = listOf("Please select...") + muscleGroupNames
+
+        muscleGroupAdapter = MuscleGroupSpinnerAdapter(this, fullMuscleGroupNameList)
+        muscleGroupSpinner = findViewById(R.id.muscleGroupSpinner)
+        muscleGroupSpinner.adapter = muscleGroupAdapter
+
         loadCustomExercises()
         // Set up the toolbar
         val toolbar = findViewById<Toolbar>(R.id.toolbar_add_exercise)
@@ -120,7 +128,6 @@ class AddExerciseActivity : AppCompatActivity() {
                 } else {
                     // If a muscle group is selected, activate the exerciseSpinner and load associated exercises
                     exerciseSpinner.isEnabled = true
-                    val muscleGroupName = muscleGroupSpinner.selectedItem.toString()
                     val exerciseNames = PredefinedExercises.getExerciseNamesForMuscleGroup(muscleGroupName).filter { it != "Please select..." }
                     Log.d("AddExerciseActivity", "exercisename:$exerciseNames" )
 
