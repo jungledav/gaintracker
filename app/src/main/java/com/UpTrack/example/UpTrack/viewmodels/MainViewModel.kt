@@ -139,6 +139,7 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
     fun getMaxWeightDateForExercise(exerciseId: Long): LiveData<String> {
         val timestampLiveData: LiveData<Long?> = repository.getMaxWeightDateForExercise(exerciseId)
         return timestampLiveData.map { timestamp: Long? ->
+            Log.d("MaxWeightDate", "Timestamp: $timestamp")
             formatTimestamp(timestamp)
         }
     }
@@ -154,6 +155,8 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
     fun getMaxRepsDateForExerciseGroup(exerciseId: Long): LiveData<String> {
         val timestampLiveData = repository.getMaxRepsDateForExerciseGroup(exerciseId)
         return timestampLiveData.map { timestamp ->
+            Log.d("MaxRepsDate", "Timestamp: $timestamp")
+
             formatTimestamp(timestamp)
         }
     }

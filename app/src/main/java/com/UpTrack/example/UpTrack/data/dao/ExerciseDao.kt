@@ -120,29 +120,29 @@ interface ExerciseDao {
 
     @Query(
         """
-    SELECT exercises.date
-    FROM exercises
-    WHERE exercises.id = (
-        SELECT exercise_sets.exercise_id
-        FROM exercise_sets
-        WHERE exercise_sets.weight = (
-            SELECT MAX(exercise_sets.weight)
-            FROM exercise_sets
-            WHERE exercise_sets.exercise_id IN (
-                SELECT exercises.id
-                FROM exercises
-                WHERE exercises.exerciseGroupId = (
-                    SELECT exercises.exerciseGroupId
-                    FROM exercises
-                    WHERE exercises.id = :exerciseId
-                )
-            )
+    SELECT e.date
+    FROM exercises e
+    INNER JOIN exercise_sets es ON e.id = es.exercise_id
+    WHERE es.weight = (
+        SELECT MAX(es2.weight)
+        FROM exercise_sets es2
+        INNER JOIN exercises e2 ON es2.exercise_id = e2.id
+        WHERE e2.exerciseGroupId = (
+            SELECT e3.exerciseGroupId
+            FROM exercises e3
+            WHERE e3.id = :exerciseId
         )
-        LIMIT 1
     )
-"""
+    AND e.exerciseGroupId = (
+        SELECT e4.exerciseGroupId
+        FROM exercises e4
+        WHERE e4.id = :exerciseId
+    )
+    LIMIT 1
+    """
     )
     fun getMaxWeightDateForExercise(exerciseId: Long): LiveData<Long?>
+
 
 
     @Query("SELECT MAX(weight) FROM exercise_sets WHERE exercise_id = :exerciseId")
