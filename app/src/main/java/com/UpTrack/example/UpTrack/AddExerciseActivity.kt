@@ -22,7 +22,9 @@ import androidx.appcompat.widget.Toolbar
 import com.UpTrack.example.UpTrack.viewmodels.ExerciseDetailsActivity
 import com.jakewharton.threetenabp.AndroidThreeTen
 import androidx.lifecycle.Observer
+import com.UpTrack.example.UpTrack.adapters.ExerciseDropdownAdapter
 import com.UpTrack.example.UpTrack.adapters.MuscleGroupSpinnerAdapter
+import com.UpTrack.example.UpTrack.data.models.ExerciseDropdownItem
 
 
 class AddExerciseActivity : AppCompatActivity() {
@@ -35,6 +37,8 @@ class AddExerciseActivity : AppCompatActivity() {
     private lateinit var muscleGroupSpinner: Spinner
     private lateinit var exerciseSpinner: Spinner
     private lateinit var buttonAddExercise: Button
+    private lateinit var exerciseSpinnerAdapter: ExerciseDropdownAdapter
+
 
     companion object {
         const val EXTRA_FROM_MAIN_ACTIVITY = "com.UpTrack.example.UpTrack.EXTRA_FROM_MAIN_ACTIVITY"
@@ -141,40 +145,25 @@ class AddExerciseActivity : AppCompatActivity() {
         }
 
         viewModel.exercisesWithLastTraining.observe(this, { exercises ->
-            val exerciseListWithDates = mutableListOf("Please select...")
-            val exercisedListWithDates = mutableListOf<String>()
-            val nonExercisedListWithDates = mutableListOf<String>()
+            Log.d("AddExerciseActivity", "Exercises received: ${exercises.size}, ${exercises.joinToString()}")
 
-            for (exercise in exercises) {
-                val daysAgoLong = exercise.daysAgo?.toLong()
-                val daysAgoString = when (daysAgoLong) {
-                    null -> ""
-                    0L -> "Today"
-                    1L -> "Yesterday"
-                    else -> "${exercise.daysAgo} days ago"
-                }
+            val items = mutableListOf<ExerciseDropdownItem>()
+            items.add(ExerciseDropdownItem.SubHeader("Recently trained"))
 
-                val exerciseItem = if (exercise.daysAgo != null) {
-                    "${exercise.exerciseName} ($daysAgoString)"
-                } else {
-                    exercise.exerciseName
-                }
+            // Add recently trained exercises
+            exercises.filter { it.daysAgo != null }
+                .sortedByDescending { it.daysAgo }
+                .mapTo(items) { ExerciseDropdownItem.Exercise(it.exerciseName, "${it.daysAgo} days ago") }
 
-                if (exercise.daysAgo != null) {
-                    exercisedListWithDates.add(exerciseItem)
-                } else {
-                    nonExercisedListWithDates.add(exerciseItem)
-                }
-            }
+            items.add(ExerciseDropdownItem.SubHeader("Others"))
 
-            exerciseListWithDates.addAll(exercisedListWithDates)
-            exerciseListWithDates.addAll(nonExercisedListWithDates)
+            // Add other exercises
+            exercises.filter { it.daysAgo == null }
+                .mapTo(items) { ExerciseDropdownItem.Exercise(it.exerciseName, null) }
+            Log.d("AddExerciseActivity", "Dropdown items prepared: ${items.size}, ${items.joinToString()}")
 
-            val exerciseAdapter = ArrayAdapter<String>(
-                this@AddExerciseActivity, android.R.layout.simple_spinner_item, exerciseListWithDates
-            )
-            exerciseAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            exerciseSpinner.adapter = exerciseAdapter
+            exerciseSpinnerAdapter = ExerciseDropdownAdapter(this@AddExerciseActivity, items)
+            exerciseSpinner.adapter = exerciseSpinnerAdapter
         })
 
         exerciseSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
