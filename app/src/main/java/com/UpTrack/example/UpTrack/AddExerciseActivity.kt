@@ -76,28 +76,33 @@ class AddExerciseActivity : AppCompatActivity() {
             buttonAddExercise.isEnabled = !isLoading
         })
         buttonAddExercise.setOnClickListener {
-            val exerciseName = exerciseSpinner.selectedItem.toString()
+            // Get the selected item from the spinner, which is an instance of ExerciseDropdownItem
+            val selectedItem = exerciseSpinner.selectedItem as? ExerciseDropdownItem.Exercise
 
-            if (exerciseName.isNotBlank() && exerciseName != "+ Add your own exercise") {
+            // Check if the selected item is not null and is not the "Please Select" prompt
+            if (selectedItem != null && selectedItem.name != "Please Select") {
                 lifecycleScope.launch {
+                    // Extract the exercise name from the ExerciseDropdownItem
+                    val exerciseName = selectedItem.name
                     Log.d("AddExerciseActivity", "Inserting exercise: $exerciseName")
-                    val fullExerciseName = exerciseSpinner.selectedItem.toString()
-                   val exerciseName = fullExerciseName.substringBefore(" (").trim()
+
+                    // Insert the exercise and retrieve the ID
                     val exerciseId = viewModel.insertExercise(exerciseName)
                     Log.d("AddExerciseActivity", "Exercise inserted with ID: $exerciseId")
 
                     if (exerciseId != 0L) {
                         Log.d("AddExerciseActivity", "Navigating to ExerciseDetailsActivity with ID: $exerciseId and Name: $exerciseName")
-
                         navigateToExerciseDetailsActivity(exerciseId, exerciseName)
                     } else {
                         Log.d("AddExerciseActivity", "Failed to insert exercise.")
                     }
                 }
             } else {
+                // Prompt the user to select an exercise if "Please Select" is the current selection
                 Toast.makeText(this, "Please select an exercise", Toast.LENGTH_SHORT).show()
             }
         }
+
 
     }
 
