@@ -36,25 +36,39 @@ class ExerciseDropdownAdapter(context: Context, items: List<ExerciseDropdownItem
         return when (item) {
             is ExerciseDropdownItem.Exercise -> {
                 val view = convertView ?: inflater.inflate(R.layout.spinner_dropdown_item, parent, false)
-                val nameTextView: TextView? = view.findViewById(R.id.textViewExerciseName)
-                val lastTrainedTextView: TextView? = view.findViewById(R.id.textViewLastTrained)
-                nameTextView?.text = item.name
-                lastTrainedTextView?.text = item.lastTrained ?: "Never"
+                val nameTextView: TextView = view.findViewById(R.id.textViewExerciseName)
+                val lastTrainedTextView: TextView = view.findViewById(R.id.textViewLastTrained)
+
+                nameTextView.text = item.name
+
+                // Check if the item is the "Please Select..." prompt, and if so, do not display the last trained text
+                if (item.name == "Please select...") {
+                    lastTrainedTextView.text = "" // Clear any last trained text
+                } else {
+                    lastTrainedTextView.text = item.lastTrained ?: "Never"
+                }
+
                 view
             }
             is ExerciseDropdownItem.SubHeader -> {
                 val view = convertView ?: inflater.inflate(R.layout.spinner_subheader, parent, false)
                 val titleTextView: TextView? = view.findViewById(R.id.textViewSubHeader)
-                titleTextView?.text = item.title
+                titleTextView?.text = item.title ?: "Section"
                 view
             }
-            else -> super.getDropDownView(position, convertView, parent)
         }
     }
 
+
+
     override fun isEnabled(position: Int): Boolean {
-        // Make subheaders non-selectable
-        return getItem(position) is ExerciseDropdownItem.Exercise
+        // Disable selection of the "Please Select..." option and subheaders
+        val item = getItem(position)
+        return when (item) {
+            is ExerciseDropdownItem.Exercise -> item.name != "Please select..."
+            is ExerciseDropdownItem.SubHeader -> false
+            else -> false
+        }
     }
 }
 
