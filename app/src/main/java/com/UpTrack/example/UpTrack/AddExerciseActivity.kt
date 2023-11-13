@@ -279,18 +279,15 @@ class AddExerciseActivity : AppCompatActivity() {
                 Toast.makeText(this, "Brackets are not allowed in exercise names.", Toast.LENGTH_SHORT).show()
                 showAddCustomExerciseDialog()
             } else if (customExerciseName.isNotBlank()) {
-                PredefinedExercises.addCustomExercise(this, muscleGroupSpinner.selectedItem.toString(), customExerciseName, selectedEquipmentType)
-
-                val muscleGroupName = muscleGroupSpinner.selectedItem.toString()
-                val updatedExercises = PredefinedExercises.getExerciseNamesForMuscleGroup(muscleGroupName)
-                val customExerciseIndex = updatedExercises.indexOf(customExerciseName)
-
-                val exerciseAdapter = ArrayAdapter<String>(
-                    this, android.R.layout.simple_spinner_item, updatedExercises
+                PredefinedExercises.addCustomExercise(
+                    this,
+                    muscleGroupSpinner.selectedItem.toString(),
+                    customExerciseName,
+                    selectedEquipmentType
                 )
-                exerciseAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                exerciseSpinner.adapter = exerciseAdapter
-                exerciseSpinner.setSelection(customExerciseIndex)
+
+                // Refresh the spinner to show updated data including last trained info
+                refreshExerciseSpinnerData()
             } else {
                 Toast.makeText(this, "Please enter a custom exercise name", Toast.LENGTH_SHORT).show()
                 showAddCustomExerciseDialog()
@@ -301,7 +298,13 @@ class AddExerciseActivity : AppCompatActivity() {
         customExerciseDialog?.show()
     }
 
+    private fun refreshExerciseSpinnerData() {
+        val muscleGroupName = muscleGroupSpinner.selectedItem.toString()
+        val exerciseNames = PredefinedExercises.getExerciseNamesForMuscleGroup(muscleGroupName)
 
+        // This assumes viewModel.loadDaysSinceLastTrained will trigger an update to the spinner data
+        viewModel.loadDaysSinceLastTrained(exerciseNames)
+    }
 
 
     private fun navigateToExerciseDetailsActivity(exerciseId: Long, exerciseName: String) {
