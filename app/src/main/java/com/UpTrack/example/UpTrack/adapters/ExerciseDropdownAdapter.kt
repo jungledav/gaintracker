@@ -41,11 +41,13 @@ class ExerciseDropdownAdapter(context: Context, items: List<ExerciseDropdownItem
 
                 nameTextView.text = item.name
 
-                // Check if the item is the "Please Select..." prompt, and if so, do not display the last trained text
-                if (item.name == "Please select...") {
-                    lastTrainedTextView.text = "" // Clear any last trained text
-                } else {
-                    lastTrainedTextView.text = item.lastTrained ?: "Never"
+                // Check if the last trained is "0" and set the text to "Today" instead
+                // Also check if the item is "Please select..." to clear any last trained text
+                lastTrainedTextView.text = when {
+                    item.name == "Please select..." -> ""
+                    item.name == "+ Add your own exercise" -> ""
+                    item.lastTrained == "0 days ago" -> "Today"
+                    else -> item.lastTrained ?: "Never"
                 }
 
                 view
@@ -58,6 +60,7 @@ class ExerciseDropdownAdapter(context: Context, items: List<ExerciseDropdownItem
             }
         }
     }
+
 
 
 

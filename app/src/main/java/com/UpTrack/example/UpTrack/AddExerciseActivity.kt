@@ -158,44 +158,47 @@ class AddExerciseActivity : AppCompatActivity() {
         }
 
         viewModel.exercisesWithLastTraining.observe(this, { exercises ->
-            Log.d("AddExerciseActivity", "Exercises received: ${exercises.size}, ${exercises.joinToString()}")
+            val items = mutableListOf<ExerciseDropdownItem>()
+            items.add(ExerciseDropdownItem.Exercise("Please select...", null)) // Add default prompt
 
-            // Start with "Please Select..." prompt
-            val items = mutableListOf<ExerciseDropdownItem>(
-                ExerciseDropdownItem.Exercise("Please select...", null)
-            )
+            // Filter and sort the exercises that were trained, excluding today's workouts
+            val recentlyTrainedExercises = exercises.filter { it.daysAgo != null && it.daysAgo > 0 }
+                .sortedBy { it.daysAgo }
 
-            // Add the "Recently trained" header if there are any recently trained exercises
-            if (exercises.any { it.daysAgo != null }) {
+            // Add recently trained exercises, if any
+            if (recentlyTrainedExercises.isNotEmpty()) {
                 items.add(ExerciseDropdownItem.SubHeader("Recently trained"))
-                // Add recently trained exercises
-                exercises.filter { it.daysAgo != null }
-                    .sortedByDescending { it.daysAgo }
-                    .mapTo(items) { ExerciseDropdownItem.Exercise(it.exerciseName, "${it.daysAgo} days ago") }
+                recentlyTrainedExercises.mapTo(items) {
+                    ExerciseDropdownItem.Exercise(it.exerciseName, "${it.daysAgo} days ago")
+                }
+            }
+
+            // Add today's exercises at the end of the recently trained section
+            val todaysExercises = exercises.filter { it.daysAgo == 0 }
+            if (todaysExercises.isNotEmpty()) {
+                todaysExercises.mapTo(items) {
+                    ExerciseDropdownItem.Exercise(it.exerciseName, "Today")
+                }
             }
 
             // Add the "Others" header if there are any other exercises
-            if (exercises.any { it.daysAgo == null }) {
+            val otherExercises = exercises.filter { it.daysAgo == null }
+            if (otherExercises.isNotEmpty()) {
                 items.add(ExerciseDropdownItem.SubHeader("Others"))
-                // Add other exercises
-                exercises.filter { it.daysAgo == null }
-                    .mapTo(items) { ExerciseDropdownItem.Exercise(it.exerciseName, null) }
+                otherExercises.mapTo(items) { ExerciseDropdownItem.Exercise(it.exerciseName, "Never") }
             }
 
-            Log.d("AddExerciseActivity", "Dropdown items prepared: ${items.size}, ${items.joinToString()}")
             exerciseSpinnerAdapter = ExerciseDropdownAdapter(this@AddExerciseActivity, items)
             exerciseSpinner.adapter = exerciseSpinnerAdapter
         })
 
         exerciseSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                if (exerciseSpinner.selectedItem is ExerciseDropdownItem.Exercise) {
-                    val exercise = exerciseSpinner.selectedItem as ExerciseDropdownItem.Exercise
-                    if (exercise.name != "Please select...") {
-                        buttonAddExercise.isEnabled = true
-                    } else {
-                        buttonAddExercise.isEnabled = false
-                    }
+                val selectedItem = exerciseSpinner.selectedItem
+                if (selectedItem is ExerciseDropdownItem.Exercise && selectedItem.name != "Please select...") {
+                    buttonAddExercise.isEnabled = true
+                } else {
+                    buttonAddExercise.isEnabled = false
                 }
             }
 
