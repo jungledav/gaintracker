@@ -174,11 +174,13 @@ class AddExerciseActivity : AppCompatActivity() {
             items.add(ExerciseDropdownItem.Exercise("Please select...", null)) // Add default prompt
 
             // Filter and sort the exercises that were trained, excluding today's workouts
+            val todaysExercises = exercises.filter { it.daysAgo == 0 }
+
             val recentlyTrainedExercises = exercises.filter { it.daysAgo != null && it.daysAgo > 0 }
                 .sortedBy { it.daysAgo }
 
             // Add recently trained exercises, if any
-            if (recentlyTrainedExercises.isNotEmpty()) {
+            if (recentlyTrainedExercises.isNotEmpty()||todaysExercises.isNotEmpty()) {
                 items.add(ExerciseDropdownItem.SubHeader("Recently trained"))
                 recentlyTrainedExercises.mapTo(items) {
                     ExerciseDropdownItem.Exercise(it.exerciseName, "${it.daysAgo} days ago")
@@ -186,7 +188,6 @@ class AddExerciseActivity : AppCompatActivity() {
             }
 
             // Add today's exercises at the end of the recently trained section
-            val todaysExercises = exercises.filter { it.daysAgo == 0 }
             if (todaysExercises.isNotEmpty()) {
                 todaysExercises.mapTo(items) {
                     ExerciseDropdownItem.Exercise(it.exerciseName, "Today")
