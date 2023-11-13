@@ -127,25 +127,37 @@ class AddExerciseActivity : AppCompatActivity() {
 
         // Prepare default "Please Select..." option for exerciseSpinner
         val defaultExerciseItem = listOf(ExerciseDropdownItem.Exercise("Please select...", null))
-        exerciseSpinnerAdapter = ExerciseDropdownAdapter(this@AddExerciseActivity, defaultExerciseItem)
+        exerciseSpinnerAdapter =
+            ExerciseDropdownAdapter(this@AddExerciseActivity, defaultExerciseItem)
         exerciseSpinner.adapter = exerciseSpinnerAdapter
 
         muscleGroupSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
                 val muscleGroupName = muscleGroupSpinner.selectedItem.toString()
 
                 if (muscleGroupName != "Please select...") {
                     // Enable the exercise spinner and load associated exercises
-                    val exerciseNames = PredefinedExercises.getExerciseNamesForMuscleGroup(muscleGroupName)
+                    val exerciseNames =
+                        PredefinedExercises.getExerciseNamesForMuscleGroup(muscleGroupName)
                     viewModel.loadDaysSinceLastTrained(exerciseNames) // Pass the list of exercise names to the method
 
                     // Update the adapter with a default "Please Select..." option
-                    val items = mutableListOf(ExerciseDropdownItem.Exercise("Please select...", null))
-                    exerciseSpinnerAdapter = ExerciseDropdownAdapter(this@AddExerciseActivity, items)
+                    val items =
+                        mutableListOf(ExerciseDropdownItem.Exercise("Please select...", null))
+                    exerciseSpinnerAdapter =
+                        ExerciseDropdownAdapter(this@AddExerciseActivity, items)
                     exerciseSpinner.adapter = exerciseSpinnerAdapter
                     exerciseSpinner.isEnabled = true
                     buttonAddExercise.isEnabled = false
-                    exerciseSpinner.setSelection(0, false) // Set to "Please Select" without triggering item selected listener
+                    exerciseSpinner.setSelection(
+                        0,
+                        false
+                    ) // Set to "Please Select" without triggering item selected listener
                 } else {
                     // Muscle group not selected, reset the exercise spinner
                     resetExerciseSpinner()
@@ -157,7 +169,7 @@ class AddExerciseActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.exercisesWithLastTraining.observe(this, { exercises ->
+        viewModel.exercisesWithLastTraining.observe(this) { exercises ->
             val items = mutableListOf<ExerciseDropdownItem>()
             items.add(ExerciseDropdownItem.Exercise("Please select...", null)) // Add default prompt
 
@@ -185,29 +197,57 @@ class AddExerciseActivity : AppCompatActivity() {
             val otherExercises = exercises.filter { it.daysAgo == null }
             if (otherExercises.isNotEmpty()) {
                 items.add(ExerciseDropdownItem.SubHeader("Others"))
-                otherExercises.mapTo(items) { ExerciseDropdownItem.Exercise(it.exerciseName, "Never") }
+                otherExercises.mapTo(items) {
+                    ExerciseDropdownItem.Exercise(
+                        it.exerciseName,
+                        "Never"
+                    )
+                }
             }
 
             exerciseSpinnerAdapter = ExerciseDropdownAdapter(this@AddExerciseActivity, items)
             exerciseSpinner.adapter = exerciseSpinnerAdapter
-        })
+        }
 
         exerciseSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                val selectedItem = exerciseSpinner.selectedItem
-                if (selectedItem is ExerciseDropdownItem.Exercise && selectedItem.name != "Please select...") {
-                    buttonAddExercise.isEnabled = true
-                } else {
-                    buttonAddExercise.isEnabled = false
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val selectedItem = exerciseSpinner.selectedItem as? ExerciseDropdownItem.Exercise
+                when (selectedItem?.name) {
+                    "+ Add your own exercise" -> {
+                        showAddCustomExerciseDialog()
+                    }
+
+                    "Please select..." -> {
+                        buttonAddExercise.isEnabled = false
+                    }
+
+                    null -> {
+                        buttonAddExercise.isEnabled = false
+                        Toast.makeText(
+                            this@AddExerciseActivity,
+                            "Please select an exercise",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    else -> {
+                        // If a valid exercise is selected (other than special cases), enable the button
+                        buttonAddExercise.isEnabled = true
+                    }
                 }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {
-                buttonAddExercise.isEnabled = false // Deactivate the buttonAddExercise
+                buttonAddExercise.isEnabled = false
             }
         }
     }
-    private fun resetExerciseSpinner() {
+        private fun resetExerciseSpinner() {
         // Reset the exercise spinner to its default state with "Please Select..."
         val defaultExerciseList = listOf(ExerciseDropdownItem.Exercise("Please select...", null))
         exerciseSpinnerAdapter = ExerciseDropdownAdapter(this, defaultExerciseList)
