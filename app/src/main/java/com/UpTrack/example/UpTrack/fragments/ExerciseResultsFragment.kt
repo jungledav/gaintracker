@@ -357,6 +357,11 @@ class ExerciseResultsFragment : Fragment() {
 
             }
         }
+        if (exerciseSetExists && selectedCard == null) {
+            // Programmatically select the first card
+            // For example, if the first card is the maxWeightCardView:
+            maxWeightCardView.performClick()
+        }
         }
 
             companion object {
@@ -416,7 +421,7 @@ class ExerciseResultsFragment : Fragment() {
         // Determine the window size based on the data
         val numDays = if (dates.isNotEmpty()) {
             val diff = daysBetween(dates.first(), dates.last())
-            Math.min(diff, 90f) // We want a max of 3 months, i.e., approx 90 days
+            Math.min(diff, 180f) // We want a max of 6 months, i.e., approx 180 days
         } else {
             0f
         }
@@ -426,13 +431,13 @@ class ExerciseResultsFragment : Fragment() {
 
         val tvChartDescription = view?.findViewById<TextView>(R.id.tv_chart_description)
         tvChartDescription?.text = when(dataChoice) {
-            "maxwight" -> "Max Weight over last 3 months"
-            "onemaxrep" -> "Calculated maximum one rep over last 3 months"
-            "MaxRepsOneSet" -> "Maximum Reps in one Set over last 3 months"
-            "MaxRepsOneWorkout" -> "Maximum Reps in one Workout over last 3 months"
-            "MaxSetVolume" -> "Maximum Volume in one Set over last 3 months"
-            "MaxWorkoutVolume" -> "Maximum Volume in one Workout over last 3 months"
-            else -> "Max Weight over last 3 months"
+            "maxwight" -> "Max Weight over time"
+            "onemaxrep" -> "Calculated maximum one rep over time"
+            "MaxRepsOneSet" -> "Maximum Reps in one Set over time"
+            "MaxRepsOneWorkout" -> "Maximum Reps in one Workout over time"
+            "MaxSetVolume" -> "Maximum Volume in one Set over time"
+            "MaxWorkoutVolume" -> "Maximum Volume in one Workout over time"
+            else -> "Max Weight over time"
         }
 
         lineChart.invalidate() // refreshes the chart

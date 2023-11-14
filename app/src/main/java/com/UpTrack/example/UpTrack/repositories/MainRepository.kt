@@ -168,7 +168,7 @@ class MainRepository(
         val endDate = Date().time  // Now it's a long timestamp
         val calendar = Calendar.getInstance().apply {
             timeInMillis = endDate
-            add(Calendar.MONTH, -3)
+            add(Calendar.MONTH, -6)
         }
         val startDate = calendar.timeInMillis
         return exerciseDao.calculateMaxOneRepForLastThreeMonths(exerciseId, startDate, endDate)
@@ -178,7 +178,7 @@ class MainRepository(
         val endDate = Date().time // current timestamp
         val calendar = Calendar.getInstance().apply {
             timeInMillis = endDate
-            add(Calendar.MONTH, -3)
+            add(Calendar.MONTH, -6)
         }
         val startDate = calendar.timeInMillis
         return liveData {
@@ -189,7 +189,7 @@ class MainRepository(
         val endDate = Date().time
         val calendar = Calendar.getInstance().apply {
             timeInMillis = endDate
-            add(Calendar.MONTH, -3)
+            add(Calendar.MONTH, -6)
         }
         val startDate = calendar.timeInMillis
 
@@ -200,7 +200,7 @@ class MainRepository(
         val endDate = Date().time
         val calendar = Calendar.getInstance().apply {
             timeInMillis = endDate
-            add(Calendar.MONTH, -3)
+            add(Calendar.MONTH, -6)
         }
         val startDate = calendar.timeInMillis
 
@@ -256,7 +256,7 @@ class MainRepository(
         val endDate = Date().time
         val calendar = Calendar.getInstance().apply {
             timeInMillis = endDate
-            add(Calendar.MONTH, -3)
+            add(Calendar.MONTH, -6)
         }
         val startDate = calendar.timeInMillis
 
@@ -266,7 +266,7 @@ class MainRepository(
         val endDate = Date().time
         val calendar = Calendar.getInstance().apply {
             timeInMillis = endDate
-            add(Calendar.MONTH, -3)
+            add(Calendar.MONTH, -6)
         }
         val startDate = calendar.timeInMillis
 
