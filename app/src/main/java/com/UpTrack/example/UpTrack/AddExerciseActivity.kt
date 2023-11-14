@@ -297,6 +297,11 @@ class AddExerciseActivity : AppCompatActivity() {
             exerciseSpinner.setSelection(0)
         }
         customExerciseDialog = builder.create()
+        // Set the onCancelListener to handle if the user cancels the dialog by clicking outside
+        customExerciseDialog?.setOnCancelListener {
+            // Set the exerciseSpinner back to the default "Please Select..." position
+            exerciseSpinner.setSelection(0)
+        }
         customExerciseDialog?.show()
     }
 
