@@ -76,32 +76,22 @@ class AddExerciseActivity : AppCompatActivity() {
             buttonAddExercise.isEnabled = !isLoading
         })
         buttonAddExercise.setOnClickListener {
-            // Get the selected item from the spinner, which is an instance of ExerciseDropdownItem
             val selectedItem = exerciseSpinner.selectedItem as? ExerciseDropdownItem.Exercise
-
-            // Check if the selected item is not null and is not the "Please Select" prompt
             if (selectedItem != null && selectedItem.name != "Please Select") {
                 lifecycleScope.launch {
-                    // Extract the exercise name from the ExerciseDropdownItem
                     val exerciseName = selectedItem.name
-                    Log.d("AddExerciseActivity", "Inserting exercise: $exerciseName")
-
-                    // Insert the exercise and retrieve the ID
                     val exerciseId = viewModel.insertExercise(exerciseName)
-                    Log.d("AddExerciseActivity", "Exercise inserted with ID: $exerciseId")
-
                     if (exerciseId != 0L) {
-                        Log.d("AddExerciseActivity", "Navigating to ExerciseDetailsActivity with ID: $exerciseId and Name: $exerciseName")
                         navigateToExerciseDetailsActivity(exerciseId, exerciseName)
                     } else {
-                        Log.d("AddExerciseActivity", "Failed to insert exercise.")
+                        Toast.makeText(this@AddExerciseActivity, "Failed to insert exercise.", Toast.LENGTH_SHORT).show()
                     }
                 }
             } else {
-                // Prompt the user to select an exercise if "Please Select" is the current selection
                 Toast.makeText(this, "Please select an exercise", Toast.LENGTH_SHORT).show()
             }
         }
+
 
 
     }
@@ -276,28 +266,36 @@ class AddExerciseActivity : AppCompatActivity() {
         builder.setPositiveButton("Add") { _, _ ->
             val customExerciseName = editTextCustomExerciseName.text.toString().trim()
             val selectedEquipmentType = spinnerEquipmentType.selectedItem.toString()
-            if (customExerciseName.contains("(") || customExerciseName.contains(")")) {
-                Toast.makeText(this, "Brackets are not allowed in exercise names.", Toast.LENGTH_SHORT).show()
-                showAddCustomExerciseDialog()
-            } else if (customExerciseName.isNotBlank()) {
+            val selectedMuscleGroup = muscleGroupSpinner.selectedItem.toString()
+
+            if (customExerciseName.isNotBlank()) {
+                // First, add the exercise type with its muscle group association
                 PredefinedExercises.addCustomExercise(
-                    this,
-                    muscleGroupSpinner.selectedItem.toString(),
-                    customExerciseName,
-                    selectedEquipmentType
+                    context = this,
+                    muscleGroupName = selectedMuscleGroup,
+                    exerciseName = customExerciseName,
+                    equipmentType = selectedEquipmentType
                 )
 
-                // Refresh the spinner to show updated data including last trained info
-                refreshExerciseSpinnerData()
+                // Then, insert an instance of the exercise to get an ID
+                lifecycleScope.launch {
+                    val exerciseId = viewModel.insertExercise(customExerciseName)
+                    if (exerciseId != -1L) {
+                        navigateToExerciseDetailsActivity(exerciseId, customExerciseName)
+                    } else {
+                        Toast.makeText(this@AddExerciseActivity, "Failed to insert custom exercise.", Toast.LENGTH_SHORT).show()
+                    }
+                }
             } else {
                 Toast.makeText(this, "Please enter a custom exercise name", Toast.LENGTH_SHORT).show()
-                showAddCustomExerciseDialog()
             }
         }
+
         builder.setNegativeButton("Cancel", null)
         customExerciseDialog = builder.create()
         customExerciseDialog?.show()
     }
+
 
     private fun refreshExerciseSpinnerData() {
         val muscleGroupName = muscleGroupSpinner.selectedItem.toString()
@@ -311,15 +309,15 @@ class AddExerciseActivity : AppCompatActivity() {
     private fun navigateToExerciseDetailsActivity(exerciseId: Long, exerciseName: String) {
         Log.d("AddExerciseActivity", "Navigating to ExerciseDetailsActivity with ID: $exerciseId and Name: $exerciseName")
 
-        val intent = Intent(this, ExerciseDetailsActivity::class.java)
-        intent.putExtra(ExerciseDetailsActivity.EXTRA_EXERCISE_ID, exerciseId)
-        intent.putExtra(ExerciseDetailsActivity.EXTRA_EXERCISE_NAME, exerciseName)
-        intent.putExtra(ExerciseDetailsActivity.EXTRA_NAVIGATE_BACK_TO_MAIN, true) // new flag
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-
+        val intent = Intent(this, ExerciseDetailsActivity::class.java).apply {
+            putExtra(ExerciseDetailsActivity.EXTRA_EXERCISE_ID, exerciseId)
+            putExtra(ExerciseDetailsActivity.EXTRA_EXERCISE_NAME, exerciseName)
+            putExtra(ExerciseDetailsActivity.EXTRA_NAVIGATE_BACK_TO_MAIN, true)
+        }
         startActivity(intent)
         finish()
     }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {

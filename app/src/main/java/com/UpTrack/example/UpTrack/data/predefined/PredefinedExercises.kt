@@ -137,14 +137,16 @@ object PredefinedExercises {
         editor.putString("custom_exercises_data", json)
         editor.apply()
     }
-    fun addCustomExercise(context: Context, muscleGroupName: String, exerciseName: String, equipmentType: String) {
+    fun addCustomExercise(context: Context, muscleGroupName: String, exerciseName: String, equipmentType: String): ExerciseInfo {
         synchronized(customExercises) {
             if (customExercises[muscleGroupName] == null) {
                 customExercises[muscleGroupName] = mutableListOf()
             }
-            customExercises[muscleGroupName]!!.add(ExerciseInfo(name = exerciseName, equipment = equipmentType))
+            val newExercise = ExerciseInfo(name = exerciseName, equipment = equipmentType)
+            customExercises[muscleGroupName]!!.add(newExercise)
+            saveCustomExercises(context)
+            return newExercise
         }
-        saveCustomExercises(context) // Assuming this is also thread-safe
     }
     fun findMuscleGroupByExerciseName(exerciseName: String): String? {
         // Check in predefined exercises
