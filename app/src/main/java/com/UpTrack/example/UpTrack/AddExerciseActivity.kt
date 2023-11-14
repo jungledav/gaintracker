@@ -291,7 +291,11 @@ class AddExerciseActivity : AppCompatActivity() {
             }
         }
 
-        builder.setNegativeButton("Cancel", null)
+        builder.setNegativeButton("Cancel") { dialog, _ ->
+            dialog.dismiss()
+            // Set the exerciseSpinner back to the default "Please Select..." position
+            exerciseSpinner.setSelection(0)
+        }
         customExerciseDialog = builder.create()
         customExerciseDialog?.show()
     }
