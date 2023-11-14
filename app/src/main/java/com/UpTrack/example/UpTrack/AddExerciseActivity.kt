@@ -263,56 +263,62 @@ class AddExerciseActivity : AppCompatActivity() {
         val builder = AlertDialog.Builder(this)
         builder.setView(dialogView)
         builder.setTitle("Add Custom Exercise")
-        builder.setPositiveButton("Add") { _, _ ->
-            val customExerciseName = editTextCustomExerciseName.text.toString().trim()
-            val selectedEquipmentType = spinnerEquipmentType.selectedItem.toString()
-            val selectedMuscleGroup = muscleGroupSpinner.selectedItem.toString()
-
-            if (customExerciseName.isNotBlank()) {
-                // First, add the exercise type with its muscle group association
-                PredefinedExercises.addCustomExercise(
-                    context = this,
-                    muscleGroupName = selectedMuscleGroup,
-                    exerciseName = customExerciseName,
-                    equipmentType = selectedEquipmentType
-                )
-
-                // Then, insert an instance of the exercise to get an ID
-                lifecycleScope.launch {
-                    val exerciseId = viewModel.insertExercise(customExerciseName)
-                    if (exerciseId != -1L) {
-                        navigateToExerciseDetailsActivity(exerciseId, customExerciseName)
-                    } else {
-                        Toast.makeText(this@AddExerciseActivity, "Failed to insert custom exercise.", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            } else {
-                Toast.makeText(this, "Please enter a custom exercise name", Toast.LENGTH_SHORT).show()
-            }
-        }
+        // Do not use setPositiveButton here. It will be added manually later to override the default dismiss behavior.
 
         builder.setNegativeButton("Cancel") { dialog, _ ->
             dialog.dismiss()
-            // Set the exerciseSpinner back to the default "Please Select..." position
             exerciseSpinner.setSelection(0)
         }
-        customExerciseDialog = builder.create()
-        // Set the onCancelListener to handle if the user cancels the dialog by clicking outside
-        customExerciseDialog?.setOnCancelListener {
-            // Set the exerciseSpinner back to the default "Please Select..." position
-            exerciseSpinner.setSelection(0)
+
+        customExerciseDialog = builder.create().apply {
+            // Set the onCancelListener to reset the spinner if the dialog is canceled
+            setOnCancelListener {
+                exerciseSpinner.setSelection(0)
+            }
+            // Show the dialog before setting the positive button to override its onClickListener
+            show()
+
+            getButton(AlertDialog.BUTTON_POSITIVE)?.setOnClickListener {
+                val customExerciseName = editTextCustomExerciseName.text.toString().trim()
+                val selectedEquipmentType = spinnerEquipmentType.selectedItem.toString()
+                val selectedMuscleGroup = muscleGroupSpinner.selectedItem.toString()
+
+                if (customExerciseName.isNotBlank()) {
+                    val existingExercises = PredefinedExercises.getExerciseNamesForMuscleGroup(selectedMuscleGroup)
+
+                    if (customExerciseName in existingExercises) {
+                        Toast.makeText(this@AddExerciseActivity, "An exercise with this name already exists for $selectedMuscleGroup.", Toast.LENGTH_SHORT).show()
+                    } else {
+                        PredefinedExercises.addCustomExercise(
+                            context = this@AddExerciseActivity,
+                            muscleGroupName = selectedMuscleGroup,
+                            exerciseName = customExerciseName,
+                            equipmentType = selectedEquipmentType
+                        )
+
+                        lifecycleScope.launch {
+                            val exerciseId = viewModel.insertExercise(customExerciseName)
+                            if (exerciseId != -1L) {
+                                navigateToExerciseDetailsActivity(exerciseId, customExerciseName)
+                                dismiss() // Only dismiss the dialog if the operation is successful
+                            } else {
+                                Toast.makeText(this@AddExerciseActivity, "Failed to insert custom exercise.", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                } else {
+                    Toast.makeText(this@AddExerciseActivity, "Please enter a custom exercise name", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
-        customExerciseDialog?.show()
+
+        // Adding the positive button manually to override the default dismiss behavior
+        customExerciseDialog?.getButton(AlertDialog.BUTTON_POSITIVE)?.let {
+            it.text = getString(android.R.string.ok)
+            it.visibility = View.VISIBLE
+        }
     }
 
-
-    private fun refreshExerciseSpinnerData() {
-        val muscleGroupName = muscleGroupSpinner.selectedItem.toString()
-        val exerciseNames = PredefinedExercises.getExerciseNamesForMuscleGroup(muscleGroupName)
-
-        // This assumes viewModel.loadDaysSinceLastTrained will trigger an update to the spinner data
-        viewModel.loadDaysSinceLastTrained(exerciseNames)
-    }
 
 
     private fun navigateToExerciseDetailsActivity(exerciseId: Long, exerciseName: String) {
