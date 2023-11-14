@@ -36,14 +36,12 @@ class ExerciseDropdownAdapter(context: Context, items: List<ExerciseDropdownItem
         return when (item) {
             is ExerciseDropdownItem.Exercise -> {
                 val view = convertView ?: inflater.inflate(R.layout.spinner_dropdown_item, parent, false)
-                val nameTextView: TextView = view.findViewById(R.id.textViewExerciseName)
-                val lastTrainedTextView: TextView = view.findViewById(R.id.textViewLastTrained)
+                val nameTextView: TextView? = view.findViewById(R.id.textViewExerciseName)
+                val lastTrainedTextView: TextView? = view.findViewById(R.id.textViewLastTrained)
 
-                nameTextView.text = item.name
+                nameTextView?.text = item.name ?: "Unnamed"
 
-                // Check if the last trained is "0" and set the text to "Today" instead
-                // Also check if the item is "Please select..." to clear any last trained text
-                lastTrainedTextView.text = when {
+                lastTrainedTextView?.text = when {
                     item.name == "Please select..." -> ""
                     item.name == "+ Add your own exercise" -> ""
                     item.lastTrained == "0 days ago" -> "Today"
@@ -56,10 +54,21 @@ class ExerciseDropdownAdapter(context: Context, items: List<ExerciseDropdownItem
                 val view = convertView ?: inflater.inflate(R.layout.spinner_subheader, parent, false)
                 val titleTextView: TextView? = view.findViewById(R.id.textViewSubHeader)
                 titleTextView?.text = item.title ?: "Section"
-                view
+
+                view.apply {
+                    // Ensure this view is not clickable or selectable
+                    isEnabled = false
+                    isClickable = false
+                }
+            }
+            else -> {
+                // Log an error or throw an exception as there's an unknown item type
+                Log.e("ExerciseDropdownAdapter", "Unknown item type for dropdown view")
+                throw IllegalStateException("Unknown item type for dropdown view")
             }
         }
     }
+
 
 
 
