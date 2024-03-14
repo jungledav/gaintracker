@@ -161,44 +161,47 @@ class AddExerciseActivity : AppCompatActivity() {
 
         viewModel.exercisesWithLastTraining.observe(this) { exercises ->
             val items = mutableListOf<ExerciseDropdownItem>()
-            items.add(ExerciseDropdownItem.Exercise("Please select...", null)) // Add default prompt
+            items.add(ExerciseDropdownItem.Exercise("Please select...", null)) // Default prompt
 
-            // Filter and sort the exercises that were trained, excluding today's workouts
+            // Separate exercises trained today
             val todaysExercises = exercises.filter { it.daysAgo == 0 }
 
-            val recentlyTrainedExercises = exercises.filter { it.daysAgo != null && it.daysAgo > 0 }
-                .sortedBy { it.daysAgo }
+            // Filter recently trained exercises excluding today, and sort them so the most recent is at the top
+            val recentlyTrainedExercises = exercises.filter { it.daysAgo in 1..14 }.sortedBy { it.daysAgo }
 
-            // Add recently trained exercises, if any
-            if (recentlyTrainedExercises.isNotEmpty()||todaysExercises.isNotEmpty()) {
-                items.add(ExerciseDropdownItem.SubHeader("Recently trained"))
-                recentlyTrainedExercises.mapTo(items) {
-                    ExerciseDropdownItem.Exercise(it.exerciseName, "${it.daysAgo} days ago")
+            // Combine the sorted recently trained exercises with today's exercises at the end
+            val combinedRecentlyTrained = recentlyTrainedExercises + todaysExercises
+
+            if (combinedRecentlyTrained.isNotEmpty()) {
+                items.add(ExerciseDropdownItem.SubHeader("Recently Trained"))
+                combinedRecentlyTrained.forEach { exercise ->
+                    val label = when (exercise.daysAgo) {
+                        0 -> "Today"
+                        else -> "${exercise.daysAgo} days ago"
+                    }
+                    items.add(ExerciseDropdownItem.Exercise(exercise.exerciseName, label))
                 }
             }
 
-            // Add today's exercises at the end of the recently trained section
-            if (todaysExercises.isNotEmpty()) {
-                todaysExercises.mapTo(items) {
-                    ExerciseDropdownItem.Exercise(it.exerciseName, "Today")
-                }
-            }
+            // Others: Include exercises never trained or trained more than 14 days ago, with never trained at the end
+            val othersWithDate = exercises.filter { it.daysAgo != null && it.daysAgo > 14 }.sortedByDescending { it.daysAgo }
+            val neverTrained = exercises.filter { it.daysAgo == null }
 
-            // Add the "Others" header if there are any other exercises
-            val otherExercises = exercises.filter { it.daysAgo == null }
-            if (otherExercises.isNotEmpty()) {
+            if (othersWithDate.isNotEmpty() || neverTrained.isNotEmpty()) {
                 items.add(ExerciseDropdownItem.SubHeader("Others"))
-                otherExercises.mapTo(items) {
-                    ExerciseDropdownItem.Exercise(
-                        it.exerciseName,
-                        "Never"
-                    )
+                othersWithDate.forEach { exercise ->
+                    items.add(ExerciseDropdownItem.Exercise(exercise.exerciseName, "${exercise.daysAgo} days ago"))
+                }
+                neverTrained.forEach {
+                    items.add(ExerciseDropdownItem.Exercise(it.exerciseName, "Never"))
                 }
             }
 
             exerciseSpinnerAdapter = ExerciseDropdownAdapter(this@AddExerciseActivity, items)
             exerciseSpinner.adapter = exerciseSpinnerAdapter
         }
+
+
 
         exerciseSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
